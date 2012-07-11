@@ -1,0 +1,138 @@
+= Campaign Server WML =
+
+This page describes the WML commands exchanged between campaign download clients and a campaign server. 
+
+== Listing Available Campaigns ==
+
+This request is used to retrieve a list of campaigns available on the server and some overview information about them.
+
+* Request
+** '''[request_campaign_list]'''
+*** '''after''': only select campaigns last updated after the indicated time. ''after'' is in seconds relative to either the time when the command is processed or the [http://wikipedia.org/wiki/Unix_epoch Unix epoch]. As an example, to select campaigns last updated after Mon Oct 10 21:42:41 2005 GMT, you could not specify a value for ''times_relative_to'' (to use the default of relative to the [http://wikipedia.org/wiki/Unix_epoch Unix epoch]) and specify ''after'' = "1128980561".
+*** '''before''': only select campaigns last updated before the indicated time. ''before'' is in seconds relative to either the time when the command is processed or the [http://wikipedia.org/wiki/Unix_epoch Unix epoch]. As an example, to select campaigns last updated over a day ago, you could specify ''times_relative_to'' = "now" and ''before'' = "-86400".
+*** '''language''': return information only about campaigns that appear to be translated into this language. These names will normally be POSIX locale names. Typically you will want to either use a two letter language code (e.g. "de") or a two letter language code followed by a two character region code (e.g. "pt_BR"). Note that "pt" will not match "pt_BR".
+*** '''name''': return information for this campaign. If the name is specified and not the empty string then only information about campaigns with matching names (unless something changes there will be at most one such campaign) will be returned.
+*** '''times_relative_to''': "now" means that ''before'' and ''after'' are in seconds relative to the time when the request is processed by the campaign server. Any other value, or if it is not set, indicates that ''before'' and ''after'' are in seconds relative to the [http://wikipedia.org/wiki/Unix_epoch Unix epoch].
+* Response
+** '''timestamp''': what time the campaign server thought it was when this response was generated. You shouldn't count on this as a guaranty that no new campaigns will appear with previous update times. This could be used to detect significant clock skew or possibly used as an approximate time for how far you need to look back for updated campaigns.
+** '''[campaigns]'''
+*** '''[campaign]'''
+**** '''author''': author(s) of the campaign.
+**** '''dependencies''': list of add-on dependencies
+**** ''description'': (current trunk only) description of the campaign. For pre 1.0 campaigns this should also describe the playability.
+**** '''downloads''': the number times the campaign (including previous versions) has been downloaded directly from the campaign server.
+**** '''filename''': filename campaign is stored in (currently the same as ''name'').
+**** '''icon''': path to an image in the standard image directory for Wesnoth. This path must use forward slashes (/). It cannot refer to custom images included with the campaign. It is allowed to use [[ImagePathFunctionWML]]. This image is displayed as an icon by the campaign client built into Wesnoth.
+**** '''name''': the name of the campaign. Note this is not the title and shouldn't have spaces in it.
+**** '''size''': the size of the campaign in bytes on the campaign server.
+**** '''timestamp''': when this version of the campaign was uploaded.
+**** '''title''': campaign title. This is not a translatable string.
+**** '''translate''': whether the campaign will be automatically send to wescamp and updated from wescamp.
+**** '''uploads''': (current trunk only) number of uploads (initial upload gets 1)
+**** '''version''': version of the campaign. The recommended format is x.y.z where x, y and z are decimal strings. x should be 0 for campaigns that are not yet complete.
+**** '''type''': indicates the type of the add-on, used for the downloads manager dialog. Possible values are described in [[PblWML]].
+**** '''[translation]'''
+***** '''language''': a language that this campaign has appeared to have been at least partially translated into. The following heuristic is used when a campaign is uploaded to extract a list of languages. The list of directories in the uploaded campaign is recursively searched. If a directory named 'LC_MESSAGES' is found then the name of the object containing this '''[dir]''' (normally the parent directory, but could be the campaign name if someone did something silly) is added to the list of translations. Directories named "LC_MESSAGES" are not searched for further matches. The normal naming convention is to use Posix locale names. This will usually be a two letter language code (e.g. "de") or a two letter language code followed by a two letter region code (e.g. "pt_BR"). Since "en_US" is the base language, this language will not be listed as an available translation.
+
+== Downloading a Campaign ==
+
+This command is used to download a specified campaign from the campaign server.
+
+* Request
+** '''[request_campaign]'''
+*** '''name''': the name of the campaign. Note this is not the title and shouldn't have spaces in it.
+* Response
+** '''author''': author(s) of the campaign.
+** '''campaign_name''': the name of the campaign. Note this is not the title and shouldn't have spaces in it.
+** '''description''': description of the campaign. For pre 1.0 campaigns this should also describe the playability.
+** '''icon''': path to an image in the standard image directory for Wesnoth. This path must use forward slashes (/). It cannot refer to custom images included with the campaign. It is allowed to use [[ImagePathFunctionWML]]. This image is displayed as an icon by the campaign client built into Wesnoth.
+** '''name''': this field will always be empty. Client code would treat it as a directory name if it was not empty.
+** '''timestamp''': the time the campaign was last uploaded to the campaign server. This is a decimal string containing the number of seconds since the unix epoch.
+** '''title''': the title of the campaign. This is not a translatable string.
+** '''version''': version of the campaign. The recommended format is x.y.z where x, y and z are decimal strings. x should be 0 for campaigns that are not yet complete.
+** '''type''': indicates the type of the add-on, used for the downloads manager dialog. Possible values are described in [[PblWML]].
+** '''[file]'''
+*** '''name''': the name of the file. This does not include any path information.
+*** '''contents''': the content of the file (binary data). This data should have no zero bytes. A byte with the code of 1 is an escape byte. The next byte will be data, but its value should be reduced by 1. Normally only byte codes of 0 and 1 are escaped.
+** '''[dir]'''
+*** '''name''': the name of the directory. This does not include any path information.
+*** This tag may contain '''[file]''' or '''[dir]''' subtags (the latter are recursive).
+
+== Uploading a Campaign ==
+
+This command is used to upload a new or updated version of an add on campaign to the campaign server.
+
+* Request
+** '''[upload]'''
+*** '''author''': author(s) of the campaign.
+*** '''description''': description of the campaign. For pre 1.0 campaigns this should also describe the playability.
+*** '''icon''': path to an image in the standard image directory for Wesnoth. This path must use forward slashes (/). It cannot refer to custom images included with the campaign. It is allowed to use [[ImagePathFunctionWML]]. This image is displayed as an icon by the campaign client built into Wesnoth.
+*** '''name''': the name of the campaign. Note this is not the title and shouldn't have spaces in it.
+*** '''passphrase''': this is used to control updates to campaigns on the server. For existing campaigns, if the passphrase doesn't match, the update will be rejected. You can't easily change the passphrase yourself. If you lose or need to change the passphrase you need to contact the server administrator.
+*** '''email''': it is used by campaign server administrators to contact authors in case of important problems with their add-ons (incompatibilities, broken data files, violation of server [[Distributing_content#License|policies]], etc.).
+*** '''title''': the title of the campaign. This is not a translatable string.
+*** '''version''': version of the campaign. The recommended format is x.y.z where x, y and z are decimal strings. x should be 0 for campaigns that are not yet complete.
+*** '''type''': indicates the type of the add-on, used for the downloads manager dialog. Possible values are described in [[PblWML]].
+*** '''[data]'''
+**** '''[file]'''
+***** '''name''': the name of the file. This does not include any path information.
+***** '''contents''': the content of the file (binary data). This data should have no zero bytes. A byte with the code of 1 is an escape byte. The next byte will be data, but its value should be reduced by 1. Normally only byte codes of 0 and 1 are escaped.
+**** '''[dir]'''
+***** '''name''': the name of the directory. This does not include any path information.
+***** This tag may contain '''[file]''' or '''[dir]''' subtags (the latter are recursive).
+* Response
+** '''[message]'''
+*** '''message''': translatable string that indicates that the campaign upload was successful.
+
+== Changing the Passphrase for a Campaign ==
+
+This command is used to change the passphrase for a campaign. Currently the normal client doesn't have a way to use this. However, you can use the perl script campaign_passphrase.pl to do it, if you have a copy of the source tree.
+
+* Request
+** '''[change_passphrase]'''
+*** '''name''': The name of campaign.
+*** '''passphrase''': The old passphrase.
+*** '''new_passphrase''': The new passphrase.
+* Respose
+** '''[message]'''
+*** '''message''': Translatable string that says that the passphrase was changed.
+
+== Deleting a Campaign ==
+
+This command is used to delete an existing campaign from the campaign server.
+
+* Request
+** '''[delete]'''
+*** '''name''': The name of the campaign to delete.
+*** '''passphrase''': This must match the passphrase on record for the campaign or the master_password in order for the campaign to be deleted. Master_password.
+* Response
+** '''[message]'''
+*** '''message''': Translatable string that says that the campaign was deleted.
+
+== Request License Information ==
+
+Retrieve the terms of the license used for any uploaded campaigns. You may not upload a campaign if you don't (or can't) aggree to the license. Wesnoth requires campaigns (including images and sound) to be licensed under the GPL. For more information on licensing, see [[Wesnoth:Copyrights]].
+
+* Request
+** '''[request_terms]'''
+* Response
+** '''[message]'''
+*** '''message''': translatable string containing the text of the license.
+
+== Developer commands ==
+
+* Request
+** '''[validate_scripts]'''
+*** '''name''': The name of the campaign to sign.
+*** '''master_password''': The signing password.
+* Response
+** '''[message]'''
+*** '''message''': Translatable(?) string that says that the campaign was signed.
+
+== See Also ==
+
+* [[UserScenarios#Campaign_Server_Web_Access]]
+* [[PblWML]]
+* [[BuildingCampaignsThePBLFile]]
+
+[[Category:WML Reference]]

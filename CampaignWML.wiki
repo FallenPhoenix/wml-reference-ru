@@ -1,0 +1,57 @@
+{{WML Tags}}
+== the [campaign] tag ==
+
+<!--
+
+Dacyn and/or Invisible Philosopher -- please be careful
+you don't reduce the signal-to-noise ratio on the WML pages
+when editing!  Eg. knowing that a tag is translatable is _important_
+for the 29 translations we have in progress. -- ott
+
+-->
+
+This page describes how the campaign is displayed in the "Campaign" menu, and how it starts.
+
+'''[campaign]''' describes a campaign
+* '''id''': the internal campaign identifier used to classify saved games
+* '''icon''': the image displayed in the campaign selection menu
+* '''name''': (translatable) name displayed in the campaign selection menu
+* '''abbrev''': (translatable) abbreviation used as a prefix for savefile names made from this campaign
+* '''image''': the image shown in the information pane when this campaign is selected in the campaign selection menu (typically a transparent, 350×350 pixels portrait)
+* '''description''': (translatable) text shown in the information pane when this campaign is selected in the campaign selection menu
+* '''define'''='''''CAMPAIGN_SYMBOL''''' when this campaign is started, the preprocessor symbol '''''CAMPAIGN_SYMBOL''''' will be defined. See '''#ifdef''' in [[PreprocessorRef]] for how this can be used to isolate parts of the campaign file from other campaigns. Only the tags '''[campaign]''' and '''[binary_path]''' (see [[BinaryPathWML]]) should go outside of '''#ifdef ''CAMPAIGN_SYMBOL'''''. This symbol will be defined ''before'' any .cfg is preprocessed. Important note: starting with 1.7.13, [binary_path] does no longer need to be outside of the '''#ifdef ''CAMPAIGN_SYMBOL''''' block to make custom binary data available, which could easily cause overwrites. E.g. icon=data/add-ons/whatever/something.png is supposed to work. This seems to have been a bug since at least BfW 1.0 which means that practically all available examples of user made add-ons are wrong in this aspect.
+* '''extra_defines''': a comma(''',''') separated list of preprocessor symbols. Those symbols will be defined ''before'' any .cfg is preprocessed. Currently supported extra_defines are:
+** '''ENABLE_ARMAGEDDON_DRAKE''', that allows the advancement ''Inferno Drake'' -> ''Armageddon Drake''
+** '''ENABLE_DWARVISH_ARCANISTER''', that allows the advancement ''Dwarvish Runemaster'' -> ''Dwarvish Arcanister''
+** '''ENABLE_DWARVISH_RUNESMITH''', that allows the advancement ''Dwarvish Fighter'' -> ''Dwarvish Runesmith''
+** '''DISABLE_GRAND_MARSHAL''', that disallows the advancement ''General'' -> ''Grand Marshal''
+** '''ENABLE_ANCIENT_LICH''', that allows the advancement ''Lich'' -> ''Ancient Lich''
+** '''ENABLE_DEATH_KNIGHT''', that allows the advancement ''Revenant'' -> ''Death Knight''<br />{{DevFeature1.11}} 1.11.x also supports:
+** '''ENABLE_TROLL_SHAMAN''', that allows the advancement ''Troll Whelp'' -> ''Troll Shaman''
+** '''ENABLE_WOLF_ADVANCEMENT''', that allows the advancements ''Wolf'' -> ''Great Wolf'' -> ''Direwolf''
+* '''difficulties''': a comma(''',''') separated list of preprocessor symbols, exactly one of which will be stored depending on the difficulty setting chosen when the campaign is started. The symbols '''EASY''', '''NORMAL''', and '''HARD''' are usually used, and there are several macros in utils.cfg (see [[UtilWML]]) which check for these values to set WML keys to different values depending on difficulty.  If you use different difficulty symbols, you may need to define your own versions of these macros.
+* '''difficulty_descriptions''': the menu of difficulties; this is a list of descriptions (see [[DescriptionWML]]) that correspond to different difficulty levels. Since each description is a menu option for a difficulty level, this must provide the same number of descriptions as there are levels in the ''difficulties'' list.
+* '''allow_difficulty_change''': {{DevFeature1.11}} Allows difficulty switching during an ongoing campaign. Default:yes
+* '''first_scenario''': the ID of the first scenario in the campaign; see ''id'' in [[ScenarioWML]]
+* '''rank''': a number that determines the order of campaigns in the campaign selection menu.  Lower ''rank'' campaigns appear earlier, with unranked campaigns at the end. Currently the mainline campaigns use multiples of 10 from 0 to 399, with 0-99 for Novice campaigns, 100-199 for Intermediate campaigns, and 200-399 for Expert campaigns; if you specify this, it should not be less than 400.  (Note: This replaces an older convention that topped out at 50.)
+* '''[about]''': inserts your own credits into the game's list of credits. The campaign's name automatically is inserted at the top of the rolling credits followed by title/text key pairs.  There can be any number of '''[about]''' tags inside a '''[campaign]''' tag, but none of them will display credits if there is no "id" key present inside [campaign] (see above). The '''[about]''' tag has the following keys:
+** '''title''': (translatable) large text used to start a new subsection (writers, artists, units, balancing) in the rolling credits
+** '''text''': (translatable, but you probably won't want to make it such) smaller text which is displayed before the contributor names
+** '''[entry]''': Contains information about a single contributor. Only the ''name'' key will be used in-game, the other three keys are for display on the [[Credits]] page ('''note:''' the values of these keys will only display on the Credits page for mainline campaigns; they will not display for UMC campaigns)
+*** '''name''': The name of the contributor
+*** '''comment''': Optional short note about what that person did
+*** '''email''': Optional email address
+*** '''wikiuser''': Optional, the user name on the wiki
+* '''end_credits''': {{DevFeature1.11}} Whether to display the credits screen at the end of the campaign. Defaults to ''yes''.
+* '''end_text''': (translatable) Text that is shown centered in a black screen at the end of a campaign. Defaults to "The End".
+* '''end_text_duration''': Delay, in milliseconds, before displaying the game credits at the end of a campaign. In other words, for how much time '''end_text''' is displayed on screen. Defaults to 3500.
+
+== See Also ==
+
+* [[PreprocessorRef]]
+* [[ScenarioWML]]
+* [[ReferenceWML]]
+* [[PblWML]]
+
+
+[[Category: WML Reference]]

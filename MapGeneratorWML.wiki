@@ -1,0 +1,117 @@
+== [generator] ==
+
+The '''[generator]''' tag replaces a scenario's map data;
+in fact its whole purpose is to generate the map data given a set of configuration parameters.
+The map generator function is not very well documented.  This rewrite is an attempt to remedy that.
+
+There are only two kinds of generators, ‘default’ and ‘cave’. As each behaves differently,  a section for each has been made.
+To use '''[generator]''' your '''[scenario]''' tag must contain one of the following keys:
+* '''scenario_generation''': (This is used in the cave examples below)
+* '''map_generation''': (This is used in the multiplayer Random Map.)
+For which key to use and what value, see the section for the generator you want to use.
+
+===The Default Generator===
+The default generator can be used to generate map data for any scenario. The data in this section is inferred from “data/multiplayer/scenarios/Random_Scenario.cfg”, usage in add-on content, and inspection of mapgen.cpp
+
+'''Excerpt from mapgenerator comments:'''
+
+* Basically we generate alot of hills, each hill being centered at a certain point, with a certain radius - being a half sphere. Hills are combined additively to form a bumpy surface. The size of each hill varies randomly from 1-hill_size. We generate 'iterations' hills in total. The range of heights is normalized to 0-1000. 'island_size' controls whether or not the map should tend toward an island shape, and if so, how large the island should be. Hills with centers that are more than 'island_size' away from the center of the map will be inverted (i.e. be valleys). 'island_size' as 0 indicates no island.
+
+To use the default '''[generator]''' your '''[scenario]''' tag must contain one of the following keys:
+* '''scenario_generation=default'''
+* '''map_generation=default'''
+If ‘scenario_generation’ is used, the engine will expect for your entire '''[scenario]''' sub tags to be inside a '''[scenario]''' tag inside '''[generator]'''. Tags outside of this will be ignored.  There may be value in this, but at this writing, it’s not clear.
+‘map_generation=default’ is simpler and more commonly used.  It is also necessary to use this key so that you can regenerate a map in MP game creation.
+In its use only generator data is in the '''[generator]''' tag, all other '''[scenario]''' data is placed outside of it. The exception is if you are making an initial MP scenario available in MP game creation, for this a '''[scenario]''' tag must appear inside of '''[generator]''', containing the '''[scenario]''' subtags you want to use. See “data/multiplayer/scenarios/Random_Scenario.cfg” for an example.
+
+The following key/tags are recognized for '''[generator]''' when the default generator is used:
+* '''[scenario]''': See [[ScenarioWML]]
+* '''name'''
+** '''default''''
+* '''map_width''','''map_height''': size of the map to generate
+* '''iterations''': the number of times an attempt is being made to generate a hill
+* '''hill_size''': hills will have a random size between 1 and ''hill_size''
+* '''max_lakes''': the number of times an attempt is being made to generate a lake
+* '''min_lake_height''': lakes are the starting point of rivers and need to start above a certain height
+* '''lake_size''': the size of a lake still randomly generated
+* '''river_frequency''': determine how much a river can run uphill and thus generate more rivers
+
+* '''villages''': villages per 1,000 hexes
+* '''players''': Number of starting locations for the map.
+* '''castle_size''': Number of castle tiles (including the keep), per player.
+* '''temperature_iterations''': Same as iterations, but for the temperature map.
+* '''temperature_size''': Same as hill_size, but for the temperature map.
+(Temperature map is generated the same way as a hill map, but is hard coded with a island_size of 0.)
+* '''roads''': number of roads the generator will attempt to make
+* '''road_windiness''': Use 1 for the road to be made using the cheapest path (based on [road_cost] tags), higher values introduce randomness to make the road wind a bit.
+* '''island_size''': Use 1-5 for coastal maps and 6-10 for island maps. Bigger values may crash map generation process. Bigger numbers makes more water (and less land)
+* '''default_flatland''': If not specified, is Grassland. If your height tags don't go down to 0, the default_flatland will be used (possibly in other cases as well).
+* '''[height]''': list of common terrain types
+which come in at different heights, from highest to lowest
+Good WML will have the range of 1000-0 covered.
+** '''height''': the terrain specified below will appear at this height and up.
+** '''terrain''': 1 terrain code
+* '''[convert]''': used to make terrain conversions
+For example water becomes ice at low temperatures, grass snow, etc.
+If the terrain is between the min_x and max_x it will be converted
+if min_x is not defined it will default to a large negative number
+if max_x is not defined it will default to a large positive number
+** '''min_height'''
+** '''max_height'''
+** '''min_temperature'''
+** '''max_temperature'''
+** '''from''': a comma separated terrains to convert from
+** '''to''': The terrain to convert these terrains to
+* '''[road_cost]'''
+** '''terrain''' 1 terrain code
+** '''cost''': how expensive it is the create a road on this terrain, this influences the odds of this terrain getting a road
+** '''convert_to_bridge''': a comma separated list of terrains; N/S, then NE/SW, then NW/SE.
+** '''convert_to''': 1 terrain code (note using both ''convert_to_bridge'' and ''convert_to'' might result in unwanted results)
+* '''[village]''': The conversion of terrains to villages
+** '''terrain''': 1 terrain code which will be converted to a village
+** '''convert_to''': 1 terrain code for the village
+** '''adjacent_liked''': a comma separated terrain list. This list increases the rating for a certain location, every tile around the location will be tested against this list and for every match the rating of the location is increased. The same terrain twice in the list will double the rating increase for that location.
+** '''rating''': chance of appearing
+* '''[castle]''': the conversion of castles
+** '''valid_terrain''': a comma-separated terrain list with terrains which are allowed to be converted to a castle.
+** '''min_distance''': all castles generated must be this number of hexes apart from each other
+* '''[naming]'''
+** '''male_names'''
+* '''[village_naming]'''
+** '''male_names'''
+
+===The Cave Generator===
+The cave generator does not appear to have been written for multiplayer scenario game creation like the default generator was.  It is used in '''campaigns\Sceptre_of_Fire\scenarios\4_Gathering_Materials.cfg''' & '''campaigns\Heir_To_The_Throne\scenarios\ 17_Scepter_of_Fire.cfg '''. The data here is inferred from those scenarios and an inspection of cavegen.cpp
+
+To use the cave '''[generator]''' your '''[scenario]'''  tag must contain one of the following keys:
+* '''scenario_generation=cave'''
+* '''map_generation=cave'''
+Here it is recommend you use ‘scenario_generation’ as there are examples to follow, though it may be possible to use’ map_generation’.
+
+
+The following key/tags are recognized for '''[generator]''' when the cave generator is used:
+* '''[settings]''':  behaves as if '''[scenario]''', See [[ScenarioWML]]
+* '''map_width''','''map_height''': size of the map to generate
+* '''village_density''': influences number of villages
+* '''flipx_chance''': Chance to flip x coordinates, that meens the map is mirrored at the vertical axis in its midth.
+* '''flipy_chance''': Chance to flip y coordinates, that meens the map is mirrored at the horizontal axis in its midth.
+* '''[chamber]''': for underground maps
+** '''id''': a name used to identify where the passages lead.  See the [passage] tag, below.
+** '''x''','''y''': approximate location of the center hex of the chamber.  Unfortunately it isn't always exact.  Can be a single number (x=5) or a range (x=10-20)
+** '''size''': circular radius of the chamber, including the center hex
+** '''jagged''': a good value is probably between 0-50 (not sure exactly)
+** '''[items]''': See [[ScenarioWML]].  This can contain tags normally found under [scenario] like [side], [item], and [event].  Moveto events definitely work here (using the same_location_as_previous key instead of a location filter).  Other events can be placed in the [settings] tag, above.  Locations of items will be generated randomly.  The attribute '''same_location_as_previous=yes''' means that the filter for a moveto event (see [[EventWML]]) is the same as the location of the previous item.
+** '''[passage]''': defines a pathway between chambers
+*** '''destination''': the id key of the destination chamber
+*** '''windiness''': a good value is probably between 1-10
+*** '''laziness''':
+*** '''width''': number of hexes
+*** '''jagged''': a good value is probably between 1-10
+*** '''chance''': chance for the passage to be generated, between 0 and 100, 100 if key not present
+
+== See Also ==
+
+* [[ScenarioWML]]
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]

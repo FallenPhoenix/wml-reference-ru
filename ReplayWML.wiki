@@ -1,0 +1,44 @@
+{{WML Tags}}
+== The [command] tag ==
+
+The '''[command]''' tag is used to specify an action in a replay.
+
+The following tags are recognized:
+* '''[start]''': is used to initialize the replay so that generated random numbers can be saved.
+* '''[move]''': the player moved a unit.
+** '''[source]''': the location the unit moved to.
+** '''[destination]''': the location the unit moved from.
+* '''[recruit]''': the player recruited a unit.
+** '''value''': the index number of the recruited unit. (Index numbers start at 0 and include all recruitable units in alphabetical order.)
+** '''x''' and '''y''': the castle tile the unit is recruited on.
+* '''[recall]''': the player recalled a unit. Same keys as [recruit], except that the index is in order of level, followed by required XP to advance.
+* '''[attack]''': the player attacked.
+** '''weapon''': the index number of the weapon. Weapons are indexed by the unit designer.
+** '''[source]''': the location of the attacking unit.
+** '''[destination]''': the location of the defending unit.
+* '''[end_turn]''': the player ended his turn.
+* '''[init_side]''': new turn is starting for a side. This fires begin of turn events.
+* '''[fire_event]''': a specific event was raised
+** '''raise''': the name of the event
+** '''[source]''': the location of the event
+** '''[set_variable]''': set WML variable(s) before firing
+*** '''name''': the name of the variable
+*** '''value''': a string value (literal)
+* '''[advance_unit]''': a unit was leveled by WML. ([unstore_unit] for example)
+* '''[choose]''': the player was given an option by the scenario or for an advancement path.
+** '''value''': the index number of the option chosen. Index numbers are given by the scenario designer.
+* '''[random]''': if the action required a random number, this describes the random number that was generated. In 1.0.x, nested '''[random]''' tags are used and only one is allowed at this level. In 1.1.x, a '''[random]''' tag is used at this level for each value.
+** '''value''': list of generated random values. In 1.1.x only a single value can be used.
+** '''[results]''': used for '''[attack]''' commands. Describes the results of the battle.
+*** '''chance''': the percent chance that the attack had to hit.
+*** '''damage''': the amount of damage that the attack would do if it hits.
+*** '''dies''': whether the defender dies from the hit.
+*** '''hits''': whether the attack hits.
+** '''[random]''': additional lists of generated random values. '''[random]''' has the same format as the first '''[random]''' and describes the other numbers that were generated. .
+
+== See Also ==
+* [[SavefileWML]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

@@ -1,0 +1,317 @@
+{{WML Tags}}
+
+Part of [[ActionWML]], Internal actions are actions that WML uses internally that do not directly affect game play (or, at least, are not readily apparent to the player). For example, storing a variable is an internal action.
+
+== Variable Actions ==
+
+These actions are focused, in one way or another, on [[VariablesWML|variables]]. Creating them, modifying them, capturing game data to them, you name it, these actions are all about the variables.
+
+=== [set_variable] ===
+
+The '''[set_variable]''' tag is used to create and manipulate WML variables. The [http://www.wesnoth.org/macro-reference.xhtml#VARIABLE VARIABLE] macro is a quick syntactic shortcut for simple variable creation and the [http://www.wesnoth.org/macro-reference.xhtml#VARIABLE_OP VARIABLE_OP] macro is a quick syntactic shortcut for performing simple mathematical operations on variables.
+
+* '''name''': the name of the variable to manipulate
+
+* '''value''': set the variable to the given value (can be numeric or string).Use literal for no substitution. (see [[VariablesWML]])
+
+* '''literal''': set the variable to the given value (can be numeric or string). This does not interpret any dollars signs.
+
+* '''to_variable''': set the variable to the value of the given variable, e.g. 'to_variable=temp' would be equivalent to 'value=$temp'.
+
+* '''add''': add the given amount to the variable.
+
+* '''sub''': subtract the given amount from the variable.
+
+* '''multiply''': multiply the variable by the given number. The result is a float.<br />To negate a number, multiply by -1. If you negate 0, the result is a floating-point negative zero -0. To display -0 as 0, use a second tag with add=0; it will flip -0 to 0 but not affect other numbers.
+
+* '''divide''': divide the variable by the given number. The result is a float. Wesnoth 1.9 and later no longer uses integer division. Use a second tag with round=floor if you relied on this.
+
+* '''modulo''': returns the remainder of a division.
+
+* '''rand''': the variable will be randomly set.<br>You may provide a comma separated list of possibilities, e.g. 'random=Bob,Bill,Bella'.<br>You may provide a range of numbers (integers), e.g. 'random=3..5'.<br>You may combine these, e.g. 'random=100,1..9', in which case there would be 1/10th chance of getting 100, just like for each of 1 to 9. See [[BuildingMultiplayerExamples]] for more info on the MP case.
+
+* '''time=stamp''': Retrieves a timestamp in milliseconds since wesnoth was started, can be used as timing aid. Don't try to use this as random value in MP since it will cause an OOS.
+
+* '''string_length''': Retrieves the length in characters of the string passed as this attribute's value; such string is parsed and variable substitution applied automatically (see [[VariablesWML]] for details).
+
+* '''[join]''' joins an array of strings to create a textual list
+** '''variable''': name of the array
+** '''key''': the key of each array element(array[$i].foo) in which the strings are stored
+** '''separator''': separator to connect the elements
+** '''remove_empty''': whether to ignore empty elements
+
+* '''ipart''': Assigns the integer part (the part to the left of the comma) of the referenced variable.
+
+* '''fpart''': Assigns the decimal part (the part to the right of the comma) of the referenced variable.
+
+* '''round''': Rounds the variable to the specified number of digits of precision. Negative precision works as expected (rounding 19517 to -2 = 19500). Special values:
+**'''round=ceil''': Rounds upward to the nearest integer.
+**'''round=floor''': Rounds down to the nearest integer.
+
+=== [set_variables] ===
+
+Manipulates a WML array or container
+
+* '''name''': the name of the array or container to manipulate
+
+* '''mode''': one of the following values:
+** ''replace'': will clean the array '''name''' and replace it with given data
+** ''append'': will append given data to the current array
+** ''merge'': will merge in the given data into '''name'''
+** ''insert'': will insert the given data at the index specified in the '''name''' attribute, such as name=my_array[1]. The default index is zero, which will insert to the front of the array. '''Note:''' if an invalid index is used, empty containers will be created before the insertion is performed. In other words, do not attempt to insert at an index greater than (or equal to) the array's current length. This limitation may be removed in future versions.
+
+* '''to_variable''': data will be set to the given array
+
+* '''[value]''': the WML inside the [value] tags will be stored in data, variables will be interpolated directly, use $| in order to escape the $ sign, you can store arrays of WML by supplying multiple [value] tags. ([[#Using_.5Bset_variables.5D_to_Create_Arrays_of_WML|See Example]])
+
+* '''[literal]''': same as '''[value]''', but variables will not be substituted, '''[literal]''' and '''[value]''' can not be used in the same [set_variables] tag, i.e. you can not create arrays by piling a mix of '''[value]''' and '''[literal]''' tags
+
+*'''[split]''' splits a textual list into an array which will then be set to data
+** '''list''': textual list to split
+** '''key''': the key of each array element(array[$i].foo) in which the strings are stored
+** '''separator''': separator to separate the elements
+** '''remove_empty''': whether to ignore empty elements
+
+=== Capturing Game Data ===
+
+These actions capture different bits of game data and store them to variables so they can be examined and/or manipulated.
+
+==== [store_gold] ====
+
+Stores a side's gold into a variable.
+
+* '''[[StandardSideFilter]]''': The first matching side's gold will be stored in the variable "variable".
+* '''variable''': (default='gold') the name of the variable to store the gold in
+
+==== [store_locations] ====
+
+Stores a series of locations that pass certain criteria into an array. Each member of the array has members 'x' and 'y' (the position) and 'terrain' (the terrain type) and 'owner_side' (villages only). The array will include any unreachable border hexes, if applicable.
+
+* [[StandardLocationFilter]]: a location or location range which specifies the locations to store. By default, all locations on the map are stored.
+
+* '''variable''': the name of the variable (array) into which to store the locations.
+
+==== [store_reachable_locations] ====
+
+Stores locations reachable by the given units. Can store either the movement, attack or vision ranges.
+
+* '''[filter]''': a [[StandardUnitFilter]]. The locations reachable by any of the matching units will be stored.
+* '''[filter_location]''': (optional) a [[StandardLocationFilter]]. Only locations which also match this filter will be stored.
+* '''range''': possible values ''movement'' (default), ''attack'', ''vision''. If ''movement'', stores the locations within the movement range of the unit, taking Zone of Control into account. If ''attack'', stores the attack range (movement range + 1 hex). If ''vision'', stores the vision range (movement range ignoring Zone of Control + 1 hex).
+* '''moves''':  possible values ''current'' (default), ''max''. Specifies whether to use the current or maximum movement points when calculating the range.
+* '''viewing_side''': (optional) the side whose vision to use when calculating the reach. This only has meaning in the presence of fog, shroud, or units with the ambush ability. If left out, then fog, shroud and ambushers are ignored and the real reach of the units is stored.
+* '''variable''': the name of the variable (array) into which to store the locations.
+
+==== [store_map_dimensions] ====
+
+Stores the map dimensions in a variable.
+
+* '''variable''': the name of the variable where the values will be saved into. If it is skipped, a variable 'map_size' is used, and its contents overridden, if they existed already. The result is a container variable, with members ''width'' and ''height''.
+
+==== [store_side] ====
+
+Stores information about a certain side in a variable. The variable will contain the member variables 'name', 'team_name', 'gold' and 'income', 'fog', 'shroud', 'hidden', 'user_team_name', 'color', 'controller', 'village_gold', 'recruit', and 'side' (the $side_number of the side belonging to this container).
+
+* '''[[StandardSideFilter]]''': All matching sides are stored. (An array is created if several sides match - access it with side[2].team_name and so on.)
+* '''variable''': the name of the variable to store the information in (default: "side")
+
+''note: In networked multiplayer, the controller attribute is ambiguous. Be very careful or you have OOS errors.''
+
+==== [store_starting_location] ====
+
+Stores the starting location of a side's leader in a variable. The variable is a composite type which will have members 'x', 'y', 'terrain' and 'owner_side' (villages only)
+
+* [[StandardSideFilter]]: The starting locations of all matching sides will be stored. If multiple sides are matched, a WML array will be created.
+* '''variable''': (default='location'): the name of the variable to store the location in
+
+==== [store_time_of_day] ====
+
+Stores time of day information from the current scenario into a WML variable container.
+
+* '''variable''': (default='time_of_day') name of the container on which to store the information. The container will be filled with the same attributes found on [[TimeWML]].
+
+* '''turn''': (defaults to the current turn number) changes the turn number for which time of day information should be retrieved.
+
+==== [store_unit] ====
+
+Stores details about units into a [[VariablesWML#Container|container]] variable. When a unit is stored, all keys and tags in the unit definition may be manipulated, including some others, with [[InternalActionsWML#.5Bset_variable.5D|[set_variable]]]. A sample list of these tags and keys can be found [[InternalActionsWMLUnitTags|here]]. If you have a doubt about what keys are valid or what the valid value range is for each key, code a [store_unit] event, save the game, and examine what keys are in the file (or just examine the '''[unit]''' tag(s) in any save file).
+
+Common usage is to manipulate a unit by using '''[store_unit]''' to store it into a variable, followed by manipulation of the variable, and then [[DirectActionsWML#.5Bunstore_unit.5D|[unstore_unit]]] to re-create the unit with the modified variables.
+
+''Note: stored units also exist on the field, and modifying the stored variable will not automatically change the stats of the units. You need to use [unstore_unit]. See also [[DirectActionsWML#.5Bunstore_unit.5D|[unstore_unit]]] and [http://www.wesnoth.org/macro-reference.xhtml#FOREACH FOREACH].''
+
+* '''[filter]''' with a [[StandardUnitFilter]] as argument. All units matching this filter will be stored. If there are multiple units, they will be stored into an array of variables. The units will be stored in order of their internal ''underlying_id'' attribute, which is usually in creation order (but you normally should not depend on the order).
+
+* '''variable''': the name of the variable into which to store the unit(s)
+
+* '''mode''': defaults to ''always_clear'', which clears the variable, whether or not a match is found. If mode is set to ''replace'', the variable will not be cleared, and units which match the filter will overwrite existing elements at the start of the array, leaving any additional elements intact if the original array contained more elements than there are units matching the filter. If mode is set to ''append'', the variable will not be cleared, and units which match the filter will be added to the array after the existing elements.
+
+* '''kill''': if 'yes' the units that are stored will be removed from play. This is useful for instance to remove access to a player's recall list, with the intent to restore the recall list later.
+
+==== [store_unit_type] ====
+
+* '''type''': (required) the defined ID of the unit type, for example "Goblin Knight". Do not use a translation mark or it will not work correctly for different languages. A comma-separated list of IDs may also be used to store an array of unit types.
+
+* '''variable''': the name of the variable into which to store the unit type information (default "unit_type")
+
+==== [store_unit_type_ids] ====
+
+* '''variable''': the name of the variable into which to store a comma-separated list of all unit type IDs
+
+==== [store_villages] ====
+
+Stores a series of locations of villages that pass certain criteria into an array. Each member of the result array will have members 'x' and 'y' (the position) and 'terrain' (the terrain type) and 'owner_side'. note: The only advantage/difference this tag has, in comparison to using [store_locations]terrain=*^V*, is that the amount of hexes which are considered for a possible match is previously restricted to those with villages.
+
+* '''variable''': the name of the variable (array) into which to store the locations (default: "location")
+* '''[[StandardLocationFilter]]''' tags and keys as arguments
+
+==== [store_items] ====
+
+Stores current items in the scenario into an array. Each entry has at least members x and y and can have all of the other keys listed in the documentation of [[InterfaceActionsWML#.5Bitem.5D|[item]]] (depending on what was set during creating the item).
+
+*'''variable''': name of the wml variable array to use (default "items")
+*'''[[StandardLocationFilter]]''' keys as arguments: only items on locations matching this [[StandardLocationFilter]] will be stored
+
+==== [find_path] ====
+
+A WML interface to the pathfinder. Calculates the path between a unit and a location and returns the result in a WML variable, that contains also an array for every step of the path.
+
+*'''[traveler]''': [[StandardUnitFilter]], only the first matching unit will be used for calculation
+*'''[destination]''': [[StandardLocationFilter]], only the first matching nearest hex will be used
+*'''variable''': the variable name where the result will be stored, if no value is supplied 'path' will be used as default name. Each step will be stored in a [step] array inside that variable.
+*'''allow_multiple_turns''': default no, if yes also moves that require more than one turn will be calculated.
+*'''check_visibility''': default no, if yes the path will not be computed if some hexes are not visible due to shroud.
+*'''check_teleport''': default yes, if no teleport won't be taken in account while computing path.
+*'''check_zoc''': default yes, if no unit ZOCs won't be considered while calculating the path.
+This is the structure of the variable returned by [find_path]:
+ [path]
+ 	length = the total length of the path
+ 		if the path is calculated to an impassable hex, or the move requires multiple turns
+ 		and allow_multiple_turns is no, its value will be 0.
+ 	hexes = in 1.11, this will replace the length key above
+ 	from_x, from_y = location of the unit
+ 	to_x, to_y = destination
+ 	movement_cost = total movement cost required by unit to reach that hex
+ 	required_turns = total turns required by unit to reach that hex
+ 	[step]
+ 		x, y = location of the step
+ 		terrain = terrain of the step
+ 		movement_cost = movement cost required by unit to reach that hex
+ 		required_turns = turns required by unit to reach that hex
+ 	[/step]
+ [/path]
+To read the total length of the path on 1.10, use ''path.step.length''.<br>
+{{DevFeature1.11}} ''length'' is replaced by ''hexes'' in the output array.
+
+=== [clear_variable] ===
+
+This will delete the given variable. This tag can delete a scalar or an entire array; it can also delete one container at an array index. The macro [http://www.wesnoth.org/macro-reference.xhtml#CLEAR_VARIABLE CLEAR_VARIABLE] is a shortcut for this tag.
+
+This action is good to use to clean up the set of variables; for example, a well-behaved scenario will delete any variables that should not be kept for the next scenario before the end of the scenario. One can also clear tags and variables of stored units; for example, one can remove [trait]s and [object]s.
+
+* '''name''': the name of the variable to clear. This can also be a comma-separated list of multiple variable names.
+** If a name ends with an array index, then it deletes that one container, and shifts the indexes of all subsequent containers. For example, <code>{CLEAR_VARIABLE my_awesome_array[2]}</code> deletes <code>my_awesome_array[2]</code>, but then moves <code>my_awesome_array[3]</code> to <code>my_awesome_array[2]</code>, moves <code>my_awesome_array[4]</code> to <code>my_awesome_array[3]</code>, and so on until the end of the array.
+** Note that <code>{CLEAR_VARIABLE my_awesome_array}</code> deletes the entire array, but <code>{CLEAR_VARIABLE my_awesome_array[0]}</code> deletes only the first container.
+
+== Other Internal Actions ==
+
+Believe it or not, there are some internal actions that are not focused primarily on variables. They are all grouped here.
+
+=== [fire_event] ===
+
+Trigger a WML event
+
+* '''name''': the name of event to trigger
+
+* '''[primary_unit]''': ''(Optional)'' Primary unit for the event. Will never match on a recall list unit. The first unit matching the filter will be chosen.
+**[[StandardUnitFilter]] as argument. Do not use a [filter] tag.
+
+* '''[secondary_unit]''': ''(Optional)'' Same as '''[primary_unit]''' except for the secondary unit.
+**[[StandardUnitFilter]] as argument. Do not use a [filter] tag.
+
+* '''[primary_attack]''': Information passed to the primary attack filter and $weapon variable on the new event.
+
+* '''[secondary_attack]''': Information passed to the second attack filter and $second_weapon variable on the new event.
+
+=== [insert_tag] ===
+
+Inserts a variable as WML. In other words, the value of the passed [[VariablesWML#Container|container variable]] will be injected into the game as if they had been written out in WML form. ([[#.5Binsert_tag.5D_Example|See Example]]).
+
+Tag insertion is a special case in that it can be used in places where other ActionWML cannot be used. The basic rule is that anywhere that $variable syntax works, tag insertion will also work. In practice this means pretty much everywhere except directly within top-level scenario tags.
+
+*'''name''': The ["name"] to be given to the tag. This must be a tag which would be valid at the place where [insert_tag] is used, for anything to happen. (For example, if used as ActionWML, it should be a [[ActionWML]] tag name, and it may be a recognized subtag such as "option" when used within a [message]).
+
+*'''variable''': Name of the container variable which will have its value inserted into the tag.
+
+=== [role] ===
+
+Tries to find a unit to assign a role to.<br>This is useful if you want to choose a non-major character to say some things during the game. Once a role is assigned, you can use '''role=''' in a unit filter to identify the unit with that role (See [[FilterWML]]).<br>However, there is no guarantee that roles will ever be assigned. You can use '''[have_unit]''' (see [[ConditionalActionsWML#Condition_Tags|Condition Tags]]) to see whether a role was assigned. This tag uses a [[StandardUnitFilter]] (without [filter]) with the modification to order the search by type, mark only the first unit found with the role, and the role attribute is not used in the search. If for some reason you want to search for units that have or don't have existing roles, you can use one or more [not] filters. The will check recall lists in addition to units on the map. In normal use, you will probably want to include a ''side'' attribute to force the unit to be on a particular side.
+
+* '''role''': the value to store as the unit's role. This role is not used in the [[StandardUnitFilter]] when doing the search for the unit to assign this role to.
+
+* '''type''': a comma-separated list of possible types the unit can be. If any types are given, then units will be searched by type in the order listed. If no type is given, then no particular order with respect to type is guaranteed.
+
+* [[StandardUnitFilter]], do not use a [filter] sub-tag. SUF's role= and type= keys are not used: if you want to use them, use a nested SUF wrapped inside a [and] tag.
+
+== Examples ==
+
+=== Using [set_variables] to Create Arrays of WML ===
+
+ [set_variables]
+     name=arr
+     mode=replace
+     [value]
+         foo=bar
+     [/value]
+     [value]
+        foo=more
+     [/value]
+ [/set_variables]
+ {DEBUG_MSG $arr[0].foo}
+ {DEBUG_MSG $arr[1].foo}
+
+This will produce two output messages, first one saying '''bar''' and next one saying '''more'''.
+
+=== [insert_tag] Example ===
+
+ [event]
+     name=moveto
+     
+     [set_variable]
+         name=temp.speaker
+         value=Konrad
+     [/set_variable]
+     
+     [set_variable]
+         name=temp.message
+         value= _ "Yo Kalenz!"
+     [/set_variable]    
+     
+     [insert_tag]
+         name=message
+         variable=temp
+     [/insert_tag]
+ [/event]
+
+This is effectively identical to:
+
+ [event]
+     name=moveto
+     
+     [message]
+         speaker=Konrad
+         message= _ "Yo Kalenz!"
+     [/message]
+ [/event]
+
+== See Also ==
+* [[VariablesWML]]
+* [[ActionWML]]
+** [[ConditionalWML]]
+** [[DirectActionsWML]]
+** [[InterfaceActionsWML]]
+* [[EventWML]]
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]
+[[Category: ActionsWML]]

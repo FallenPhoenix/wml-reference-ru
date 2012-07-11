@@ -1,0 +1,152 @@
+Image Path Functions provide a simple method for WML coders to alter the way their specified images will be displayed in the game. All of the function parameters are included at the end of an image path and should not contain any spaces or special characters (other than those specified here).
+
+== Team-Color Function ==
+In Wesnoth version 1.2, the only Image Path Function was '''~TC()''', which took two comma-separated parameters: the team number and the source color palette. The valid values for both of these parameters are defined in the file ''data/team-colors.cfg''
+
+=== Syntax ===
+'''~TC(''' ''team number'' ''',''' ''source color palette'' ''')'''
+*''team number'' - this is the first parameter, a number 1-9 signifying the team number of a unit. Number 1 typically means the red team, 2 typically means the blue team, and so on (unless the scenario color settings for any side have been altered).
+*''source color palette'' - the second parameter is a source color palette, usually magenta. Do not surround this parameter with quotes.
+
+== Re-Color Function ==
+May be used to change some colors in an image.
+=== Syntax ===
+'''~RC(''' ''source color palette'' '''>''' ''color range ID'' ''')'''
+*''source color palette'' - the first parameter is a source color palette, usually magenta. Do not surround this parameter with quotes.
+*''color range ID'' - this is the second parameter, signifying the ID of a color range defined in the file ''data/core/team-colors.cfg'' (or it may be a custom ID for a color range defined locally).  
+
+=== Example ===
+In the following example, the magenta regions in an elvish captain's image are turned  a healthy shade of green:
+
+  [message]
+      speaker=narrator
+      image=units/elves-wood/captain.png~RC(magenta>green)
+      message=_ "Now I am on the green team."
+  [/message]
+
+The IDs of the color ranges may be the lowercased English name of the palette's base color (e.g. 'red', 'brown', etc.). They may also be numeric color indices from the palette WML included with the game, but this is not recommended.
+
+== Palette-switch Function ==
+May be used to change colors in an image following the specifications of a source and target (new) palette.
+=== Syntax ===
+'''~PAL(''' ''source color palette'' '''>''' ''target color palette'' ''')'''
+*''source color palette'' - the first parameter is a source color palette, such as magenta. Do not surround this parameter with quotes.
+*''target color palette'' - the new palette to take the place of the source colors in the image.
+
+== Flip Function ==
+May be used to flip an image horizontally and/or vertically.
+=== Syntax ===
+'''~FL(''' ''optional argument list'' ''')'''
+*''vertical'' - if the string "vert" is found anywhere in the argument list, the image will be flipped vertically.
+*''horizontal'' - if the string "horiz" is found anywhere in the argument list, the image will be flipped horizantally.
+*if the argument list is empty, the image will only be flipped horizontally.
+
+== Rotate Function ==
+{{devfeature1.11}}
+May be used to rotate an image by a multiple of 90 degrees.
+=== Syntax ===
+'''~ROTATE(''' ''degrees'' ''')'''
+* ''degrees'' - The number of degrees by which the image will be rotated. This must be a multiple of 90. Positive numbers indicate clockwise rotation, while negative numbers indicate counter-clockwise. (Zero indicates no rotation.)
+If the number of degrees is omitted, a quarter turn (90 degrees) clockwise is assumed.
+
+== Greyscale Function ==
+May be used to greyscale the image (turn to black and white)
+=== Syntax ===
+'''~GS( )'''
+
+== Crop Function ==
+Extracts a rectangular section of an image file.
+=== Syntax ===
+'''~CROP(x,y,width,height)'''
+* ''x'',''y'': top-left corner coordinates for the rectangular section extracted. Must be greater or equal than zero, and inside the image's bounds.
+* ''width'': width of the selected region. Must be less than or equal to the original image's width.
+* ''height'': height of the selected region. Must be less than or equal to the original image's height.
+
+== Blit Function ==
+Blit the parameter image on the main image. Example: peasant.png~BLIT(hat.png,30,10)
+=== Syntax ===
+'''~BLIT(src,x,y)'''
+* ''src'': an image file used as source for the blit, other image path functions can be used there.
+* ''x'',''y'': top-left corner coordinates where to blit. Must be greater or equal than zero. If missing assume (0,0).
+
+== Mask Function ==
+Remove parts of the main image using the parameter image as a mask. Example: grass.png~MASK(circle.png) will give a circle of grass.
+=== Syntax ===
+'''~MASK(mask,x,y)'''
+* ''mask'': an image file used as mask, other image path functions can be used there.
+* ''x'',''y'': top-left corner coordinates where to put the mask. Parts ouside of the mask are considered transparent. If missing assume (0,0).
+
+Only the alpha channel of the mask is used and each alpha value will be the maximum alpha of the resulting image. This means that the fully-transparent parts of the mask will erase the corresponding parts of the image, but also that a semi-transparent mask will create a semi-transparent image. 
+
+== Color-shift function ==
+Performs simple per-channel color shifts by adding the arguments to the respective color channels.
+=== Syntax ===
+''Multi-channel:'' '''~CS(r,g,b)'''
+''Single-channel:'' '''~R(v)''', '''~G(v)''', '''~B(v)'''
+
+The multichannel syntax assumes all arguments are set to zero initially, so one can use, e.g. ~CS(2,4) to add +2 and +4 units to the red and green channels respectively, leaving the blue channel intact. Arguments may be negative to diminish a channel's value; this can be used to change an image's brightness. Checks for out-of-range arguments or results (less than 0 or greater than 255) are made, so the resultant values are truncated if necessary.
+
+The single channel syntax behaves exactly the same, except that only single-channel modifications are made per function. However, one can stack them to produce the same behavior as ~CS(), e.g. ~R(r)~G(g)~B(b), but that tends to be just a performance loss.
+
+== Lightmap color-shift function ==
+Performs per-pixel and per-channel color shifts using another image (a "lightmap") as source, allowing to create textured light effects.
+
+=== Syntax ===
+'''~L(lightmap)'''
+
+For each pixel of the original image, it checks the RGB values from the corresponding pixel of the lightmap, slightly transform them, then add these values to the original pixel.
+
+The transformation involved is done to convert the (0,255) spectrum to (-255,255), allowing to add or subtract color. The formula is (x-128)*2, which means that 0 gives -256, 128 gives 0 and 255 gives 254. So, the no-effect lightmap is a fully gray image (RGB = 128,128,128) and any non-gray pixel will shift the colors of the original.
+
+Note that the lightmap will be scaled to the same dimensions as the original image.
+
+== Image-scaling function ==
+Scales a graphic up or down.
+=== Syntax ===
+
+'''~SCALE( ''new_width'', ''new_height'' )
+
+The ''new_width'' and ''new_height'' parameters are taken as the image's original width or height, respectively, if one of them happens to be zero. Negative values are treated in the same way, but an error is printed in stderr.
+
+== Opacity modifying function ==
+Changes an image's opacity at render time.
+=== Syntax ===
+
+'''~O( ''factor or percentage%'' )'''
+
+If the argument includes the percentage symbol (''%''), it will be treated as a percentage of full (real) opacity; an image will be displayed at its native opacity with ~O(100%).
+
+Without the percentage symbol, the argument is assumed to be a factor by which the image's native opacity should be multiplied. Thus, ~O(0.5) and ~O(50%) are equivalent forms of specifying to reduce an image's opacity by half.
+
+== Blurring function ==
+Blurs a graphic at render time using the same algorithm used for in-game dialogs.
+=== Syntax ===
+
+'''~BL( ''radius'' )'''
+
+== Overlay function ==
+Puts a time-of-day overlay on the image.
+=== Syntax ===
+
+'''~LIGHTEN()'''
+
+'''~DARKEN()'''
+
+== Background coloring function ==
+Sets the color of all the (semi-)transparent pixels of the image.
+=== Syntax ===
+
+'''~BG(r,g,b)'''
+
+== Null function ==
+Does nothing.
+=== Syntax ===
+
+'''~NOP()'''
+
+== Precedence of Functions  ==
+
+All functions are applied in left-to-right order, with the exception of RC(), TC() and PAL() which are applied always before any other functions. Standard team coloring for a unit is applied after all custom RC(), TC() and PAL() functions but before any other functions.
+That is, stuff like "units/elves-wood/fighter.png~CROP(0,0,20,20)~CROP(10,10,10,10)" would result in taking a crop of the rectangle x=20;y=20;w=40;h=40 and then taking a crop from ''that'' rectangle as x=10;y=10;w=10;h=10 resulting in the area x=30;y=30;w=10;h=10 from the original graphic.
+
+[[Category:WML Reference]]

@@ -1,0 +1,353 @@
+{{WML Tags}}
+== Interface actions ==
+
+Part of [[ActionWML]], interface actions are actions that do not have a direct effect on gameplay;
+instead, they show something to the player.  The main interface tags
+are '''[message]''' and '''[objectives]''', but several other tags affect
+the interface also.
+
+== [inspect] ==
+This user interface action only works in debug mode. It displays the gamestate inspector dialog (the same one which can be brought up with '':inspect'' ), which can be used to inspect the values of WML variables, AI configuration, recall lists, and more.
+
+* '''name''': optional attribute to specify the name of this gamestate inspector dialog. It is just a label to help differentiate between different invocations of gamestate inspector dialog.
+
+== [message] ==
+The most commonly used interface action is [message], which displays a message to the user in a dialog box. It can also be used to take input from the user.
+
+The following key/tags are accepted for [message]:
+* [[StandardUnitFilter]]: The unit whose profile and name are displayed. Do not use a [filter] tag. If no unit matching this filter is found, the message is not displayed (The unit has probably been killed).<br>'''[message]''' elements should be constructed so that it is either guaranteed that a certain unit is alive, or so that dialog flows smoothly even if the message isn't displayed.
+
+* '''speaker''': an alternative to standard unit filter. You may specify as the value of the speaker attribute a unit id or any of the following special values:
+** '''narrator''': the dialog box is displayed without a caption for the unit speaking or a unit image
+** '''unit''': the primary unit for the event is speaking
+** '''second_unit''': the secondary unit for the event is speaking
+
+* '''message''': (translatable) the text to display to the right of the image. ''message'' is sometimes multiple lines; if it is, be sure to use quotes(''' ' ''' or ''' " ''')
+* '''[show_if]''': if present then this message will only be displayed if the conditional statement in this tag is passed (see [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]])
+* '''side_for''': (default: all sides) comma-separated list of sides for who message is shown.
+* '''image''': (default: profile image of speaker) the image to display next to the message.
+* '''caption''': (default: name of speaker) the caption to display beside the image. Name to be displayed. Note: use a translation mark to avoid wmllint errors.
+* '''scroll''': Boolean specifying whether the game view should scroll to the speaking unit. Defaults to ''yes''.
+* '''duration''': (default: 10) the minimum number of frames for this message to be displayed. (A frame lasts about 30 milliseconds.) During this time any dialog decisions will be disregarded.
+* '''sound''': a sound effect (wav file) to play as the message is displayed. This can be a comma-separated list, from which one will be randomly chosen.
+* '''[option]''': No '''[option]''' elements have to be used. If '''[option]''' elements are present, then each option will be displayed in a menu for the user to select one option.
+** '''message''': (translatable) the text displayed for the option (see [[DescriptionWML]])
+** '''[show_if]''': if present then this option will only be displayed if the conditional statement in this tag is passed (see [[InternalActionsWML]])
+** '''[command]''': an element containing actions which are executed if the option is selected.
+* '''[text_input]''': there can be only one [text_input] tag. this adds a text input field to the message.
+** '''variable''': the variable that the user's input will be written to
+** '''label''': a text label to the left of the input field
+** '''max_length''': the maximum number of characters that may be typed into the field
+** '''text''': text that is written into the field in the beginning
+* Check [[EventWML#Multiplayer_safety]] to find out in which events you can safely use '''[option]''' and '''[text_input]''' without causing OOS.
+
+=== Formatting ===
+In 1.8, [http://developer.gnome.org/pango/unstable/PangoMarkupFormat.html Pango markup formatting codes] have been adopted for '''[message]'''. These can also be used in unit names (user_description), objectives, and such. Note that you'll probably want to use a single quote ' instead of a double quote " as double quotes cannot be escaped, otherwise the string will appear fragmented and you may also encounter errors. Running wmllint on your campaign will up-convert it, warning you about unusual cases you must fix by hand.
+
+For example, if you wanted to write "You are victorious!" in large, italic, gold letters, you might write it this way:
+
+ <nowiki><span color='#BCB088' size='large' font-style='italic'>You are victorious!</span></nowiki>
+
+
+These are the codes taken from the Pango markup formatting guide:
+
+*'''font''', '''font_desc''': A font description string, such as "Sans Italic 12".
+*'''font_family''', '''face''': A font family name.
+*'''font_size''', '''size''': Font size in 1024ths of a point, or one of the absolute sizes 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large', or one of the relative sizes 'smaller' or 'larger'.
+*'''font_style''', '''style''': One of 'normal', 'oblique', 'italic'.
+*'''font_weight''', '''weight''': One of 'ultralight', 'light', 'normal', 'bold', 'ultrabold', 'heavy', or a numeric weight.
+*'''font_variant''', '''variant''': One of 'normal' or 'smallcaps'.
+*'''font_stretch''', '''stretch''': One of 'ultracondensed', 'extracondensed', 'condensed', 'semicondensed', 'normal', 'semiexpanded', 'expanded', 'extraexpanded', 'ultraexpanded'.
+*'''foreground''', '''fgcolor''', '''color''': An RGB color specification such as '#00FF00' or a color name such as 'red'.
+*'''background, bgcolor''': An RGB color specification such as '#00FF00' or a color name such as 'red'.
+*'''underline''': One of 'none', 'single', 'double', 'low', 'error'.
+*'''underline_color''': The color of underlines; an RGB color specification such as '#00FF00' or a color name such as 'red'.
+*'''rise''': Vertical displacement, in 10000ths of an em. Can be negative for subscript, positive for superscript.
+*'''strikethrough''': 'true' or 'false' whether to strike through the text.
+*'''strikethrough_color''': The color of strikethrough lines; an RGB color specification such as '#00FF00' or a color name such as 'red'
+*'''fallback''': 'true' or 'false' whether to enable fallback. If disabled, then characters will only be used from the closest matching font on the system. No fallback will be done to other fonts on the system that might contain the characters in the text. Fallback is enabled by default. Most applications should not disable fallback.
+*'''letter_spacing''': Inter-letter spacing in 1024ths of a point.
+*'''gravity''': One of 'south', 'east', 'north', 'west', 'auto'.
+*'''gravity_hint''': One of 'natural', 'strong', 'line'.
+
+
+In 1.6, Wesnoth uses older text formatting options
+* A tilde (~) as the first character causes the line to be boldfaced.
+* An at symbol (@) as the first character causes the line to be green, as done with victory conditions.
+* A pound symbol (#) as the first character causes the line to be red, as done with defeat conditions.
+* An asterisk (*) as the first character causes the line to be bigger.
+* A backquote (`) as the first character causes the line to be smaller.
+* If used, the caption key text is boldfaced.
+* An RGB colour code in the beginning causes the line to be the given colour. This can still be preceded by the above characters. Example: ''message=_"<255,0,0>Red!"''
+
+== [objectives] ==
+The other tag used for plot development is '''[objectives]'''.
+The '''[objectives]''' tag overwrites any previously set objectives,
+and displays text which should describe the objectives of the scenario.
+Scenario objectives are displayed on the player's first turn after the tag is used,
+or as part of the event if it triggers during that player's turn.
+Objectives can also be accessed at any time in a scenario using the
+"Scenario Objectives" game menu option, making this tag useful for
+scenario-specific information that the player may need to refer to during play.
+
+Attributes of '''[objectives]''':
+* '''side''': Default '0'. The side to set the objectives for. A value of 0 sets objectives for all sides. note: There are side-specific objectives and default objectives, which are used in case a side doesn't have specific ones. Specifying 0 sets the default ones.
+* '''[[StandardSideFilter]]''' {{DevFeature1.11}} tags and keys: Sets the objectives of all matching sides to these passed specifications (the rest of this [objectives] tag). If no sides (such as when passing side=0) or all sides match, sets the default objectives, and the side specific ones for the matching sides otherwise.
+* '''bullet''': Default '• '. Replaces the default bullet, with whatever is passed, for all objectives, gold carryover notes, and notes defined with [note].
+* '''summary''': Displayed first in the objectives text, this should describe the basic objective for the overall scenario.  Can be omitted.
+* '''note''': Displayed last in the objectives text, this is sometimes used for hints or additional information.  Can be omitted.
+* '''victory_string''': Default ' _ "Victory:"', this text precedes the victory objectives.
+* '''defeat_string''': Default ' _ "Defeat:"', this text precedes the defeat objectives.
+* '''gold_carryover_string''': Default ' _ "Gold carryover:"', this text precedes the gold carryover information.
+* '''notes_string''': Default ' _ "Notes:"', this text precedes the notes.
+* '''silent''': Default: not present. If set to "yes", the objectives are silently changed. Else, they will be shown to the user when appropriate.
+
+Tags of '''[objectives]''':
+* '''[objective]''': describes a win or loss condition. Most scenarios have multiple win or loss conditions, so use a separate [objective] subtag for each line; this helps with translations.
+** '''bullet''': Default '• ' or whatever is set in the parent [objectives] block. Replaces the default bullet, with whatever is provided, for the objective defined by the [objective] block.
+** '''red''': Default '0' for winning objectives, '255' for losing objectives. Overrides the default red coloring of the entire objective, including the bullet.
+** '''green''': Default '255' for winning objectives, '0' for losing objectives. Overrides the default green coloring of the entire objective, including the bullet.
+** '''blue''': Default '0'. Overrides the default blue coloring of the entire objective, including the bullet.
+** '''description''': text for the specific win or loss condition.
+** '''condition''': The color and placement of the text. Values are 'win'(colored green, placed after ''victory_string'') and 'lose'(colored red, placed after ''defeat_string'')
+** '''show_turn_counter''': If set to yes, displays the number of turns remaining in the scenario. Default is no.
+** '''[show_if]''': A condition that disables the objective if it doesn't hold. Conditional objectives are refreshed at '''[show_objectives]''' time only.
+* '''[gold_carryover]''': describes how the gold carryover works in this scenario. This is intended to be a more convenient way of displaying carryover information than using the note= key in [objectives].
+** '''bullet''': Default '• ' or whatever is set in the parent [objectives] block. Replaces the default bullet with whatever is provided.
+** '''red''': Default '255'. Overrides the default red coloring of the entire objective, including the bullet.
+** '''green''': Default '255'. Overrides the default green coloring of the entire objective, including the bullet.
+** '''blue''': Default '192'. Overrides the default blue coloring of the entire objective, including the bullet.
+** '''bonus''' (boolean): whether an early finish bonus is granted. If omitted, early finish bonus is not mentioned.
+** '''carryover_percentage''': the amount of carryover gold. If omitted, the amount is not mentioned.
+* '''[note]''': describes a note, usually used for hints or additional information. This is an easier way of adding several notes than concatenating them together into a single string to use with the ''note='' key.
+** '''bullet''': Default '• ' or whatever is set in the parent [objectives] block. Replaces the default bullet with whatever is provided for the note defined by the [note] block.
+** '''red''': Default '255'. Overrides the default red coloring of the entire note, including the bullet.
+** '''green''': Default '255'. Overrides the default green coloring of the entire note, including the bullet.
+** '''blue''': Default '255'. Overrides the default blue coloring of the entire note, including the bullet.
+** '''description''': the text of the note.
+** {{DevFeature1.11}} '''[show_if]''': The note will not be shown if the specified condition isn't met. Conditional notes are refreshed at '''[show_objectives]''' time only.
+
+=== Macros ===
+There are a few predefined macros for Objectives that you can use to shorten the code: [http://www.wesnoth.org/macro-reference.xhtml#SET_OBJECTIVES SET_OBJECTIVES], [http://www.wesnoth.org/macro-reference.xhtml#VICTORY_CONDITION VICTORY_CONDITION], and [http://www.wesnoth.org/macro-reference.xhtml#DEFEAT_CONDITION DEFEAT_CONDITION]. Follow the links for each one to see complete syntax and example usage.
+
+== [set_menu_item] ==
+This tag is used to add a custom option in the right-click context menu which can then be used to trigger arbitrary WML commands.
+
+'''Note:''' Due to limitations in portable devices where there are no scroll bars for context menus, there is a hard-coded limit of 7 custom WML menu items. If you really need to have more than 7 menu items, try combining some of them in a submenu.
+
+* '''id''': the unique id for this menu item. If a menu item with this id already exists, it allows you to set specific changes to that item.
+* '''description''': the in-game text that will appear for this item in the menu.
+* '''image''': the image to display next to this item.
+* '''needs_select''': if ''yes'' (default ''no''), then the latest select event (see [[EventWML]]) that triggered before this menu item was chosen will be transmitted over the network before this menu item action will be. This only has any effect in networked multiplayer, and is intended to allow more elaborate menu item behaviour there without causing out of sync errors. If you don't know what this means, just leave it false.
+* '''[show_if]''': If present, the menu item will only be available if the conditional statement (see [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]]) within evaluates to true. When this is evaluated, the WML variables ''$x1'' and ''$y1'' will point to the location on which the context menu was invoked, so it's possible to for example only enable the option on empty hexes or on a particular unit.
+* '''[filter_location]''': contains a location filter similar to the one found inside Single Unit Filters (see [[FilterWML]]). The menu item will only be available on matching locations.
+* '''[command]''': contains the WML actions to be executed when the menu item is selected. Again, the WML variables ''$x1'' and ''$y1'' will point to the location on which the context menu was invoked on.
+** '''delayed_variable_substitution ''' {{DevFeature1.11}} (boolean yes|no, default: yes): If no, forces a variable substitution run onto the wml included in this [command] block. Use this, if you want variables which are to substitute to get the values they have at execution time of the event where this set_menu_item appears. Other than that, they get the values they have at invocation time of the menu item.
+
+== [clear_menu_item] ==
+{{DevFeature1.11}}
+
+Removes a menu item from the scenario.
+Normally menu items are, including all their defining wml, automatically carried over between scenarios. This tag prevents this. (The behavior is comparable to set_variable/clear_variable).
+* '''id''': (string): id of the menu item to clear. Can be a comma-separated list.
+
+== Other interface tags ==
+
+The following tags are also action tags:
+=== [item] ===
+Makes a graphical item appear on a certain hex. Note this only places the graphics for an item. It does not make the item do anything. Use a moveto event to make moving onto the item do something. <tt>''('''Hint:''' There are a number of predefined items that are used in various campaigns that you can make use of. You can find [http://www.wesnoth.org/macro-reference.xhtml#file:items.cfg a list of them] if you look into the items.cfg file in the wesnoth install directory (under /data/core/macros))''</tt>
+* '''x''', '''y''': the location to place the item. (only for [event][item]: full [[StandardLocationFilter|SLF]] support)
+* '''image''': the image (in ''images/'' as .png) to place on the hex.
+* '''halo''': an image to place centered on the hex. Use this instead of ''image'' if the image is bigger than the hex or if you want to animate an image. ''Example (where the integer after the colon is the duration of each frame): halo=scenery/fire1.png:100,scenery/fire2.png:100,scenery/fire3.png:100,scenery/fire4.png:100,scenery/fire5.png:100,scenery/fire6.png:100,scenery/fire7.png:100,scenery/fire8.png:100''
+* '''team_name''': name of the team for which the item is to be displayed (hidden for others). For multiple teams just put all the names in one string, for example separated by commas.
+* '''visible_in_fog''': whether the item should be visible through fog or not. Default yes.
+* '''redraw''': {{DevFeature1.11}}(boolean yes|no, default: yes): If no, disables implicit calls to [[InterfaceActionsWML#.5Bredraw.5D|[redraw]]] when placing the items.
+
+=== [remove_item] ===
+Removes any graphical items on a given hex.
+* [[StandardLocationFilter]]: the hexes to remove items off
+* '''image''' if specified, only removes the given image item (This image name must include any [[ImagePathFunctionWML|image path functions]] appended to the original image name.)
+
+=== [print] ===
+Displays a message across the screen. The message will disappear after a certain time.
+* '''text''': (translatable) the text to display.
+* '''size''': (default=12) the pointsize of the font to use
+* '''duration''': (default=50) the length of time to display the text for. This is measured in the number of 'frames'. A frame in Wesnoth is usually displayed for around 30ms.
+* '''red''', '''green''', '''blue''': (default=0,0,0) the color to display the text in. Values vary from 0-255.
+=== [move_unit_fake] ===
+Moves an image of a unit along a certain path on the map. The path does not need to be a continuous list of adjacent hexes, so for example only the start and end points can be given, in which case the straightest line between those points will be calculated and used.
+* '''type''': the type of the unit whose image to use
+* '''x''': a comma-separated list of x locations to move along
+* '''y''': a comma-separated list of y locations to move along (x and y values are matched pairs)
+* '''side''': the side of the fake unit, used for team-coloring the fake unit
+* '''gender''': the gender of the fake unit. Example: gender=female
+* '''variation''': the variation of the fake unit. Example: variation=undead
+* '''image_mods''': [[ImagePathFunctionWML|image path functions]] sequence to be applied on the fake unit.
+=== [move_units_fake] ===
+moves multiple images of units along paths on the map. These units are moved in lockstep.
+* '''[fake_unit]''': A fake unit to move
+** '''type''': the type of unit whose image to use
+** '''x''': a comma-separated list of x locations to move along
+** '''y''': a comma-separated list of y locations to move along (x and y values are matched pairs)
+** '''side''': the side of the fake unit, used for team-coloring the fake unit
+** '''skip_steps''': the number of steps to skip before this unit starts moving
+=== [hide_unit] ===
+Temporarily prevents the engine from displaying the given unit. The unit does not become invisible, as it would be with the '''[hides]''' ability; it is still the same plain unit, but without an image. Useful in conjunction with '''[move_unit_fake]''': to move a leader unit into position on-screen. Until 1.8 each '''[hide_unit]''' tag only hides one unit.
+* [[StandardUnitFilter]]: All matching units will be hidden
+
+=== [unhide_unit] ===
+Stops the currently hidden units from being hidden.
+* [[StandardUnitFilter]]: Only the matching units will be unhidden
+
+=== [scroll] ===
+Scroll a certain number of pixels in a given direction. Useful for earthquake/shaking effects.
+* '''x''', '''y''': the number of pixels to scroll along the x and y axis
+=== '''[scroll_to]''' ===
+Scroll to a given hex
+* '''x''', '''y''': the hex to scroll to
+* {{DevFeature1.11}} [[StandardLocationFilter]], do not use a [filter_location] sub-tag. If more than one location matches the filter, only the first matching location will be used.
+* '''check_fogged''': whether to scroll even to locations covered in fog or shroud. Possible values ''true'' (don't scroll to fog) and ''false'' (scroll even to fog), with ''false'' as the default.
+
+=== [scroll_to_unit] ===
+Scroll to a given unit
+* [[StandardUnitFilter]]
+* '''check_fogged''': whether to scroll even to locations covered in fog or shroud. Possible values ''true'' (don't scroll to fog) and ''false'' (scroll even to fog), with ''false'' as the default.
+=== [select_unit] ===
+Selects a given unit.
+* [[StandardUnitFilter]]: The first unit found will be selected.
+* '''fire_event''': whether a ''select'' event should be triggered or not (def. ''no''). (Note that select events aren't multiplayer save.)
+* '''highlight''': whether the unit's current hex should be highlighted (def. ''yes'').
+
+=== [sound]===
+Plays a sound
+* '''name''': the filename of the sound to play (in ''sounds/'' as .wav or .ogg)
+* '''repeat''': repeats the sound for a specified additional number of times (default=0)
+=== [sound_source] ===
+Creates a sound source. "Sound sources" is a general name for a mechanism which makes possible for map elements to emit sounds according to some rules, where "map elements" can be specific locations or terrain types. For now, only sound sources tied to locations are supported.
+* '''id''': a unique identification key of the sound source
+* '''sounds''': a list of comma separated, randomly played sounds associated with the sound source
+* '''delay''': a numerical value (in milliseconds) of the minimal delay between two playbacks of the source's sound if the source remains visible on the screen; if one scrolls out and back in, the source will be considered as ready to play
+* '''chance''': a percentage (a value from 0 to 100) describing the chance of the source being activated every second after the delay has passed or when the source's location appears on the screen (note that it cannot play more than one file at the same time)
+* '''check_fogged''': possible values "true" and "false" - if true the source will not play if its locations are fogged
+* '''check_shrouded''': possible values "true" and "false" - if true the source will not play if its locations are shrouded
+* '''x,y''': similar to x,y as found in a [[StandardLocationFilter]], these are the locations associated with the sound source
+* '''fade_range''' (default = 3): distance in hexes that determines a "circular" area around the one specified by '''full_range''' where sound volume fades out linearly
+* '''full_range''' (default = 14): distance in hexes that determines a "circular" area where source plays with full volume, relative to screen center
+* '''loop''': number of times a sound sample should be looped if it stays visible. -1 means infinite (~65000)
+
+=== [remove_sound_source] ===
+Removes a previously defined sound source.
+* '''id''': the identification key of the sound source to remove
+
+=== [music]===
+Switches to playing different music
+* '''name''': the filename of the music to play (in ''music/'' as .ogg)
+* see [[MusicListWML]] for the correct syntax
+===[volume]===
+Changes the game volume to a percent of the preferences volume for the game being played. Values can go from 0 to 100:  
+* '''music''':  Changes the music volume.
+* '''sound''':  Changes the sound volume.
+=== [color_adjust]===
+Tints the color of the screen.
+* '''red''', '''green''', '''blue''': values from -255 to 255, the amount to tint by for each color
+=== [delay] ===
+Pauses the game.
+* '''time''': the time to pause in milliseconds
+=== [redraw] ===
+Redraws the screen (this normally isn't done during events, although some of the other interface actions cause the screen or parts of it to be redrawn).
+* '''clear_shroud''' (boolean yes|no, default no): If yes, recalculates fog and shroud.  Useful if you for example spawn friendly units in the middle of an event and want the shroud to update accordingly (otherwise units that spawn inside fog would remain invisible for the duration of the event, since the fog would not automatically get cleared around them).
+* '''[[StandardSideFilter]]''': the sides for which to recalculate fog and shroud.
+* '''side''': If used (forces clear_shroud=yes), recalculates fog and shroud for that side.
+
+=== [unit_overlay] ===
+Sets an image that will be drawn over a particular unit, and follow it around
+* [[StandardUnitFilter]]: All matching units will get the overlay
+* '''image''': the image to place on the unit
+
+=== [remove_unit_overlay] ===
+removes a particular overlayed image from a unit
+* [[StandardUnitFilter]]: The overlay will get removed from all matching units
+* '''image''': the image to remove from the unit
+
+=== [animate_unit] ===
+Uses an animation of a unit to animate it on screen (if the unit has the corresponding animation).
+* '''flag''': The key to find the custom animation in the unit description (see the '''[extra_anim]''' description in [[AnimationWML]]). Standard animations can be triggered with the following keywords: ''leading recruited standing idling levelout levelin healing healed poisoned movement defend attack death victory pre_teleport post_teleport''
+* '''[filter]''' with a [[StandardUnitFilter]] as argument, see [[FilterWML]]. By default, the unit at the event location will be animated. You can use this tag to choose any other unit to animate.
+* '''[primary_attack]''': If this tag is not present, the filter for animation will be triggered with no attack. If it is here, all attacks from the unit will be filtered, and a matching one will be used to filter the animation. Takes a weapon filter as argument, see [[FilterWML]].
+* '''[secondary_attack]''': Similar to '''[primary_attack]'''. May be needed to trigger a defense animation correctly, if there are more than one animations available for the defending unit.
+* '''hits''': yes/no/hit/miss/kill: which according variation of a attack/defense animation shall be chosen (required)
+* '''text''': a text to hover during the animation 
+* '''red''': red value for the text color (0-255)
+* '''green''': green value for the text color
+* '''blue''': blue value for the text color
+* '''with_bars''': yes/no: whether to display the status bars during the animation (e.g. the hitpoint bar)
+* '''[animate]''': a sub block with the same syntax as '''[animate_unit]''' except that the '''[filter]''' block is mandatory to find the unit. This block will find and animate another unit simultaneously.
+* '''[facing]''': a [[StandardLocationFilter]] specifying what direction the unit should be facing when animated
+
+=== [label] ===
+Places a label on the map.
+* '''x''', '''y''': the location of the label
+* '''text''': what the label should say
+* '''team_name''': if specified, the label will only be visible to the given team.
+* '''color''': color of the label. The format is r,g,b; r, g and b are numbers between 0 and 255.
+* '''visible_in_fog''': whether the label should be visible through fog or not. Default yes.
+* '''visible_in_shroud''': whether the label should be visible through shroud or not. Default no.
+* '''immutable''': whether this label is protected from being removed or changed by players. Default yes.
+=== [floating_text]===
+Floats text (similar to the damage and healing numbers) on the given locations.
+* [[StandardLocationFilter]]: the text will be floated on all matching locations simultaneously.
+* '''text''': the text to display.
+
+The default text color is <span style="color: #6b8cff;">'''#6b8cff'''</span>. To change the color, use [[#Formatting|Pango markup]]. For example:
+
+<pre>
+# Float some golden yellow text at 20,20.
+[floating_text]
+   x,y=20,20
+   text="<span color='#cccc33'>Your text here</span>"
+[/floating_text]
+</pre>
+
+=== [deprecated_message] ===
+Shows a deprecated message in the message area, this feature is only intended to be used to warn about deprecated macros in mainline. The message is not translatable.
+* '''message''': the message to show.
+=== [wml_message] ===
+Outputs a message to Wesnoth's console output. Intended for campaign designers to output silent text to the console, without annoying the player; then, that text might contain information useful for later bug-reporting. The log domain for it is '''wml''', and the '''debug/dbg''' log level is available for use with the '''logger''' attribute. Depending on the current log level ('''error''' by default), which may be changed with the in-game :log command, or the --log-<level>=wml command line switch, the messages are echoed to the in-game chat.
+* '''message''': the message to show.
+* '''logger''': the Wesnoth engine output logger that should catch the text; this might be 'err' (the errors log level), 'warn'/'wrn' (the warnings log level) or anything else (the information log level). Not all information will be displayed depending on the log level chosen when starting Wesnoth.
+
+Note: As of 1.9.4/1.9.5 (r48805) the following "loggers" should work: If in [wml_message]: err/error, warn/wrn/warning, debug/dbg; using the :log command: Only the long forms error, warning, info and debug (this part gathered by trying rather than source inspecting). The long forms are most likely also the only ones working when starting wesnoth with --log-<level>=wml.
+For log level warning or error (as during normal play), only wml_messages with logger error or warning display (for both). With logger info or debug, additionally wml_messages with logger info or debug display (for both).
+
+=== [open_help] ===
+Opens the in-game help.
+* '''topic''': the id of the topic to open
+=== [show_objectives] ===
+refreshes the objectives defined by [objectives] and its [show_if] tags, and displays them. (It is also called whenever the user explicitly asks for the objectives; this matters only if the tag was overridden by a [[LuaWML#register_wml_action|Lua]] script.)
+* '''side''': the side to show the objectives. If not set, all sides are used.
+* '''[[StandardSideFilter]]''' {{DevFeature1.11}} tags and keys: Tag affects the matching sides instead of just all or the one given by the integer value of the side= key.
+
+=== [chat] ===
+Displays a message in the chat area.
+* '''speaker''': (default="WML") A string for the name of the sender of the message.
+* '''message''': The message that should be displayed.
+* '''[[StandardSideFilter]]''' tags and keys as argument; if the same client controls multiple sides that match, then the message will only be displayed once.
+
+== Useful Macros ==
+There are some predefined macros that you find useful for interface actions. You can find a complete list along with a detailed explanation of how they work [http://www.wesnoth.org/macro-reference.xhtml here].
+* '''{FLOATING_TEXT}''' Float some text over a unit similar to the damage numbers.
+* '''{HIGHLIGHT_UNIT}''' Highlight a unit on the map. Use this to show important units
+* '''{HIGHLIGHT_IMAGE}''' Places and highlights an image on the map. Use this to show important items or locations
+* '''{SET_IMAGE}''' Places an image on the map which has no other function.
+* '''{QUAKE <soundfile>}''' Creates a tremor like screenshake and plays <soundfile>. ('''{TREMOR}''' is a deprecated version, equivalent to '''{QUAKE (rumble.ogg)}''')
+* '''{FLASH_WHITE}''' Flash the screen white momentarily. You can also replace WHITE with RED, BLUE or GREEN for a different colour.
+
+== See Also ==
+* [[DirectActionsWML]]
+* [[InternalActionsWML]]
+* [[EventWML]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]
+[[Category: ActionsWML]]

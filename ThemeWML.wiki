@@ -1,0 +1,175 @@
+{{WML Tags}}
+== The toplevel [theme] tag ==
+
+Themes are used both for the wesnoth game and the wesnoth editor.
+Themes allow flexible configuration of how everything is laid out on-screen.
+
+The only keys in '''[theme]''' are '''name''', which is the name of the theme, and the optional '''hidden''' key (defaults to '''no'''), which hides a theme from the user in Preferences, allowing to hide e.g. cutscene user interface themes that shouldn't be hidden in regular gameplay.
+
+The only tag in '''[theme]''' is '''[[ThemeSystem|[resolution]]]''', but each theme can have multiple [resolution] tags.
+The [resolution] tags are scanned until the first one which is of the same or lower resolution than is currently being used is found, and this is used as our theme.
+This allows us to define themes to work differently on different resolutions, 
+and will allow us to support both high and low resolutions elegantly.
+
+The following keys and tags are recognized for [resolution]:
+
+* '''width''', '''height''': dimensions in pixels
+
+All subtags of [resolution] use the following keys:
+* '''rect''': defines the rectangle to display on. Parts of a ''rect=a,b,c,d'' clause may be:
+** number : absolute positions
+** ''='' : same value as the same field in reference rect (alignment with reference)
+** +number or -number : for a and b, add this value to reference's c and d respectively (spacing from reference)
+; for c and d, add this value to self's a and b (specify by width and height)
+** =+number or =-number : add this value to same field in reference rect (eg. consider reference as a container box)
+* '''xanchor''', '''yanchor''': control the behavior of how this rectangle changes as the resolution changes.
+** '''left'''': its distance from the left side of the screen always remain the same, while changes in the resolution will change its size by the same amount (top for the y axis).
+** '''right''': its size always remain the same, as well as its distance to the right side of the screen (bottom for the y axis).
+** '''fixed''': its co-ordinates in that axis remain constant
+** '''proportional''': its co-ordinates multiplied by the ratio of the resolution being used to the canonical resolution.
+
+== [main_map] ==
+
+defines where the main game display (i.e. all the hexagons and units) is displayed.
+
+== [main_map_border] ==
+Defines the border of the main map area. It has the following keys.
+
+* '''border_size''': the size of the border, the value should be between 0.0 and 0.5. The images which are used by default are sized for 0.5. If the border gets smaller the images still need the same size. They're simply cut off at the right spot.
+* '''background_image''': the filename of the image to use as background.
+* '''tile_image''': the filename of the image to use for the _off^_usr tile. The image in the minimal can't be controlled only the image in the main map. This image must be in the terrain directory and a png image. When specifying the image the 'terrain/' prefix and '.png' suffix _must_ be ommitted.
+* '''corner_image_top_left''': filename for the image in the top left corner.
+* '''corner_image_bottom_left''': filename for the image in the top left corner.
+* '''corner_image_top_right_odd''': filename for the image in the top right corner, if the x value of the corner is odd. This x value is the value seen in game (and thus not in the source).
+* '''corner_image_top_right_even''': filename for the image in the top right corner, if the x value of the corner is even. This x value is the value seen in game (and thus not in the source).
+* '''corner_image_bottom_right_odd''': filename for the image in the bottom right corner, if the x value of the corner is odd. This x value is the value seen in game (and thus not in the source).
+* '''corner_image_bottom_right_even''': filename for the image in the bottom right corner, if the x value of the corner is even. This x value is the value seen in game (and thus not in the source).
+* '''border_image_left''': filename for the image at the left border.
+* '''border_image_right''': filename for the image at the right border.
+* '''border_image_top_odd''': filename for the image at the top border, if the x value of the tile is odd. This x value is the value seen in game (and thus not in the source). 
+* '''border_image_top_even''': filename for the image at the top border, if the x value of the tile is even. This x value is the value seen in game (and thus not in the source). 
+* '''border_image_bottom_odd''': filename for the image at the bottom border, if the x value of the tile is odd. This x value is the value seen in game (and thus not in the source). 
+* '''border_image_bottom_even''': filename for the image at the bottom border, if the x value of the tile is even. This x value is the value seen in game (and thus not in the source).
+
+== [mini_map] ==
+
+Determines where the mini map is displayed
+
+== [panel] ==
+
+Displays an image as a panel on-screen.
+* '''image''': the image used for the panel
+
+== [label] ==
+
+Displays a text label on screen.
+* '''prefix''': a string that will be printed before the text in all languages
+* '''text''': a text string id to be displayed
+* '''postfix''': a string that will be printed after the text in all languages
+* '''icon''': an image that will be displayed instead of the text if it is available
+* '''font_size''': the size of font to use for the label
+
+== [menu] ==
+
+* '''title''': the id of the string to write on the button
+* '''title_literal''': a string that will be displayed "as is" in all language after the title
+* '''image''': the image to use if available
+* '''is_context_menu''': if set to true this menu will not be placed, but displayed on a right click
+* '''items''': comma separated list of actions to put in the menu. if there is only one action, it will be executed immediately and no menu will be displayed
+** '''cycle''': move to next movable unit
+** '''endunitturn''': consume this unit's move and cycle to the next one
+** '''leader''': center on the leader
+** '''undo''': undo last action
+** '''redo''': redo undone action
+** '''zoomin''': zoom the map in
+** '''zoomout''': zoom the map out
+** '''zoomdefault''': return to default zoom
+** '''fullscreen''': switch fulscreen mode
+** '''accelerated''': switch turbo mode
+** '''resistance''': show resistance table of current unit
+** '''terraintable''': show terrain table of current unit
+** '''describeunit''': show unit description
+** '''renameunit''': change unit name
+** '''save''': save the game
+** '''recruit''': recruit a unit
+** '''repeatrecruit''': repeat last recruitement
+** '''recall''': recall a unit from previous scenarion
+** '''endturn''': end current turn
+** '''togglegrid''': toggle grid display
+** '''statustable''': show status table
+** '''mute''': mute all sounds
+** '''speak''': send message to other players
+** '''createunit''': debug create a unit on the map
+** '''preferences''': open preference dialog
+** '''objectives''': show objective window
+** '''unitlist''': list units
+** '''statistics''': show game statistics
+** '''quit''': quit the game
+** '''labelterrain''': label current location
+** '''clearlabels''': clear all labels on map
+** '''showenemymoves''': show grids reachable by the enemy
+** '''bestenemymoves''': show grids reachable by the enemy with no zone of control
+** '''editnewmap''': editor only start a new map
+** '''editloadmap''': editor only loads an existing map
+** '''editsavemap''': editor only saves the current map
+** '''editsaveas''': editor only saves the current map, let you choose a filename
+** '''editsetstartpos''': editor only set a starting position for a team
+** '''editfloodfill''': editor only flood the map with a terrain
+** '''toggleshroud''': toggle the "moving removes shroud" behaviour
+** '''updateshroud''': removes all possible shroud
+** '''AUTOSAVES''': expands to a list of all Auto-Save games prior to this one
+
+== [status] ==
+
+This tag describes the Status Table.
+This tag contains many other tags, which determine where other game statistics, such as the current turn, and a description of selected units go.
+For instance, the [time_of_day] tag will determine where the time of day image goes.
+Each subtag of [status] can contain the following attributes
+
+** '''font_size''': the size of font to use for the status
+** '''rect''': the rectangle as for the main_map attribute
+** '''xanchor''': the x-wise anchoring as for the main_map attribute
+** '''yanchor''': the y-wise anchoring as for the main_map attribute
+** '''prefix''': the string to display before the actual status, this is the string id for internationalisation
+** '''prefix_literal''': a string to put after the prefix, but before the label for all languages.
+** '''postfix_literal''': a string to put after the status
+** '''postfix''': the string to display after the postfix_literal, this is the string id for internationalisation
+
+the following tags are recognized for [status]:
+* '''[unit_description]''': the user description of the current unit. Note: this tag is now obsolete
+* '''[unit_name]''': the user description of the current unit
+* '''[unit_type]''': the type of the current unit
+* '''[unit_race]''': the race of the current unit
+* '''[unit_level]''': the level of the current unit
+* '''[unit_side]''': the side of the current unit (flag)
+* '''[unit_traits]''': the traits of the current unit
+* '''[unit_status]''': the status of the current unit
+* '''[unit_alignment]''': the alignment of the current unit
+* '''[unit_abilities]''': the abilities of the current unit
+* '''[unit_hp]''': the HP of the current unit
+* '''[unit_xp]''': the XP of the current unit
+* '''[unit_moves]''': the moves remaining for the current unit
+* '''[unit_weapons]''': the attacks of the current unit
+* '''[unit_image]''': the icon for the current unit
+* '''[unit_profile]''': the portait for the current unit
+* '''[unit_advancement_options]''': the advancement(s) of the current unit appear in the tooltip of this element
+* '''[time_of_day]''': the time of day on the current location
+* '''[turn]''': the turn number and turn remaining
+* '''[gold]''': the gold remaining
+* '''[villages]''': the number of villages owned
+* '''[num_units]''': the number of units owned
+* '''[upkeep]''': the money needed to keep your units every turn
+* '''[expenses]''': the money lost each turn when you don't have enough income
+* '''[income]''': the income per turn (can be positive)
+* '''[terrain]''': the text description of the current terrain
+* '''[position]''': the current terrain's position
+* '''[side_playing]''': the current playing side (flag)
+* '''[observers]''': the current observers
+
+== See Also ==
+
+* [[ThemeSystem]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

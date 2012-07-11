@@ -1,0 +1,160 @@
+{{WML Tags}}
+==  Abilities and their effects ==
+
+There are two types of abilities: ones that apply to units (called ''abilities'') and ones that only apply when using a particular attack (called ''specials'' or ''weapon specials'').  A unit may have multiple abilities and an attack can have multiple specials, but by convention only one weapon special should be assigned to any given attack.
+
+== The ''[abilities]'' tag ==
+
+The following tags are used to describe an ability in WML:
+
+* '''[heals]''': modifies the hitpoints of a unit at the beginning of the healer's turn
+* '''[regenerate]''': modifies the hitpoints of a unit at the beginning of the unit's turn
+* '''[resistance]''': modifies the resistance of a unit to damage
+* '''[leadership]''': modifies the damage of a unit
+* '''[skirmisher]''': negates enemy zones of control
+* '''[illuminates]''': modifies the time of day adjacent to the affected units
+* '''[teleport]''': allows the unit to teleport
+* '''[hides]''': renders the unit invisible to enemies
+Any other name is valid (for example '''[dummy]'''), but will result in an ability that does nothing but report it's there. These tags still use the same common keys and tags as every other ability. '''Note:''' a dummy ability must have an id for the name and description to display.
+
+=== Common keys and tags for every ability ===
+
+* '''name''': the name of the ability.
+* '''name_inactive''': the name of the ability when inactive.
+* '''description''': the description of the ability.
+* '''description_inactive''': the description of the ability when inactive.
+* '''affect_self''': if equal to 'yes', the ability will affect the unit that has it.
+* '''affect_allies''': if equal to 'yes', the ability will affect allies in the specified adjacent hexes.
+* '''affect_enemies''': if equal to 'yes', the ability will affect enemies in the specified adjacent hexes.
+* '''cumulative''': if set to 'yes', this ability will be cumulative with the base value for this ability.
+* '''id''': this ability will not be cumulative with other abilities using this id. Must be present if cumulative is anything other than 'yes'.
+* '''[adjacent_description]''': contains all four of the above keys, which are used when an adjacent unit receives the ability.
+* '''[filter]''': [[StandardUnitFilter]] If the unit owning the ability does not match this filter, the ability will be inactive.
+* '''[affect_adjacent]''': each adjacent unit that does not match this filter will not receive its effects.
+** '''adjacent''': a comma seperated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
+** '''[filter]''': a [[StandardUnitFilter]].
+* '''[filter_self]''': if the owner of the ability does not match this filter, it will not receive the effects of the ability. [filter_self] takes a [[StandardUnitFilter]] as argument.
+* '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc. If several keys are used all have to match.
+
+=== Extra keys used by the ''[heals]'' ability ===
+
+* '''value''': the amount healed.
+* '''poison''': can be one of ''slowed'',''cured''.
+
+=== Extra keys used by the ''[regenerate]'' ability ===
+
+* '''value''': the amount healed.
+* '''poison''': can be one of ''slowed'',''cured''.
+
+=== Extra keys and tags used by the ''[resistance]'' ability ===
+
+* '''value''': set resistance to this value.
+* '''max_value''': maximum resistance value. This value '''must''' be set in order for [resistance] to function.
+* '''add''': adds to resistance.
+* '''sub''': subtracts from resistance.
+* '''multiply''': multiplies resistance value. 
+* '''divide''': divides resistance value.
+* '''apply_to''': a list of damage types; if left out, the ability applies to all types.
+* '''active_on''': one of 'defense' or 'offense'; if left out, the ability is active on both.
+
+=== Extra keys used by the ''[leadership]'' ability ===
+
+* '''value''': the percentage bonus to damage.
+
+=== Extra keys used by the ''[illuminates]'' ability ===
+
+* '''value''': the percentage bonus to lawful units.
+* '''max_value''': the maximum percentage bonus given.
+* '''min_value''': the minimum percentage bonus given.
+
+=== Extra keys used by the ''[hides]'' ability ===
+
+* '''alert''': the displayed text when the unit is discovered. Default "Ambushed!".
+
+=== Extra tags used by the ''[teleport]'' ability ===
+
+* '''[tunnel]''' - a tunnel tag (see [[DirectActionsWML]]) (without the remove key) defining the tunneling source and target hexes, and maybe other conditions. (It automatically applies only to the unit with the ability.)  You may use $teleport_unit inside the tunnel tag for filtering purposes.
+
+=== Macros for common abilities ===
+
+* ABILITY_AMBUSH
+* ABILITY_CURES
+* ABILITY_HEALS
+* ABILITY_ILLUMINATES
+* ABILITY_LEADERSHIP_LEVEL_1 to ABILITY_LEADERSHIP_LEVEL_5
+* ABILITY_NIGHTSTALK
+* ABILITY_REGENERATES
+* ABILITY_SKIRMISHER
+* ABILITY_STEADFAST
+* ABILITY_SUBMERGE
+* ABILITY_TELEPORT
+
+== The ''[specials]'' tag ==
+
+The '''[specials]''' tag goes inside the '''[attack]''' tag. It can contain the following tags:
+
+* '''[damage]''': modifies the damage of a weapon
+* '''[attacks]''': modifies the number of attacks of a weapon
+* '''[chance_to_hit]''': modifies the chance to hit of a weapon
+* '''[slow]'''
+* '''[poison]'''
+* '''[stones]''' ('''[petrifies]''' in recent versions.)
+* '''[berserk]'''
+* '''[firststrike]'''
+* '''[drains]''': heals the attacker half of the damage dealt
+* '''[heal_on_hit]''': heals the attacker when an attack connects {{DevFeature1.11}}
+* '''[plague]'''
+Any other name is valid, but will result in an special that does nothing but report it's there.
+
+=== Common keys and tags for every weapon special ===
+
+* '''name''': the name of the special.
+* '''name_inactive''': the name of the special when inactive.
+* '''description''': the description of the special.
+* '''description_inactive''': the description of the special when inactive.
+* '''value''': the value to be used. Applies to '''[damage]''', '''[attacks]''', '''[chance_to_hit]''' and '''[berserk]''' (the maximum number of combat rounds).
+** {{DevFeature1.11}} Also applies to '''[drains]''' (percentage of damage drained) and '''[heal_on_hit]''' - negative values will harm the attacker, but not kill
+* '''add''' the number to add to the base value.
+* '''sub''' the number to subtract from the base value.
+* '''multiply''': same as '''value''', except that this multiplies the base value.
+* '''divide''': same as '''value''', except that this divides the base value.
+* '''cumulative''': if set to 'yes', this special will be cumulative with the base value.
+* '''type''': only usable in '''[plague]''', where it defines the unit type to be spawned on kill.
+* '''id''': this ability will not be cumulative with other specials using this id.
+* '''active_on''': one of '''defense''' or '''offense'''; if left out, the special is active on both.
+* '''apply_to''': one of '''self''','''opponent''','''attacker''','''defender''','''both'''. Determines who the effects of this special are applied to.
+* '''[filter_adjacent]''': [[StandardUnitFilter]], which takes an extra key '''adjacent''', which is used to specify which adjacent hexes to filter on. '''adjacent''' is a comma seperated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
+* '''[filter_adjacent_location]''': like [filter_adjacent], except that it filters on the locations rather than the units.
+* '''[filter_self]''': the special will only be active if the owner matches this filter.
+** '''[filter_weapon]''': a standard weapon filter.
+* '''[filter_opponent]''': the special will only be active if the opponent matches this [[StandardUnitFilter]].
+** '''[filter_weapon]''': a standard weapon filter.
+* '''[filter_attacker]''': the special will only be active if the attacker matches this filter.
+** '''[filter_weapon]''': a standard weapon filter.
+* '''[filter_defender]''' the special will only be active if the defender matches this filter.
+** '''[filter_weapon]''': a standard weapon filter.
+* '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc.
+
+=== Macros for common weapon specials ===
+
+* WEAPON_SPECIAL_BACKSTAB
+* WEAPON_SPECIAL_BERSERK
+* WEAPON_SPECIAL_CHARGE
+* WEAPON_SPECIAL_DRAIN
+* WEAPON_SPECIAL_FIRSTSTRIKE
+* WEAPON_SPECIAL_MAGICAL
+* WEAPON_SPECIAL_MARKSMAN
+* WEAPON_SPECIAL_PLAGUE
+* WEAPON_SPECIAL_PLAGUE_TYPE TYPE
+* WEAPON_SPECIAL_POISON
+* WEAPON_SPECIAL_SLOW
+* WEAPON_SPECIAL_STONE
+* WEAPON_SPECIAL_SWARM
+
+== See Also ==
+
+* [[UnitTypeWML]]
+* [[SingleUnitWML]]
+* [[ReferenceWML]]
+
+[[Category:WML Reference]]

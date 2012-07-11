@@ -1,0 +1,99 @@
+{{WML Tags}}
+== the [side] tag ==
+
+The [side] tag is used to describe a side in a particular scenario.
+
+The following keys are recognized:
+
+* '''side''': a number. The leader of this side is placed on the tile represented by this number (see [[BuildingMaps]]). When defining sides, they must be defined in order since the side number is checked against the number of sides seen so far. Currently, the Multiplayer server rejects entering a scenario with more than 9 sides, even if those extra sides are AI sides. 
+
+* '''controller''': how moves for this side should be inputted.
+** '''ai''': the Wesnoth AI makes this side's moves. This is the default setting.
+** '''human''': a player controls this side's moves.
+** '''null''': the side doesn't get a turn to move and doesn't have a leader generated from the contents of the [side] tag. (It still can get units from [unit] tags in the [side] tag.)
+
+* '''no_leader''': if "no" (default), then keys describing a unit which will begin on the side's keep will be the remainder of the '''[side]''' tag, See [[SingleUnitWML]]. Note that if the keys '''x''', '''y''' are included, the leader will begin there regardless of keep location. If this side has a recall list from a previous level, then the recall list will be searched for a leader (using '''canrecruit=yes''') and if one is found it will be used instead of the one described in the '''[side]''' tag. Typical keys used for defining the leader unit are '''type''' (mandatory), '''id''', '''name''' and '''unrenamable=yes''', see [[SingleUnitWML]].
+
+* '''recruit''': a list of unit types. At the beginning of the scenario, the side gains recruitment of these units.
+
+* '''gold''': the starting gold for this side. Default 100. (If gold is carried over from a previous scenario, this value is the minimum starting gold.)
+
+* '''income''': the base income for this side, default 0. This is added to ''base_income'', '''[game_config]''' to determine the side's base income. (see [[GameConfigWML]]).
+
+* '''hidden''': if 'yes', side is not shown in status table.
+
+* '''fog''': if 'yes', this side cannot see any tiles it is not within vision of, except at the start. Please note that the AI currently ignores the fog.
+
+* '''fog_data''': describes the area which this team has de-fogged, using the same format as shroud_data. (This is not particularly useful when defining a side, though, as the game will recalculate fog as turns begin and end. {{DevFeature1.11}}It is used in saved games.)
+
+* '''[fog_override]''' {{DevFeature1.11}} With keys x= and y=, this records the hexes that have been cleared (multiturn) with {{tag|DirectActionsWML|lift_fog}}.
+
+* '''shroud''': if 'yes', this side cannot see any tiles it has not moved within sight of. Please note that the AI currently ignores the shroud. NOTE: with shroud=no, this team *ignores* shroud, so it is not possible to modify it using place_shroud and remove_shroud tags. If you want to do so, use "shroud=yes" and place_shroud/remove_shroud tags.
+
+* '''shroud_data''': describes the area which this team has de-shrouded. An example:
+ |
+ |00011111000
+This would leave the first column on the map unaltered and would change the second column for 11 tiles. A '0' means: shrouded, '1' means unshrouded. You can either call an external file using {@filename}  (see [[PreprocessorRef]]) or place the data in quotes. For making an external file see [[BuildingScenariosShroudData]].
+
+* '''persistent''': whether the side exists in any other scenarios. If '1'(yes), then ''save_id''(see below) is used to identify the side in other scenarios. Default '1'(yes) for sides with a human controller, '0'(no) for ai controlled sides.
+
+* '''save_id''': default ''description'' if available, 'Unknown' otherwise. The ID of the side with respect to the previous and next scenarios. Used to carry over the side's recall list (including the side's leader), recruitment list, and starting gold from scenario to scenario. Also used for the side's displayed name in the victory gold-calculation dialog. (For versions prior to 1.7.3, some extra effort to retrieve carryover information may be needed. See [[SideSwitchingWML]])
+
+* '''team_name''': a non translatable string representing the team's description. Sides with the same team_name are allied. Default ''side''. ''team_name'' is now a comma-separated list of teams that the side is on.
+
+* '''user_team_name''': a translatable string representing the team's description. This has no effect on alliances. Default ''team_name''.
+
+* '''current_player''': a translatable string representing the player's or leader's name. Defaults to the leader's id; if the side's leader is a human player in multiplayer, the default is the player's username.
+
+* '''color''': May be either a numeric color index or a color name (e.g. 'blue', 'purple', 'orange', etc.).  The numeric form is deprecated. The default list of numbers and corresponding colors can be found in data/core/team_colors.cfg.
+
+* '''flag''': a custom flag animation to use instead of the default one to mark captured villages. An automatic side-coloring is applied.
+** Example animation that has three frames and loops every 750ms: ''flag=misc/myflag-1.png:250,misc/myflag-2.png:250,misc/myflag-3.png:250''
+
+* '''flag_icon''': a custom flag icon to indicate the side playing in the statusbar (a size of 24x16 is recommended). An automatic side-coloring is applied.
+
+* '''village_gold''': the amount of gold given to this side per village it controls per turn. Default specified in ''village_income'', '''[game_config]''' ([[GameConfigWML]]).
+
+* '''village_support''': {{DevFeature1.11}} the number of unit levels this side is able to support (does not pay upkeep on) per village it controls. Default specified in ''village_support'', '''[game_config]''' ([[GameConfigWML]]).
+
+* '''recall_cost''': the amount of gold it costs to recall a unit. Default specified in ''recall_cost'', '''[game_config]''' ([[GameConfigWML]]).
+
+* '''share_maps''': whether sides allied with this side see all terrains that this side sees, if they are on shroud.
+
+* '''share_view''': whether sides allied with this side see the units that this side sees, if they are on FoW (fog).
+
+* '''disallow_observers''': prevents observers from seeing this side turn. (default: no)
+
+* '''scroll_to_leader''': optional. If 'no', scroll to the leader is not performed on the start of each turn. (default: yes)
+
+* '''[ai]''' if '''controller=ai''', gives parameters to the AI. See [[AiWML]].
+
+* '''[village]''' describes a village the side begins in control of.
+** ''x'', ''y'' the location of the village. If the pair of coordinates is not a village or is duplicated in another [village] tag, behaviour is undefined. Recent game engine or wmllint should warn about these.
+
+* '''[unit]''' describes a unit which begins on the side. See [[SingleUnitWML]]. If the side has a recall list and the unit is not given a location, it will start on the recall list. Note that the ''side'' attribute under '''[unit]''' will be ignored, as the side will come from the ''side'' attribute of '''[side]'''.
+
+
+The following keys are multiplayer only:
+
+* '''allow_player''': if false then this side will not be allowed to be modified and will be hidden during game creation.
+
+* '''team_lock''': if true then this side's team is not allowed to be modified.
+
+* '''color_lock''': if true then this side's color is not allowed to be modified.
+
+* '''gold_lock''': if true then this side's gold is not allowed to be modified. 
+
+* '''income_lock''': if true then this side's income is not allowed to be modified.
+
+* '''faction''': this lock this side to this faction.
+
+* '''faction_from_recruit''': if true then this side will be locked to the faction that matches the recruits better.
+
+== See Also ==
+* [[EraWML]]
+* [[ScenarioWML]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

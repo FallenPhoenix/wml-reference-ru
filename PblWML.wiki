@@ -1,0 +1,128 @@
+{{WML Tags}}
+
+To upload an add-on you have made, you need a .pbl file.
+
+This is a file with name '''data/add-ons/''Addon_name''.pbl''' or, for Wesnoth 1.6 and later, '''data/add-ons/''Addon_Name''/_server.pbl''' in a subdirectory.  [http://exong.net/wesnoth-attach/files/pblexample_111.png Click here for an example of what we're talking about.]
+
+When you upload a add-on, the file '''data/add-ons/''Addon_Name''.cfg'''
+and the directory '''data/add-ons/''Addon_Name''/''' will be published. Alternatively, '''data/add-ons/''Addon_Name''.cfg''' can be replaced with '''data/add-ons/''Addon_Name''/_main.cfg'''. Your add-on must be based entirely on these paths.
+
+Be aware that translations in the .pbl-files are '''not''' used, so don't mark these strings as translatable.
+
+== What goes into a .pbl file? ==
+
+'''Note:''' ''You should '''not''' use special formatting or coloring in any of these keys when uploading to the official server.'''''
+
+The following keys are recognized for .pbl files:
+
+=== icon ===
+: An image, displayed leftmost in the add-ons download dialog. It must be a standard Wesnoth file and not a custom one. A custom file will work for users who already have the relevant add-on installed. This is not related to the icon used for entries in the campaigns menu -- see [[CampaignWML]] for more information.
+
+: If the icon is a unit with magenta team-color bits, please use [[ImagePathFunctionWML]] to recolor it.
+
+=== title ===
+: Displayed to the right of the icon, it is just text. It should usually be the same as the name of your add-on when it is played.
+
+=== version ===
+: Displayed to the right of the title, it is just text. However, starting with Wesnoth 1.6, the ''required'' format is x.y.z where x, y and z are numbers and a value for x greater than 0 implies the add-on is complete feature-wise. Trailing non-numeric elements are allowed, but nothing should appear ''before'' the numbers. This is necessary for the ''Update add-ons'' button to work correctly. ([[#Version Key Examples|See Examples]])
+
+=== author ===
+: Displayed to the right of the version, it is just text. Put your name or nickname here. If several people have contributed significantly to the add-on you may want to list all of their names.
+
+=== passphrase ===
+: Not displayed, it prevents others from modifying the version of your add-on on the server. You do not need to input a passphrase when initially publishing a add-on; if you do not, one will be randomly generated for you and replaced in your local copy of the .pbl file.
+
+=== description ===
+: This can be used to provide a brief description of your add-on, and for pre-1.0 versions, let people know how playable it is. The description can be viewed by users by clicking on the Description button in the built-in client, or by moving their mouse over the add-on's icon in the web interface.
+
+=== dependencies ===
+: An optional list of dependencies (a comma separated list of ''addon-name'' – the directory names of the needed add-ons), which should be provided if your add-on relies on other user-made content to work properly. ([[#Dependency Key Example|See Example]])
+
+=== translate ===
+: If set to '''true''', the add-on will be sent to and updated with [[WesCamp|WesCamp-i18n]]. (NOTE: this is a new and experimental function, which will automatically update the translations in your add-on. Make sure you make backups of your add-on in case of problems.)
+
+: You should make sure your add-on complies with some very specific [[WesCamp#How_to_contribute_to_this_Project|conventions]] required to ease the process for translators.
+
+=== type ===
+: Indicates the type of the add-on, used for the downloads manager dialog. Possible values are:
+
+:* ''campaign'': single player campaign.
+:* ''scenario'': single player scenario.
+:* ''era'': multiplayer era.
+:* ''faction'': multiplayer stand-alone faction, or add-on for other available era.
+:* ''map_pack'': multiplayer map-pack.
+:* ''campaign_mp'': multiplayer campaign.
+:* ''scenario_mp'': multiplayer scenario. (See the note below.)
+:* ''media'': miscellaneous resources for UMC authors/users, for example, music packs, packages of general-purpose WML, etc.
+:* ''other'': The type to use when no other type fits.
+
+'''Note:''' If your add-on contains two or more separate multiplayer scenarios, use ''map_pack''.
+
+=== email ===
+: Hidden e-mail address used by the server administrators to contact content authors in case of major issues. Again, this will only be seen by the server administrators and it is required that you provide one in case you need to be contacted about your add-on.
+
+
+The add-on server keeps track of some other information about uploaded content, including when they were uploaded, what languages they have been at least partly translated into, how large they are on the server and the number of times they have been downloaded. For more information about this you can read [[CampaignServerWML]].
+
+== Examples ==
+
+=== Dependency Key Example ===
+
+The following dependency key could be used when the add-on needs the ''Imperial_Era'' and ''Era_of_Myths'' to be installed before it will work properly:
+
+ dependencies=Imperial_Era,Era_of_Myths
+
+=== Version Key Examples ===
+
+The following are examples of '''good''' version values:
+
+ version="1.5"
+
+ version="0.11.4"
+
+ version="0.1.4beta"
+
+ version="1.5c"
+
+
+The following are examples of '''bad''' version values:
+
+ version="Beta1.5"
+
+ version="Incomplete (0.3.4)"
+
+In both of the above examples the version number as read by the server will be '''0.0.0Beta1.5''' and '''0.0.0Incomplete (0.3.4)'''. You can clearly see why this will not be a good thing with the ''Update add-ons'' feature.
+
+
+Finally, here are some example version numbers and how they will be interpreted by the ''Update add-ons'' button. The number on the left will be considered an earlier number than the number on the right in each example.
+
+ 0.5 < 1.0
+
+ 1.5 < 1.5c
+
+ 1.0 < 1.0.1
+
+ 1.0c < 1.0.1a
+
+ 1.0.1a < 1.0.1c
+
+ 1.0 Final < 1.0.1 Beta
+
+=== Example .pbl File ===
+
+ title="My Campaign"
+ type="campaign"
+ icon="misc/ball.png"
+ version="0.1.2"
+ author="Me, artwork by myself"
+ passphrase="This is like a password"
+ description="You get to kill a lot of bad guys. But only the first map is done."
+ email="name@example.com"
+
+== See Also ==
+
+* [[ReferenceWML]]
+* [[BuildingCampaignsThePBLFile]]
+* [[CampaignServerWML]]
+
+[[Category: WML Reference]]

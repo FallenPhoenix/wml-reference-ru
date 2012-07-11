@@ -1,0 +1,82 @@
+{{WML Tags}}
+== Description texts ==
+
+A description is a part of the value of a menu attribute.
+It represents a single option in the difficulty selection menu for a campaign, which consists of an image (called the ''icon'') followed by text. When appropriate, the icon should use [[ImagePathFunctionWML]] to replace any magenta with a team color.
+
+The description tag uses a special format:
+
+* ''';''' if another description precedes it
+
+* '''*''' if it should be the default selection
+
+* '''&''image''=''text''''' image with one text description
+
+* '''&''image''=''text''=''text2''''' image with two text descriptions
+
+Single text items are always enclosed in '''"''', and can be joined together (concatenated) with '''+'''. This allows the text to contain translatable items and span multiple lines. (Marking text with '''_''' indicates that it is translatable.)
+
+A sample difficulty description tag might look like this:
+
+ difficulty_descriptions="&" + "units/elves-wood/elvish-fighter.png~TC(1,magenta)" + "=" + _"Fighter" + "=" + _"(easiest)" +
+ 	";*" + "&" + "units/elves-wood/elvish-hero.png~TC(1,magenta)" + "=" + _"Hero" +
+ 	";" + "&" + "units/elves-wood/elvish-champion.png~TC(1,magenta)" + "=" + _"Champion" + "=" + _"(hardest)"
+
+The utility macros (see [[UtilWML]]) '''{MENU_IMG_TXT ''icon'' ''text''}'''
+and '''{MENU_IMG_TXT2 ''icon'' ''text'' ''text-2''}'''
+can be used to create descriptions more easily. The above example would become:
+
+ difficulty_descriptions={MENU_IMG_TXT2 "units/elves-wood/elvish-fighter.png~TC(1,magenta)" _"Fighter" _"(easiest)"} +
+ 	";*" + {MENU_IMG_TXT "units/elves-wood/elvish-hero.png~TC(1,magenta)" _"Hero"} + ";" +
+ 	{MENU_IMG_TXT2 "units/elves-wood/elvish-champion.png~TC(1,magenta)" _"Champion" _"(hardest)"}
+
+====Alternative Description Implementation====
+
+For still greater clarity, I have the following suggestion:
+Before the start of the [campaign] tag, create a set of #define commands as follows:
+ # Image definitions
+ # NB Don't forget the trailing + symbols for all but the last entry.
+ #define EASY_IMAGE
+ "&units/elves-wood/elvish-fighter.png~TC(1,magenta)"+
+ #enddef
+ 
+ #define NORMAL_IMAGE
+ ";*&units/elves-wood/elvish-hero.png~TC(1,magenta)"+
+ #enddef
+ 
+ #define HARD_IMAGE
+ ";&units/elves-wood/elvish-champion.png~TC(1,magenta)"+
+ #enddef
+ 
+ # Difficulty ratings
+ #po: NB be sure to retain the = signs in the translated text.
+ #define EASY_TEXT
+ _"=Fighter=(easiest)"+
+ #enddef
+ 
+ #define NORMAL_TEXT
+ _"=Hero"+
+ #enddef
+ 
+ #define HARD_TEXT
+ _"=Champion=(hardest)"
+ #enddef
+
+'''Note:''' The above example assumes three difficulty levels, which gives six difficulty entries – three for the pictures and three for the text. If you have more or fewer than three difficulty levels, make sure that the last entry does ''not'' have a trailing plus sign and that all the others do. Note also that the first image description ''doesn't'' start with a semicolon, whereas the second and subsequent ones do. Finally, only the default difficulty entry is marked with a * character.
+
+If you set up your difficulty strings in this way you can then use a standard difficulty_descriptions tag that you will rarely need to alter. Note that this string does ''not'' contain any plus signs. You have to have them in the difficulty ratings strings instead to avoid upsetting the Wesnoth preprocessor:
+
+ difficulty_descriptions={EASY_IMAGE}{EASY_TEXT}{NORMAL_IMAGE}{NORMAL_TEXT}{HARD_IMAGE}{HARD_TEXT}
+
+The only time you would need to alter this string is if you have more or fewer than three difficulty levels for your campaign.
+
+[[User:Simons Mith|Simons Mith]] 20:16, 18 November 2011 (UTC)
+
+== See Also ==
+
+* [[CampaignWML]]
+* [[EraWML]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

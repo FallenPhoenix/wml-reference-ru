@@ -1,0 +1,538 @@
+{{WML Tags}}
+
+== The '''[lua]''' tag ==
+
+This tag is a part of [[ActionWML]], thus can be used inside [event] and at other places where [[ActionWML]] can be used. It makes it possible to write actions with the [http://www.lua.org Lua 5.1] language.
+
+The tag supports only the '''code''' key, which is a string containing the Lua scripts. Since Lua makes usage of the quotes and the { and } symbols, it is certainly wise to enclose the script between stronger quotes, as they prevent the preprocessor from performing macro expansion and tokenization.
+
+ [lua]
+     code = << wesnoth.message "Hello World!" >>
+ [/lua]
+
+The Lua kernel can also be accessed from the [[CommandMode|command mode]]:
+
+ :lua local u = wesnoth.get_units({ id = "Konrad" })[1]; u.moves = 5
+
+The '''[args]''' sub-tag can be used to pass a WML object to the script via its variadic local variable "'''...'''".
+
+ [lua]
+     code = << local t = ...; wesnoth.message(tostring(t.text)) >>
+     [args]
+         text = _ "Hello world!"
+     [/args]
+ [/lua]
+
+== Global environment ==
+
+All the Lua scripts of a scenario share the same global environment (aka Lua state). For instance, a function defined in an event can be used in all the events that happen after it.
+
+ [event]
+     name = preload
+     first_time_only = no
+     [lua]
+         code = <<
+             function narrator(t)
+                 -- Behave like the [message] tag.
+                 wesnoth.fire("message",
+                   { speaker = "narrator", message = t.sentence })
+             end
+         >>
+     [/lua]
+ [/event]
+ 
+ [event]
+     name = turn 1
+     [lua]
+         code = << narrator(...) >>
+         [args]
+             sentence = _ "Hello world!"
+         [/args]
+     [/lua]
+     [lua]
+         code = << narrator(...) >>
+         [args]
+             sentence = _ "How are you today?"
+         [/args]
+     [/lua]
+ [/event]
+
+In the example above, the redundant structure could be hidden behind macros. But it may be better to simply define a new WML tag.
+
+ [event]
+     name = preload
+     first_time_only = no
+     [lua]
+         code = <<
+             -- The function is now local, since its name does not have to be
+             -- visible outside this Lua scripts.
+             local function handler(t)
+                 -- Behave like the [message] tag.
+                 wesnoth.fire("message",
+                   { speaker = "narrator", message = t.sentence })
+             end
+             -- Create a new tag named [narrator].
+             wesnoth.register_wml_action("narrator", handler)
+         >>
+     [/lua]
+ [/event]
+ 
+ [event]
+     name = turn 1
+     [narrator]
+         sentence = _ "Hello world!"
+     [/narrator]
+     [narrator]
+         sentence = _ "How are you today?"
+     [/narrator]
+ [/event]
+
+The global environment is not preserved over save/load cycles. Therefore, storing values in the global environment is generally a bad idea (unless it has been redirected to WML variables, see [[LuaWML:Variables#set_wml_var_metatable|helper.set_wml_var_metatable]]). The only time assigning global variables (including function definitions) makes sense is during a [[EventWML#Predefined 'name' Key Values|preload]] event, as this event is always run. Therefore, helper functions defined at that time will be available to all the later scripts.
+
+The global environment initially contains the following modules: [http://www.lua.org/manual/5.1/manual.html#5.1 basic] (no name), [http://www.lua.org/manual/5.1/manual.html#5.4 string], [http://www.lua.org/manual/5.1/manual.html#5.5 table], and [http://www.lua.org/manual/5.1/manual.html#5.6 math]. A '''wesnoth''' module is also available, it provides access to the [[#Interface to the C++ engine|C++ engine]]. Besides, the functions clock, date, time and difftime from the [http://www.lua.org/manual/5.1/manual.html#5.8 os] library (Keep in mind that they aren't multiplayer- and replay-save.) and traceback from the [http://www.lua.org/manual/5.1/manual.html#5.9 debug] library are also available.
+
+At the start of a script, the variadic local variable '''...''' (three dots) is a proxy table representing [[#Encoding WML objects into Lua tables|WML data]]. This table is the content of the '''[args]''' sub-tag of the '''[lua]''' tag, if any.
+
+== Examples ==
+
+The following WML event is taken from Wesnoth' tutorial. It will serve as an example to present how Lua scripts are embedded into Wesnoth. The event is fired whenever a unit from side 1 (that is, the hero controlled by the user) moves to a tile that is not the one set in the WML variable ''target_hex''.
+
+ # General catch for them moving to the wrong place.
+ [event]
+     name=moveto
+     first_time_only=no
+     [allow_undo][/allow_undo]
+     [filter]
+         side=1
+     [/filter]
+ 
+     [if]
+         [variable]
+             name=target_hex.is_set
+             equals=yes
+         [/variable]
+         [then]
+             [if]
+                 [variable]
+                     name=x1
+                     equals=$target_hex.x
+                 [/variable]
+                 [variable]
+                     name=y1
+                     equals=$target_hex.y
+                 [/variable]
+                 [then]
+                 [/then]
+                 [else]
+                     [redraw][/redraw]
+                     [message]
+                         speaker=narrator
+                         message=_ "*Oops!
+ You moved to the wrong place! After this message, you can press 'u' to undo, then try again." +
+                         _ "
+ *Left click or press spacebar to continue..."
+                     [/message]
+                 [/else]
+             [/if]
+         [/then]
+     [/if]
+ [/event]
+
+A Lua script that performs the same action is presented below.
+
+ [event]
+     name=moveto
+     first_time_only=no
+     [allow_undo][/allow_undo]
+     [filter]
+         side=1
+     [/filter]
+ 
+     [lua]
+         code = <<
+             local event_data = wesnoth.current.event_context
+             if target_hex.is_set and
+                (event_data.x1 ~= target_hex.x or event_data.y1 ~= target_hex.y)
+             then
+                 W.redraw()
+                 narrator_says(_ "*Oops!\nYou moved to the wrong place! After this message, you can press 'u' to undo, then try again.")
+             end
+         >>
+     [/lua]
+ [/event]
+
+Here is a more detailed explanation of the Lua code. Its first line
+
+ local event_data = wesnoth.current.event_context
+
+puts the event data into the ''event_data'' local variable. Since it is a ''moveto'' event, the ''event_data'' table contains the destination of the unit in the ''x1'' and ''y1'' fields.
+
+The next two lines then test
+
+ if target_hex.is_set and
+    (event_data.x1 ~= target_hex.x or event_data.y1 ~= target_hex.y)
+
+whether the variable ''target_hex'' matches the event parameters. Since ''target_hex'' is not a local variable, it is taken from the global environment (a table implicitly named ''_G'', so it is actually ''_G.target_hex''). The global environment is not persistent, so it cannot be used to store data. In order to make it useful, it was mapped to the storage of WML variables by the following ''preload'' event.
+
+ [event]
+     name=preload
+     first_time_only=no
+     [lua]
+         code = <<
+             H = wesnoth.require "lua/helper.lua"
+             -- skipping some other initializations
+             -- ...
+             H.set_wml_var_metatable(_G)
+         >>
+     [/lua]
+ [/event]
+
+Without a prelude redirecting ''_G'', the conditional would have been written
+
+ if wesnoth.get_variable("target_hex.is_set") and
+    (event_data.x1 ~= wesnoth.get_variable("target_hex.x") or event_data.y1 ~= wesnoth.get_variable("target_hex.y")
+
+The body of the conditional then performs the [[InterfaceActionsWML#Other interface tags|[redraw]]] action.
+
+ W.redraw()
+
+Again, this short syntax is made possible by a line of the prelude that makes ''W'' a proxy for performing WML actions.
+
+ W = H.set_wml_action_metatable {}
+
+Without this shortcut, the first statement would have been written
+
+ wesnoth.fire("redraw")
+
+Finally the script displays a message by
+
+ narrator_says(_ "*Oops!\nYou moved to the wrong place! After this message, you can press 'u' to undo, then try again.")
+
+The ''narrator_says'' function is defined in the prelude too, since the construct behind it occurs several times in the tutorial. In plain WML, macros would have been used instead. The definition of the function is
+
+ function narrator_says(m)
+     W.message { speaker="narrator",
+                 message = m .. _ "\n*Left click or press spacebar to continue..." }
+ end
+
+The function fires a [[InterfaceActionsWML#.5Bmessage.5D|[message]]] action and passes a WML object containing the usual two fields to it. The second field is initialized by concatenating the function argument with another string. Both strings are prefixed by the ''_'' symbol to mark them as translatable. (Note that ''_'' is just a unary function, not a keyword.) Again, this is made possible by a specific line of the prelude:
+
+ _ = wesnoth.textdomain "wesnoth-tutorial"
+
+A longer translation of the tutorial is available at [https://gna.org/patch/download.php?file_id=5483].
+
+== Interface to the engine and helper functions ==
+
+Functionalities of the game engine are available through the functions of the '''wesnoth''' global table. Some of these functions return proxy tables. Writes to fields marked "read-only" are ignored. The '''__cfg''' fields return plain tables; in particular, writes do not modify the original object, and reads return the values from the time the dump was performed.
+
+Some helper functions are provided by the '''lua/helper.lua''' library. They are stored inside a table that is returned when loading the library with [[LuaWML:Files#wesnoth.require|wesnoth.require]].
+
+ helper = wesnoth.require "lua/helper.lua"
+
+=== WML variables ===
+
+* [[LuaWML:Variables#wesnoth.get_variable|wesnoth.get_variable]]
+* [[LuaWML:Variables#wesnoth.set_variable|wesnoth.set_variable]]
+* [[LuaWML:Variables#helper.set_wml_var_metatable|helper.set_wml_var_metatable]]
+* [[LuaWML:Variables#helper.get_child|helper.get_child]]
+* [[LuaWML:Variables#helper.child_range|helper.child_range]]
+* [[LuaWML:Variables#helper.get_variable_array|helper.get_variable_array]]
+* [[LuaWML:Variables#helper.get_variable_proxy_array|helper.get_variable_proxy_array]]
+* [[LuaWML:Variables#helper.set_variable_array|helper.set_variable_array]]
+
+=== Events and WML actions ===
+
+* [[LuaWML:Events#wesnoth.fire|wesnoth.fire]]
+* [[LuaWML:Events#wesnoth.register_wml_action|wesnoth.register_wml_action]]
+* [[LuaWML:Events#wesnoth.wml_actions|wesnoth.wml_actions]]
+* [[LuaWML:Events#wesnoth.game_events|wesnoth.game_events]]
+* [[LuaWML:Events#wesnoth.fire_event|wesnoth.fire_event]]
+* [[LuaWML:Events#wesnoth.eval_conditional|wesnoth.eval_conditional]]
+* [[LuaWML:Events#wesnoth.tovconfig|wesnoth.tovconfig]]
+* [[LuaWML:Events#helper.set_wml_action_metatable|helper.set_wml_action_metatable]]
+* [[LuaWML:Events#helper.wml_error|helper.wml_error]]
+* [[LuaWML:Events#helper.literal|helper.literal]]
+* [[LuaWML:Events#helper.parsed|helper.parsed]]
+* [[LuaWML:Events#helper.shallow_literal|helper.shallow_literal]]
+* [[LuaWML:Events#helper.shallow_parsed|helper.shallow_parsed]]
+
+=== User interface ===
+
+* [[LuaWML:Display#wesnoth.message|wesnoth.message]]
+* [[LuaWML:Display#wesnoth.clear_messages|wesnoth.clear_messages]]
+* [[LuaWML:Display#wesnoth.textdomain|wesnoth.textdomain]]
+* [[LuaWML:Display#wesnoth.delay|wesnoth.delay]]
+* [[LuaWML:Display#wesnoth.float_label|wesnoth.float_label]]
+* [[LuaWML:Display#wesnoth.select_hex|wesnoth.select_hex]]
+* [[LuaWML:Display#wesnoth.scroll_to_tile|wesnoth.scroll_to_tile]]
+* [[LuaWML:Display#wesnoth.play_sound|wesnoth.play_sound]]
+* [[LuaWML:Display#wesnoth.set_music|wesnoth.set_music]]
+* [[LuaWML:Display#wesnoth.show_dialog|wesnoth.show_dialog]]
+* [[LuaWML:Display#wesnoth.set_dialog_value|wesnoth.set_dialog_value]]
+* [[LuaWML:Display#wesnoth.get_dialog_value|wesnoth.get_dialog_value]]
+* [[LuaWML:Display#wesnoth.set_dialog_active|wesnoth.set_dialog_active]]
+* [[LuaWML:Display#wesnoth.set_dialog_callback|wesnoth.set_dialog_callback]]
+* [[LuaWML:Display#wesnoth.set_dialog_canvas|wesnoth.set_dialog_canvas]]
+* [[LuaWML:Display#wesnoth.get_displayed_unit|wesnoth.get_displayed_unit]]
+* [[LuaWML:Display#wesnoth.theme_items|wesnoth.theme_items]]
+* [[LuaWML:Display#helper.get_user_choice|helper.get_user_choice]]
+* [[LuaWML:Display#wesnoth.get_time_of_day|wesnoth.get_time_of_day]]
+
+=== Map and terrains ===
+
+* [[LuaWML:Tiles#wesnoth.get_map_size|wesnoth.get_map_size]]
+* [[LuaWML:Tiles#wesnoth.get_terrain|wesnoth.get_terrain]]
+* [[LuaWML:Tiles#wesnoth.set_terrain|wesnoth.set_terrain]]
+* [[LuaWML:Tiles#wesnoth.get_terrain_info|wesnoth.get_terrain_info]]
+* [[LuaWML:Tiles#wesnoth.get_selected_tile|wesnoth.get_selected_tile]]
+* [[LuaWML:Tiles#wesnoth.get_locations|wesnoth.get_locations]]
+* [[LuaWML:Tiles#wesnoth.match_location|wesnoth.match_location]]
+* [[LuaWML:Tiles#wesnoth.add_tile_overlay|wesnoth.add_tile_overlay]]
+* [[LuaWML:Tiles#wesnoth.remove_tile_overlay|wesnoth.remove_tile_overlay]]
+* [[LuaWML:Tiles#items.place_image|items.place_image]]
+* [[LuaWML:Tiles#items.place_halo|items.place_halo]]
+* [[LuaWML:Tiles#items.remove|items.remove]]
+
+=== Units ===
+
+* [[LuaWML:Units#wesnoth.get_units|wesnoth.get_units]]
+* [[LuaWML:Units#wesnoth.get_unit|wesnoth.get_unit]]
+* [[LuaWML:Units#wesnoth.match_unit|wesnoth.match_unit]]
+* [[LuaWML:Units#wesnoth.put_unit|wesnoth.put_unit]]
+* [[LuaWML:Units#wesnoth.get_recall_units|wesnoth.get_recall_units]]
+* [[LuaWML:Units#wesnoth.put_recall_unit|wesnoth.put_recall_unit]]
+* [[LuaWML:Units#wesnoth.create_unit|wesnoth.create_unit]]
+* [[LuaWML:Units#wesnoth.copy_unit|wesnoth.copy_unit]]
+* [[LuaWML:Units#wesnoth.extract_unit|wesnoth.extract_unit]]
+* [[LuaWML:Units#wesnoth.add_modification|wesnoth.add_modification]]
+* [[LuaWML:Units#wesnoth.unit_resistance|wesnoth.unit_resistance]]
+* [[LuaWML:Units#wesnoth.unit_defense|wesnoth.unit_defense]]
+* [[LuaWML:Units#wesnoth.unit_movement_cost|wesnoth.unit_movement_cost]]
+* [[LuaWML:Units#wesnoth.unit_ability|wesnoth.unit_ability]]
+* [[LuaWML:Units#wesnoth.get_unit_type_ids|wesnoth.get_unit_type_ids]]
+* [[LuaWML:Units#wesnoth.get_unit_type|wesnoth.get_unit_type]]
+* [[LuaWML:Units#wesnoth.unit_types|wesnoth.unit_types]]
+* [[LuaWML:Units#wesnoth.races|wesnoth.races]]
+* [[LuaWML:Units#wesnoth.get_traits|wesnoth.get_traits]]
+* [[LuaWML:Units#wesnoth.simulate_combat|wesnoth.simulate_combat]]
+* [[LuaWML:Units#wesnoth.transform_unit|wesnoth.transform_unit]]
+
+=== Sides ===
+
+* [[LuaWML:Sides#wesnoth.get_side|wesnoth.get_side]]
+* [[LuaWML:Sides#wesnoth.sides|wesnoth.sides]]
+* [[LuaWML:Sides#wesnoth.get_sides|wesnoth.get_sides]]
+* [[LuaWML:Sides#wesnoth.get_village_owner|wesnoth.get_village_owner]]
+* [[LuaWML:Sides#wesnoth.set_village_owner|wesnoth.set_village_owner]]
+* [[LuaWML:Sides#wesnoth.is_enemy|wesnoth.is_enemy]]
+* [[LuaWML:Sides#wesnoth.match_side|wesnoth.match_side]]
+* [[LuaWML:Sides#wesnoth.get_starting_location|wesnoth.get_starting_location]]
+* [[LuaWML:Sides#helper.all_teams|helper.all_teams]]
+
+=== Pathfinder ===
+
+* [[LuaWML:Pathfinder#wesnoth.find_path|wesnoth.find_path]]
+* [[LuaWML:Pathfinder#wesnoth.find_vacant_tile|wesnoth.find_vacant_tile]]
+* [[LuaWML:Pathfinder#wesnoth.find_reach|wesnoth.find_reach]]
+* [[LuaWML:Pathfinder#helper.distance_between|helper.distance_between]]
+* [[LuaWML:Pathfinder#helper.adjacent_tiles|helper.adjacent_tiles]]
+
+=== Lua files ===
+
+* [[LuaWML:Files#wesnoth.dofile|wesnoth.dofile]]
+* [[LuaWML:Files#wesnoth.require|wesnoth.require]]
+
+=== Location sets ===
+
+* [[LuaWML:Location_set#location_set.create|location_set.create]]
+* [[LuaWML:Location_set#location_set.of_pairs|location_set.of_pairs]]
+* [[LuaWML:Location_set#location_set.of_wml_var|location_set.of_wml_var]]
+* [[LuaWML:Location_set#location_set:empty|location_set:empty]]
+* [[LuaWML:Location_set#location_set:size|location_set:size]]
+* [[LuaWML:Location_set#location_set:clear|location_set:clear]]
+* [[LuaWML:Location_set#location_set:get|location_set:get]]
+* [[LuaWML:Location_set#location_set:insert|location_set:insert]]
+* [[LuaWML:Location_set#location_set:remove|location_set:remove]]
+* [[LuaWML:Location_set#location_set:of_pairs|location_set:of_pairs]]
+* [[LuaWML:Location_set#location_set:of_wml_var|location_set:of_wml_var]]
+* [[LuaWML:Location_set#location_set:to_pairs|location_set:to_pairs]]
+* [[LuaWML:Location_set#location_set:to_stable_pairs|location_set:to_stable_pairs]]
+* [[LuaWML:Location_set#location_set:to_wml_var|location_set:to_wml_var]]
+* [[LuaWML:Location_set#location_set:union|location_set:union]]
+* [[LuaWML:Location_set#location_set:inter|location_set:inter]]
+* [[LuaWML:Location_set#location_set:iter|location_set:iter]]
+* [[LuaWML:Location_set#location_set:stable_iter|location_set:stable_iter]]
+* [[LuaWML:Location_set#location_set:filter|location_set:filter]]
+* [[LuaWML:Location_set#location_set:union_merge|location_set:union_merge]]
+* [[LuaWML:Location_set#location_set:inter_merge|location_set:inter_merge]]
+
+=== Miscellaneous ===
+
+* [[LuaWML:Misc#wesnoth.game_config|wesnoth.game_config]]
+* [[LuaWML:Misc#wesnoth.current|wesnoth.current]]
+* [[LuaWML:Misc#wesnoth.synchronize_choice|wesnoth.synchronize_choice]]
+* [[LuaWML:Misc#wesnoth.get_image_size|wesnoth.get_image_size]]
+* [[LuaWML:Misc#wesnoth.compare_versions|wesnoth.compare_versions]]
+* [[LuaWML:Misc#wesnoth.debug|wesnoth.debug]]
+* [[LuaWML:Misc#helper.set_wml_tag_metatable|helper.set_wml_tag_metatable]]
+* [[LuaWML:Misc#helper.modify_unit|helper.modify_unit]]
+* [[LuaWML:Misc#helper.move_unit_fake|helper.move_unit_fake]]
+* [[LuaWML:Misc#helper.rand|helper.rand]]
+* [[LuaWML:Misc#helper.round|helper.round]]
+
+== Encoding WML objects into Lua tables ==
+
+Function [[LuaWML:Events#wesnoth.fire|wesnoth.fire]] expects a table representing a WML object as its second argument (if needed). Function [[LuaWML:Variables#wesnoth.set_variable|wesnoth.set_variable]] allows to modify whole WML objects, again by passing it a table. Function [[LuaWML:Variables#wesnoth.get_variable|wesnoth.get_variable]] transforms a WML object into a table, if its second argument is not set to ''true''. All these tables have the same format.
+
+Scalar fields are transformed into WML attributes. For instance, the following Lua table
+
+ {
+     a_bool = true,
+     an_int = 42,
+     a_float = 1.25,
+     a_string = "scout",
+     a_translation = _ "Hello World!"
+ }
+
+is equivalent to the content of the following WML object
+
+ [dummy]
+     a_bool = "yes"
+     an_int = "42"
+     a_float = "1.25"
+     a_string = "scout"
+     a_translation = _ "Hello World!"
+ [/dummy]
+
+WML child objects are not stored as Lua named fields, since several of them can have the same tag. Moreover, their tags can conflict with the attribute keys. So child objects are stored as pairs string + table in the unnamed fields in definition order. This means that for every subtag appearing in the wml code there is an additional table "layer" in the corresponding WML table of the form {[1] = "tag_name", [2] = {}} which is equivalent to {"tag_name", {}}. [1] etc are the unnamed fields (as opposed to wml attributes). The table under [2] in this subtable then holds the wml attributes from inside the wml subtag. So every subtag other than the toplevel tag corresponds to two nested tables each. For instance, the following Lua table
+
+ {
+     foo = 42,
+     { "bar", { v = 1, w = 2 } },
+     { "foo", { x = false } },
+     { "bar", { y = "foo" } },
+     { "foobar", { z = 5, { "barfoo", {} } } }
+ }
+
+is equivalent to the content of the following WML object
+
+ [dummy]
+     foo = 42
+     [bar]
+         v = 1
+         w = 2
+     [/bar]
+     [foo]
+         x = no
+     [/foo]
+     [bar]
+         y = foo
+     [bar]
+     [foobar]
+         z = 5
+         [barfoo]
+         [/barfoo]
+     [/foobar]
+ [/dummy]
+
+Both tables above are also equivalent to this WML table, where all unnamed fields are displayed:
+ {
+     foo = 42,
+     [1] = { [1] = "bar", [2] = { v = 1, w = 2 } },
+     [2] = { [1] = "foo", [2] = { x = false } },
+     [3] = { [1] = "bar", [2] = { y = "foo" } },
+     [4] = { [1] = "foobar", [2] = { z = 5, [1] = { [1] = "barfoo", [2] = {} } } }
+ }
+
+So assuming ''cfg'' contains the above WML object, the following accesses are possible:
+
+ a_int = cfg.foo        -- "dummy.foo", 42
+ a_string = cfg[3][2].y -- "dummy.bar[1].y", "foo"
+ a_table = cfg[4][2]    -- "dummy.foobar", { z = 5, { "barfoo", {} } }
+
+Consider using the [[LuaWML:Variables#helper.get_child|helper.get_child]] and [[LuaWML:Variables#helper.child_range|helper.child_range]] to ease the access to subtags.
+
+Functions registered by [[LuaWML:Events#wesnoth.register_wml_action|wesnoth.register_wml_action]] receive their data in a userdata object which has the exact same structure as above. It is read-only however. Accessing fields or children performs variable substitution on the fly. Its '''__parsed''' and '''__literal''' fields provide translations to plain tables (therefore writable). '''__literal''' returns the original text of the data (including dollar symbols in attributes and [insert_tag] children), while '''__parsed''' performs a variable substitution.
+
+For instance, if you cannot stand any longer the fact that '''first_time_only''' is set to yes by default for the '''[event]''' tag, you can redefine it. But we have to be careful not to cause variable substitution, since the engine would perform a second variable substitution afterwards.
+
+ local old_event_handler
+ old_event_handler = register_wml_action("event",
+     function(cfg)
+         -- Get the plain text from the user.
+         local new_cfg = cfg.__literal
+         -- The expression below is equivalent to cfg.__parsed.first_time_only,
+         -- only faster. It is needed, since the first_time_only attribute may
+         -- reference variables.
+         local first = cfg.first_time_only
+         -- Modify the default behavior of first_time_only.
+         if first == nil then first = false end
+         new_cfg.first_time_only = first
+         -- Call the engine handler.
+         old_event_handler(new_cfg)
+     end
+ )
+
+Note that, since the object is a userdata and not a table, '''pairs''' and '''ipairs''' are unfortunately not usable on it. So scripts have to work at a lower level. For instance, the following function returns the first sub-tag with a given name and it works both on WML tables and WML userdata:
+
+ function get_child(cfg, name)
+     for i = 1, #cfg do
+         local v = cfg[i]
+         if v[1] == name then return v[2] end
+     end
+ end
+
+Another approach for handling userdata and tables in the same way, would be to convert the former into the latter beforehand:
+
+ if getmetatable(cfg) == "wml object" then cfg = cfg.__parsed end
+
+The WML userdata provides two other special fields: '''__shallow_parsed''' and '''__shallow_literal'''. They return a table corresponding to the WML userdata with variable substitution performed on the attributes (or not). [insert_tag] tags have also been parsed, so the number of children is faithful. But contrarily to '''__parsed''' and '''__literal''', the process is not recursive: all the children are still WML userdata and variable substitution can still happen for them. These shallow translators are meant as optimized versions of the deep ones, when only the toplevel attributes need to be writable.
+
+== Skeleton of a preload event ==
+
+The following event is a skeleton for a prelude enabling Lua in your WML events. It creates a table ''H'' containing the functions from helper.lua and a table ''W'' that serves as a proxy for firing WML actions. It also sets up the global environment so that any access to an undefined global variable is redirected to the persistent WML storage.
+
+ [event]
+     name=preload
+     first_time_only=no
+     [lua]
+         code = <<
+             H = wesnoth.require "lua/helper.lua"
+             W = H.set_wml_action_metatable {}
+             _ = wesnoth.textdomain "my-campaign"
+ 
+             -- Define your global constants here.
+             -- ...
+ 
+             H.set_wml_var_metatable(_G)
+ 
+             -- Define your global functions here.
+             -- ...
+         >>
+     [/lua]
+ [/event]
+
+It may be worth putting the whole Lua script above inside a separate file and having the ''preload'' event load it:
+
+ [event]
+     name=preload
+     first_time_only=no
+     [lua]
+         code = << wesnoth.dofile "~add-ons/Whatever/file.lua" >>
+     [/lua]
+ [/event]
+
+== Remarks ==
+
+The math.random function is not safe for replays and multiplayer games, since the random values will be different each time and on all the clients. Instead, the Lua code should rely on the [[InternalActionsWML#.5Bset_variable.5D|[set_variable]]] tag to synchronize random values.
+
+ function random(min, max)
+   if not max then min, max = 1, min end
+   wesnoth.fire("set_variable", { name = "LUA_random", rand = string.format("%d..%d", min, max) })
+   local res = wesnoth.get_variable "LUA_random"
+   wesnoth.set_variable "LUA_random"
+   return res
+ end
+
+[[Category: Lua Reference|*]]
+[[Category: WML Reference]]

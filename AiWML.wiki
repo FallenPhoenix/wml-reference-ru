@@ -1,0 +1,471 @@
+{{WML Tags}}
+
+As of Wesnoth 1.9, the default AI is the RCA AI, which stands for Register Candidate Action AI.  During the AI turn, the RCA AI evaluates a number of potential actions (called candidate actions) for each move.  The candidate action with the highest evaluation score is executed.  Then the next move is evaluated in the same way, until no more valid moves are found.  This ends the AI turn.
+
+The RCA AI is highly configurable in three different ways (sorted by increasing complexity):
+
+* Changing the parameters/weights by which the AI moves (candidate actions) are evaluated.  This can be done easily in the WML code by setting [[AiWML#Aspects_and_Goals_Overview|aspects and goals]] and is the content of this page.
+
+* Changing the order in which candidate actions are executed (changing their evaluation scores) or deleting candidate actions.  See [[Practical Guide to Modifying AI Behavior]] for details.
+
+* Writing your own candidate actions using [[FormulaAI]] or [[LuaAI]].  See [[Practical Guide to Modifying AI Behavior]] for details.
+
+'''Notes on available AIs:''' 
+* The default AI used through Wesnoth 1.8 was named 'Default AI' (note the capital D).  This might cause confusion, as the current default AI (RCA AI) is not the Default AI.
+* Besides the RCA AI, the only other AI available in the core distribution is ''idle_ai'', which does nothing at all (see ''ai_algorithm'' [[AiWML#The_.5Bai.5D_Tag:_Defining_Aspects|below]]).  
+* The [[General_RCA_AI_Howto#Available_Stages|fallback stage]], which used to fall back to the old Default AI, now falls back to the RCA AI.
+
+
+== Evaluating AI Moves -- Candidate Actions (CAs)  ==
+
+When the AI does its turn, a number of potential actions (called candidate actions, CAs) are evaluated for each move. The CA with the highest evaluation score is executed and the process is repeated, until no more valid moves are found, which ends the AI turn.  The following candidate actions are evaluated for each move:
+
+*'''Goto''' CA: Move units toward the coordinates set by [[SingleUnitWML|goto_x, goto_y]] in their unit WML.
+
+*'''Recruitment''' CA: Recruit or recall units.
+
+*'''Move leader to goals''' CA: Move the leader toward goals set by [[AiWML#The_.5Bai.5D_Tag:_Defining_Aspects|[leader_goal]]].
+
+*'''Move leader to keep''' CA: Move the leader toward the closest available keep.
+
+*'''Combat''' CA: Attack enemy units that are in range.  Note that this CA includes the move to a hex adjacent to the enemy unit as well as the attack itself.
+
+*'''Healing''' CA: Move units onto healing locations (generally villages).
+
+*'''Villages''' CA: Move units onto villages that are unoccupied or owned by an enemy.
+
+*'''Retreat''' CA: Evaluate if any units are in grave danger or hopelessly outnumbered, and if so, retreat them.
+
+*'''Move to targets''' CA: Evaluate potential [[AiWML#AI_Targets_and_Goals|targets]] and move units toward them.  The evaluation takes into account how valuable the targets are (this is configurable by setting [[AiWML#Aspects_and_Goals_Overview|goals]]), how easily the AI's units can get there, how exposed to attacks they will be, etc.  Targets are enemy leaders, enemy units that pose a thread to the AI leader and villages, as well as anything defined as a goal.  It is important to understand that targets only apply to the move-to-targets CA.  If a target is within range of the AI's unit(s) on the current turn, other CAs, such as combat, healing and villages have a higher evaluation score and are (usually) executed first.  Thus, a target is specifically ''not'' an attack target, but a move target.
+
+*'''Passive leader shares keep''' CA: Move the leader off the keep to let an allied leader recruit.
+
+If several candidate actions are possible for the next move, they are prioritized in the order given above.  For example, the Goto CA is always the first move that is done (if ''goto_x'' and ''goto_y'' are defined and a move toward them is possible).  If a valid attack is found in the combat CA, it is ''always'' executed before any healing, village grabbing or move-to-target moves.  One of the effects this has is that attacks always have priority over any goals/targets of the move-to-target phase.
+
+== Aspects and Goals Overview==
+
+'Aspects' are configurable parameters used in the candidate action score evaluation.  Most commonly, aspects are set using the [[AiWML#The_.5Bai.5D_Tag:_Defining_Aspects|[ai] tag]], but there are several other methods as well, as described [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|here]] and [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|here]].  There are simple aspects which take on an individual value, and composite aspects that might contain several keys or sub-tags.  The sub-tags of aspects are called 'facets'.
+
+'Goals', which define AI 'targets', are composite aspects that influence the behavior of the AI in the move-to-targets candidate action.  As there a several different goals available, they are given [[AiWML#AI_Targets_and_Goals|their own subsection]] below.
+
+== The [ai] Tag: Defining Aspects ==
+
+The [ai] tag is used inside a [side] or [modify_side] tag.  Its contents are the AI [[AiWML#Aspects_and_Goals_Overview|aspects]] and define how the AI controlling that side acts. You can use multiple [ai] tags and have them apply during different turns or times of day, for example to set an undead side's caution higher and aggression lower during the day, or to boost the aggressiveness of a side when it receives reinforcements on a specific turn.
+
+[Note: if you use a different AI engine, [[FormulaAI]] or [[LuaAI]], setting aspects in the [side] tag might not work the standard way and you might have to use [modify_side] in an event instead.  You can use ':inspect' in debug mode to verify whether an aspect was changed successfully.]
+
+The following keys/tags can be used in an '''[ai]''' tag:
+* '''time_of_day''': (string) The time(s) of day when the AI should use the parameters given in this [ai] tag. Possible values are listed in data/core/macros/schedules.cfg (See also [[TimeWML]]).
+
+* '''turns''': (string) During which turns the AI should use the parameters given in this [ai] tag. This takes the same syntax of dashes (-) and commas (,) as is described under Filtering Locations in [[FilterWML]], except of course they apply to turns not locations.
+
+* '''ai_algorithm''': (string) Allows an alternate AI algorithm (cannot be created with WML) to be used. Besides the default, the game only comes with ''idle_ai'', which makes the AI do nothing and can be used to create a passive, unmoving side. Cannot be applied only to a set of turns or a given time of day using the keys ''turns'' and ''time_of_day'', but must be given either in an [ai] tag without the aforementioned keys or in the [side] tag outside all [ai] tags.
+
+* '''aggression'''=0.4: (double: ranging from -infinity to 1.0)  This key affects how the AI selects its attack targets.  The higher the value, the more likely the AI is to attack even if odds are not in its favor.  Applies to combat CA only.
+** In the attack evaluation, each attack (this includes attack combinations of several AI units against the same enemy unit) is assigned a score.  The attack with the highest score is done first.  Then the next attack is evaluated, until no attack with a score greater than 0 is found any more.  (Note that this ''attack score'' is different from the ''combat CA score'', which is always 100,000 as long as an individual attack score >0 is found.  The combat CA score is zero if the highest attack score is <=0).
+** The attack score is a complex combination of many different aspects of the attacks.  Positive (additive) contributions to the score are things like the value (cost and XP) of the target, the chance to kill the target, whether it is already wounded, how much damage the attack is likely to inflict, etc.  Negative (additive) factors include how much damage the AI's units are likely to take, how valuable they are, how exposed they will be after the attack, etc.  There are also multiplicative factors that are used if the attack target is a threat to the AI's leader etc.
+** All the negative contributions to the score are multiplied by '(1-aggression)'.  This means that:
+*** If 'aggression=1', no negative contributions are added to the score.  Thus, the AI disregards damage done to its own units and selects attacks based solely on the damage it can do to enemy units.  If the AI can inflict 1 damage and take 0, or inflict 2 damage and take 20, it will take the latter option.
+*** The smaller the value of ''aggression'', the more weight is put on value of and potential damage to the AI's units as compared to the attack target.
+*** Roughly speaking, 'aggression=0' results in the AI valuing its units approximately as much as the enemy units.  This is not a one-to-one relation, but can be used as an approximate guideline.
+*** Very large negative values of ''aggression'' mean that the value of the AI's units is much more important than that of the enemy units.  As a result, the AI never attacks unless it will receive no damage in exchange.
+** Note: ''aggression'' is always set to 1.0 for attacks on units that pose a direct threat to the AI's leader.  Currently this only means units adjacent to the leader.
+
+*'''[attacks]'''="": Filters the units considered for combat, both on the AI and the enemy sides.  Applies to the combat CA only.  It cannot be set in the same way as the other aspects and is therefore described in a [[AiWML#Filtering_Combat_with_the_.27attacks.27_Aspect|separate section]] below.
+
+* '''[avoid]'''="": Makes the AI avoid specific locations.  The AI never moves a unit to these locations except for trying to move its leader to a keep or toward [leader_goal]s, and thus applies to all CAs except move-leader-to-goals and move-leader-to-keep.
+** '''[[StandardLocationFilter]]''': The locations for the AI to avoid.  Do not use a [filter_location] tag.
+
+* '''caution'''=0.25: (double) Defines how cautious the AI is in several ways.  It determines whether the leader should move toward [leader_goal], if attacks are worth moving onto less favorable terrain, whether units should retreat, and whether the AI should move units toward targets individually, as groups or not at all.  Affects several CAs (listed in the order of their [[AiWML#Evaluating_AI_Moves_--_Candidate_Actions_.28CAs.29|evaluation scores]]):
+** Move-leader-to-goals CA: If ''max_risk'' is not set in [leader_goal], its default value is '1-caution'.  This determines whether the leader takes the next step toward his goal.  See description of [leader_goal].
+** Combat CA: 
+*** During the evaluation of attacks, the AI considers whether the attacking units could get onto more favorable terrain if they didn't attack but moved somewhere else instead.  The difference between the two terrain ratings, together with a number of other factors, determines the "exposure" rating of the units.  This exposure is then subtracted from the 'attack score' as described for ''aggression'' above.
+*** The exposure rating also contains a multiplication by ''caution'', meaning that 'caution=0' results in exposure not being taken into account, and that it becomes more and more important for larger values.  In other words, the higher the values of ''caution'', the more reluctant is the AI to attack from unfavorable terrain.  (Note that exposure is one of the negative contributions to the attack score as described for ''aggression'', and therefore is ignored if 'aggression=1' is set.)
+*** If the AI leader is used in an attack, the AI ''always'' uses 'caution=2' for the evaluation of that attack.
+** Retreat CA: 
+*** If caution is greater than 0, there is an evaluation of forces for the map location a unit stands on. This is basically the sum of damage that can be done to that location by either side, reduced by terrain defense and relative hitpoints if attackers don't have full health. A retreat takes place, if<br>caution * their_power > our_power<br>There is also a terrain factor involved if the attacker is not on optimal terrain, similar to the exposure described above for the combat CA.
+*** So let's say the AI has its default caution of 0.25. Then the enemy forces have to be at least 4 times as strong before the unit retreats. For a caution of 1, as soon as the enemy is stronger, the unit retreats. 
+*** The AI never retreats if caution is set to 0 or lower.
+** Move-to-targets CA:
+*** If grouping for the AI is enabled and the path along which to move toward a target is considered to be dangerous, caution has an influence, too. "Dangerous" mainly means that there is a good chance for a unit to be killed if it's by itself.  In that case, the AI compares its units to the enemy units and based on the result moves forward or not. All units that can reach the next location of the move are considered.  The formula for deciding whether to move toward the target as a group is<br>our_strength / their_strength > 0.5 + caution<br>If this condition holds true, units are moved toward the goal as a group, otherwise they try to group together in a location favorable for a attack on the enemy during the next turn.
+***So if caution is 0.5, the AI side needs to be at least as strong as the enemy. If it is 0, the AI moves toward the target, even if the enemy is up to twice as strong as the AI. Setting caution to 1.5 means the AI needs to be at least twice as strong as the enemy.
+*** The AI also considers retreating units during the move-to-target phase based on criteria similar to those for the retreat CA.
+
+* '''[goal]'''="": Defines units or locations as [[AiWML#AI_Targets_and_Goals|targets]] for the AI.  See the dedicated section on the [[AiWML#The_.5Bgoal.5D_Tag|[goal] tag]] below for details.  Applies to move-to-targets CA only.
+
+* '''grouping'''="offensive": (string) How the AI should try to group units.  Applies to move-to-targets CA only.  Possible values:
+** ''offensive'': Makes the AI try to group units together before attacking.
+** ''defensive'': Makes the AI group units together very conservatively, only advancing them much beyond its castle if it has overwhelming force.
+** ''no'': Makes the AI use no grouping behavior.
+
+* '''leader_aggression'''="-4.0": Exactly as aggression, but for units which can recruit.  Applies to combat CA only.  Note that the move-leader-to-keep CA has a higher score than the combat CA.  A leader therefore usually only attacks if he is on his keep at the beginning of the turn, otherwise he moves toward the closest keep instead, even with ''leader_aggression=1''.
+
+* '''[leader_goal]'''="": Makes the AI try to move its leader to a specific location.  Applies to move-leader-to-goals CA only.
+** '''x''', '''y''': The location toward which the AI should move its leader.
+** '''auto_remove'''=no: (bool)  If 'no' (default), the AI moves the leader to the goal, after which he stays there until [leader_goal] is [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|removed manually]].  If 'yes', the leader_goal is removed upon the leader getting there.  Important: this ''only'' works if ''id'' is set correctly (see the next bullet).
+** '''id'''="": (string)  An internal id key of the [leader_goal] tag.  An id is required for ''auto_remove'' to work.  However, setting this id does not automatically set the id of the [leader_goal] [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|facet]].  Thus, in principle for this to work, you need to set the id of the facet as described [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|below]] ''and'' set the ''id'' key in [leader_value] to the same value.  Since you are probably only going to use one [leader_goal] tag at a time, there is a much simpler way: setting 'id=0' (which refers to the first facet) or 'id=*' (which means all facets) in [leader_goal] allows ''auto_remove'' to work without the extra step of setting the facet id.
+**'''max_risk'''=1-caution: (double: meaningful values are >=0)  How much risk the leader may be exposed to by moving toward the goal.  For evaluating this risk, the AI multiplies the leader's hitpoints by this number.  The leader is only moved toward the goal if the resulting value is larger than the expected damage the leader is going to take during the next enemy turn.  Thus, 'max_risk=0' means he will only move if no attack on him is possible at the target hex of the move.  'max_risk=1' (or larger) results in him moving even if he's almost certainly going to die.
+
+* '''leader_value'''=3: (double) A number 0 or higher which determines the value of enemy leaders as [[AiWML#AI_Targets_and_Goals|targets]].  Affects move-to-targets CA only (and therefore specifically does not apply to attacks).
+
+* '''passive_leader'''=no: (bool) If 'yes', the AI leader never moves or attacks (not even to move back to the keep or to attack adjacent units), except to obey [leader_goal]s.  Affects all CAs except recruitment and move-leader-to-goals.
+
+* '''passive_leader_shares_keep'''=no: (bool) If 'yes', this has most of the effects of ''passive_leader=yes'', but the AI leader moves 1 hex from the keep to share it with allied players (if they can reach it next turn).  He also returns to keep to recruit when possible and attacks adjacent enemy units.
+
+*'''recruitment'''="": Limits the number of units of a given type that the AI can have on the map simultaneously.  Applies to the recruitment CA only.  It cannot be set in the same way as the other aspects and is therefore described in a [[AiWML#Limiting_Recruiting_with_the_.27recruitment.27_Aspect|separate section]] below.
+
+* '''recruitment_ignore_bad_combat'''=no: (bool) If 'yes', the AI does not analyze the enemy units on the map to see if the unit to be recruited is suitable for fighting them.  Affects recruitment CA only.
+
+* '''recruitment_pattern'''="": (string) This key takes a comma separated list containing the usages of the units that can be recruited. Common usages are: 'scout', 'fighter', 'archer', 'healer' and 'mixed fighter'. This tells the AI with what probability it should recruit different types of units. The AI considers all units with the specified usage(s) and ''only'' those, so make sure the units you want recruited are really covered by the pattern, or use an empty pattern (the default) to have it consider all available units. The usage is listed in the unit type config files (see data/core/units/ for mainline units; see also [[UnitTypeWML]]).  Affects recruitment CA only.
+** For example, "recruitment_pattern=fighter,fighter,archer" means that the AI recruits on average twice as many fighters as archers, and does not recruit scouts (other than scouts for capturing villages, which are recruited independently), healers or mixed fighters.  It does ''not'' mean that it recruits two fighters first, then an archer, then two fighters again, etc.
+
+* '''scout_village_targeting'''=3: (double) The AI multiplies the value of village [[AiWML#AI_Targets_and_Goals|targets]] for scouts by this value.  Affects move-to-targets CA only.
+
+* '''simple_targeting'''=no: (bool) If 'yes', the AI moves its units toward [[AiWML#AI_Targets_and_Goals|targets]] one by one (sequentially), without considering whether another unit might be better suited for the current move or target.  If 'no' (the default), all units are considered for all targets.  This is slower, but might result in better moves.  Affects move-to-targets CA only.
+
+* '''support_villages'''=no: (bool) Trigger a code path that tries to protect those villages that are threatened by the enemy.  This seems to cause the AI to 'sit around' a lot, so it's only used if it's explicitly enabled.  Affects move-to-targets CA only.
+
+* '''village_value'''=1: (double) A number 0 or higher which determines how much the AI tries to go for villages as [[AiWML#AI_Targets_and_Goals|targets]].  Affects move-to-targets CA only.
+
+* '''villages_per_scout'''=4: (int) A number 0 or higher which determines how many scouts the AI recruits. If 0, the AI doesn't recruit scouts to capture villages.  Affects recruitment CA only.
+
+=== Deprecated AI Targeting Aspects ===
+
+The following AI targeting parameters (aspects) currently still work, but have been superseded by the [[AiWML#The_.5Bgoal.5D_Tag|[goal] tag]].  They should not be used any more as they will likely be removed at some point.  These tags specify [[AiWML#AI_Targets_and_Goals|targets]] and only apply to the move-to-targets CA.
+
+* '''[target]'''="": '''Deprecated'''. Any number of [target] tags can be used to set targets for the AI. For anything related to 'values', set them relative to other targets. An AI is willing to dedicate twice as many resources and travel twice as far to get to a target worth '2.0' as for a target worth '1.0'.  Applies to move-to-targets CA only.
+** '''[[StandardUnitFilter]]''': Do not use a [filter] tag.
+** '''value'''=1: (double)  A number greater than 0 (default=1) which determines how much the AI tries to move toward units which pass the filter.
+
+* '''[protect_location]'''="": '''Deprecated'''. Gives the AI a location to protect. Note that the AI does ''not'' station any units around the location, it only sends units to attack any enemy units that come within the guarding radius of the target.  Applies to move-to-targets CA only.
+** '''x''', '''y''': Standard coordinates. These indicate the location the AI is protecting.
+** '''radius''': The radius around it to protect (0 indicates a single hex).
+** '''value''': The importance of protecting this location.
+
+* '''[protect_unit]'''="": '''Deprecated'''. Gives the AI a set of units to protect. Note once again that the AI does not place units around the protected units if there are no enemies nearby.  Applies to move-to-targets CA only.
+** '''[[StandardUnitFilter]]''': The unit(s) to protect. Do not use a [filter] tag.
+** '''radius''': The radius around it to protect (0 indicates a single hex).
+** '''value''': The importance of protecting this unit.
+
+* '''protect_leader'''=2.0 and '''protect_leader_radius'''=10: '''Deprecated'''. Target any enemy units that come within 'protect_leader_radius' of the AI leader with a value of 'protect_leader'.  Applies to move-to-targets CA only.
+
+=== Removed AI Aspects ===
+
+The following AI parameters (aspects) can still be set, their values can be retrieved, and they can be viewed in the gamestate inspector dialog, but they do not seem to have an effect in the RCA AI code any more.  Some other parameters will also likely be removed in the future.  We will update this list accordingly.
+
+* '''attack_depth'''=5: (int)
+* '''number_of_possible_recruits_to_force_recruit'''=3.1: (double)
+* '''recruitment_ignore_bad_movement'''=no: (bool)
+
+==AI Targets and Goals==
+
+AI targets are used in the move-to-targets candidate action (CA) to move the AI's units toward selected units or locations.  The AI engine automatically selects all enemy leaders, enemy units that pose a thread to the AI leader and unowned or enemy-owned villages as targets and assigns them certain base values.  A score is then assigned to each target based on this base value, as well as on the movement cost required to get to the target, whether moving there would put the units involved in danger, etc.
+
+It is possible to define additional targets or influence the relative ratings of the default targets.  This is done with the [goal] tag, in which we can set criteria selecting targets and define their base values (which are then evaluated in the same way as the values of the default targets).  Values set with the [goal] tag should always be relative to each other.  The AI is willing to dedicate twice as many resources and travel twice as far to get to a target worth '2.0' as for a target worth '1.0'.
+
+We stress again that these targets apply to the move-to-targets CA ''only'' and have no influence on other CAs.  This is significant since CAs that deal with, for example, combat or village-grabbing have a higher score than the move-to-targets CA and are therefore always executed first.  In practice that means that targets set with the [goal] tag only affect the AI behavior for targets that it cannot reach during the current turn, and only after combat, village-grabbing etc. are finished.
+
+Five types of targets can be set using the [goal] tag: ''target'' (the default), ''target_location'', ''protect_unit'', ''protect_my_unit'', and ''protect_location''.
+
+===The [goal] Tag===
+
+The [goal] tag specifies target units or locations toward which the AI should move its units in the move-to-targets CA.  The following keys/tags can be used:
+* '''name'''="target": (string)  The following values are possible and result in different types of targets:
+** ''target'':  The (default) target goal specifies target units (not necessarily enemy units) toward which the AI should move its units.
+** ''target_location'': Specifies target locations toward which the AI should move its units.
+** ''protect_location'': Specifies locations that the AI should protect. Enemy units within the specified distance (''protect_radius'') of one of these locations are marked as targets with the provided value.  Note that the AI will ''not'' station any units around the protected locations.  It will only send units toward enemy units that come within ''protect_radius'' of them.
+** ''protect_unit'': Specifies units (of all sides) that the AI should protect. Enemy units within ''protect_radius'' of one of these units are marked as targets with the provided value.  Note once again that the AI will not place units around the protected units if there are no enemies nearby.
+** ''protect_my_unit'': Specifies units from the AI's own side that the AI should protect. (This is basically the ''protect_unit'' goal with an implied ''side='' in the filter, restricting matching units to the AI's side.) Enemy units within ''protect_radius'' of one of these units are marked as targets with the provided value.  Note once again that the AI will not place units around the protected units if there are no enemies nearby.
+
+* '''[criteria]'''="": Contains a [[StandardUnitFilter]] (for ''target'', ''protect_unit'' or ''protect_my_unit'') or [[StandardLocationFilter]] (for ''target_location'' or ''protect_location'') describing the targets.
+
+* '''value'''=0: (int) The value of the goal.
+
+* '''protect_radius'''=20: (int) The protection radius.  Applies to ''protect_location'', ''protect_unit'' and ''protect_my_unit''.
+
+===Examples of [goal] Tag Usage===
+
+'''target:'''
+ [goal]
+     [criteria] #NOTE: this is a SUF, because we're targeting a unit
+         side=3
+     [/criteria]
+     value=5
+ [/goal]
+
+'''target_location:'''
+ [goal]
+     name=target_location
+     [criteria] #NOTE: this is a SLF, because we're targeting a location
+         x,y=42,20
+     [/criteria]
+     value=5
+ [/goal]
+
+'''protect_location:'''
+ [goal]
+     name=protect_location
+     [criteria] #NOTE: this is a SLF, because we're protecting a location
+         x,y=42,20
+     [/criteria]
+     protect_radius=16
+     value=5
+ [/goal]
+
+'''protect_unit:'''
+ [goal]
+     name=protect_unit
+     [criteria] #NOTE: this is a SUF, because we're protecting a unit
+         side=3
+     [/criteria]
+     protect_radius=16
+     value=5
+ [/goal]
+
+'''protect_my_unit:'''
+ [goal]
+     name=protect_my_unit
+     [criteria] #NOTE: this is a SUF, because we're protecting a unit
+         canrecruit=yes
+     [/criteria]
+     protect_radius=9
+     value=10
+ [/goal]
+
+To modify goals from WML events, several helper macros are available in [http://www.wesnoth.org/macro-reference.xhtml#file:ai.cfg data/core/macros/ai.cfg].
+
+== Filtering Combat with the 'attacks' Aspect==
+
+The ''attacks'' aspect lets us filter the units considered during the combat candidate action.  Units on the AI side can be selected with the '''[filter_own]''' tag and enemy units are filtered via '''[filter_enemy]''', both of which take a [[StandardUnitFilter]].  Only units defined in these tags are considered as attacker/target pairs.  To define, for example, an ''attacks'' aspect in which units from the elvish sorceresses are the only attackers, and undead units are the only targets, use either
+ [ai]
+     [aspect]
+         id=attacks
+         [facet]
+             invalidate_on_gamestate_change=yes
+             [filter_own]
+                 type=Elvish Sorceress,Elvish Enchantress,Elvish Sylph
+             [/filter_own]
+             [filter_enemy]
+                 race=undead
+             [/filter_enemy]
+         [/facet]
+     [/aspect]
+ [/ai]
+or
+ [ai]
+     [modify_ai]
+         side=2
+         action=add
+         path=aspect[attacks].facet[]
+         [facet]
+             invalidate_on_gamestate_change=yes
+             [filter_own]
+                 type=Elvish Sorceress,Elvish Enchantress,Elvish Sylph
+             [/filter_own]
+             [filter_enemy]
+                 race=undead
+             [/filter_enemy]
+         [/facet]
+     [/modify_ai]
+ [/ai]
+Several important notes:
+* See [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|A Bit More on Simple vs. Composite Aspects]] and [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|Adding and Deleting Aspects with the [modify_ai] Tag]] below for explanations of the syntax used in these examples.
+* This only works if 'invalidate_on_gamestate_change=yes' is set, so that the available attacker/target pairs are recalculated after each move.  This is also explained at [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|A Bit More on Simple vs. Composite Aspects]].
+* If [filter_own] or [filter_enemy] are omitted, the selection defaults to all units of the respective sides.
+* '''Most importantly''': The above examples result in the sorceresses-on-undead attacks being the ''only'' attacks done by the AI.  No other attacks are executed, no matter how advantageous their outcomes might be.  There is no simple way to get around that.  An example of dealing with this (executing all attacks of a certain kind first, then doing whatever possible attacks are left afterward) by setting up an additional Lua candidate action can be found in scenario 'Protect the Wizard' of campaign 'AI modification demos'.  This example will also be added to the [[Lua_AI_Code_Library]] at some point.
+
+== Limiting Recruiting with the 'recruitment' Aspect==
+
+The number of units that can be recruited by the AI can be limited using the ''recruitment'' aspect.  To define, for example, a ''recruitment'' aspect in which only two bowmen and one swordsman can be recruited, use
+ [ai]
+     [aspect]
+         id=recruitment
+         [facet]
+             [value]
+                 name=ai_default::recruitment
+                 [limit]
+                     type=Swordsman
+                     max=1
+                 [/limit]
+                 [limit]
+                     type=Bowman
+                     max=2
+                 [/limit]
+             [/value]
+         [/facet]
+     [/aspect]
+ [/ai]
+Several important notes:
+* This aspect may currently result in no recruiting happening at all after the listed units have reached their limit, if those units seem more desirable to the AI than the rest of the recruit list.  This is due to a [https://gna.org/bugs/index.php?19662 bug] and will be fixed soon.
+* See [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|A Bit More on Simple vs. Composite Aspects]] below for an explanation of the syntax used in this example.
+* The [[AiWML#Using_.5Bmodify_ai.5D_to_Change_Goals.2C_Candidate_Actions_and_Stages|[modify_ai] tag]] can also be used, equivalently to what is shown above for the [[AiWML#Filtering_Combat_with_the_.27attacks.27_Aspect|''attacks'' aspect]].
+* 'name=ai_default::recruitment' needs to be set exactly like this, so that the ''ai_default::recruitment'' stage is used.
+* A separate '''[limit]''' tag needs to be used for each unit type.
+* The number set by the '''max''' key limits the number of units that the side can have simultaneously.  Thus, if one of the bowmen dies in the example above, another can be recruited.  This is the same behavior as one gets with the LIMIT_CONTEMPORANEOUS_RECRUITS macro.
+* Units for which no [limit] tag is defined can be recruited in arbitrary amounts.
+
+== A Bit More on Simple vs. Composite Aspects ==
+
+We stated [[AiWML#Aspects_and_Goals_Overview|above]] that aspects can be either simple or composite, simple aspects being those that take on an single (scalar) value, while composite aspects have a more complex structure containing subtags called 'facets'.  That is only partially true in that, internally, all aspects are set up as composite aspects.  For example, if a simple aspect is defined like this in a [side] or [modify_side] tag
+ [ai]
+     aggression=0.765
+ [/ai]
+the AI engine turns that into
+ [aspect]
+     engine=cpp
+     id=aggression
+     name=composite_aspect
+     [facet]
+         engine=cpp
+         name=standard_aspect
+         value=0.765
+     [/facet]
+     [default]
+         engine=cpp
+         name=standard_aspect
+         value=0.4
+     [/default]
+ [/aspect]
+This can be seen, for example, in savefiles.  This shows the aspect id, 'aggression', and the engine for which it is defined, the default 'cpp' engine.  It then shows two facets, the one we just defined with the new value of 0.765, and the facet containing the default settings.
+
+Taking this one step further, if we look at 'ai config full' for a given side using the gamestate inspector dialog in debug mode, it shows all keys that can be set for this aspect (with their default values for those that we did not specify):
+ [aspect]
+     engine=cpp
+     id=aggression
+     invalidate_on_gamestate_change=no
+     invalidate_on_minor_gamestate_change=no
+     invalidate_on_tod_change_change=yes
+     invalidate_on_turn_start=yes
+     name=composite_aspect
+     [facet]
+         engine=cpp
+         id=
+         invalidate_on_gamestate_change=no
+         invalidate_on_minor_gamestate_change=no
+         invalidate_on_tod_change_change=yes
+         invalidate_on_turn_start=yes
+         name=standard_aspect
+         time_of_day=
+         turns=
+         value=0.765
+     [/facet]
+     [default]
+         ...  (omitted for brevity, same as above)
+         value=0.4
+     [/default]
+ [/aspect]
+Thus, we see, that the facet may also contain an id (important if one wants to [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|delete it]] selectively), the time of day and turns for which it is valid, and several invalidate_on_... keys.  The AI code stores information derived from the aspects in C++ objects.  This information can simply be the aspect value for some aspects (such as ''aggression'') or it can contain a significant amount of additional information.  For example, for the [[AiWML#Filtering_Combat_with_the_.27attacks.27_Aspect|''attacks'']] aspect, it contains a list of all possible attacks of the filtered attacker/target unit pairs.  This list is not valid any more after an attack has been performed and needs to be reset.  The AI does this by 'invalidating' the aspect, after which the aspect information is read anew from the [ai] tags and the stored information (such as the attacks list) is reevaluated.
+
+There are 4 levels of invalidation keys:
+* '''invalidate_on_turn_start'''="yes": (boolean) If "yes", the value of this aspect is invalidated at the start of each AI turn.
+* '''invalidate_on_tod_change'''="yes": (boolean) If "yes", the value of this aspect is invalidated when the time of day changes (not working at the moment).  This implies invalidate_on_turn_start.
+* '''invalidate_on_gamestate_change'''="no": (boolean) If "yes", the value of this aspect is invalidated on each game state change (on turn start, move, attack, recruit, etc.).  This implies invalidate_on_turn_start.
+* '''invalidate_on_minor_gamestate_change'''="no": (boolean) If "yes", the value of this aspect is invalidated on each minor game state change (on set unit variable, etc). This implies invalidate_on_gamestate_change.
+
+Thus, information stored about aspects is reevaluated by default at each AI turn and when the time of day changes.  It is not reevaluated after the game state changes (such as after an attack), which explains why 'invalidate_on_gamestate_change=yes' needs to be set explicitly for the [[AiWML#Filtering_Combat_with_the_.27attacks.27_Aspect|''attacks'']] aspect.
+
+Long story short, the definition of a simple aspect like
+ [ai]
+     aggression=0.765
+ [/ai]
+is a syntactical shortcut for (to be used in [side] or [modify_side] tags)
+ [ai]
+     [aspect]
+         id=aggression
+         [facet]
+             value=0.765
+         [/facet]
+     [/aspect]
+ [/ai]
+The former syntax is simpler for simple aspects without facet ids, but the latter is needed if a facet id is required, or for the definition of some more complex aspects such as [[AiWML#Filtering_Combat_with_the_.27attacks.27_Aspect|''attacks'']].  Alternatively, composite aspects can also be defined using the [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|[modify_ai] tag]] or with the help of several macros available in [http://www.wesnoth.org/macro-reference.xhtml#file:ai.cfg data/core/macros/ai.cfg].
+
+==Adding and Deleting Aspects with the [modify_ai] Tag==
+
+Aspects (or rather the facets describing their values and the conditions under which they apply) can also be changed, defined or deleted with the [modify_ai] tag, which can be used either in [side][ai] or in an [event].  [modify_ai] has the following keys for modifying aspects:
+
+* '''action''' (string): The action to take concerning the aspect.  The following values are allowed: 
+** ''add'': Add a facet to an aspect.
+** ''change'': Change an existing (non-default) facet of an aspect.
+** ''delete'': Delete an existing (non-default) facet of an aspect.
+** ''try_delete'': Delete a facet if it exists.  This does not produce a warning if [modify_ai] fails to change the AI.
+* '''path''' (string): Defines the aspect to be modified.  Its values are of form 'aspect[id_of_aspect].facet[facet_identifier]'.
+*'''[facet]''': Definition of the facet (the details describing the aspect and the conditions under which it applies) in the same format as shown [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|above]].
+* '''side''': If used in an [event] tag, the side of the AI to be modified.  Not needed if used in [side][ai].
+* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+
+Here, 'id_of_aspect' is the id/name of the aspect (such as 'aggression').  The 'facet_identifier' is meaningless for adding an aspect.  In fact, it can be empty for that.  It does ''not'' set the facet id, which needs to be done with the ''id'' key inside the [facet] tag.  By contrast, when changing or deleting aspects, 'facet_identifier' needs to be set to one the following values:
+* *: Applies to all facets of an aspect, except the [default] facet.
+* An integer starting with 0: Identifies the facets in the order in which they were created.
+* The facet id as defined in the [facet] subtag.  
+
+Let's illustrate all this with a few examples.  In order to define ''aggression'' in the same way as [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|above]], we could use
+ [modify_ai]
+     side=1
+     action=add
+     path=aspect[aggression].facet[]
+     [facet]
+         value=0.765
+     [/facet]
+ [/modify_ai]
+This version of the aggression aspect can then be deleted using 
+ [modify_ai]
+     side=1
+     action=delete  # or try_delete
+     path=aspect[aggression].facet[0]
+ [/modify_ai]
+if we know that it is the first non-default facet of the ''aggression'' aspect or with
+ [modify_ai]
+     side=1
+     action=delete  # or try_delete
+     path=aspect[aggression].facet[*]
+ [/modify_ai]
+along with all other user-defined ''aggression'' facets that might have been added.  (Note that the aspect itself and its default facet cannot be deleted.)  These two methods of deleting the facet also work if the value of aggression was simply set by using 'aggression=0.765' in the [ai] tag.
+
+We can also use 'action=change' to delete an existing facet and overwrite it with a new definition.  If '*' is used for ''facet_identifier'', this deletes all existing facets of this aspect and replace them by a single facet with the new definition.  [Note that adding a facet with the same ''id'' as an existing facet overwrites the previous occurrence, making that equivalent to changing the facet.]
+
+Sometimes we might want to define several facets of the same aspect, but don't know in advance in which order they will be created.  If we then only want to delete some of them selectively, we need to use facets with specific id's, such as
+ [modify_ai]
+     side=1
+     action=add
+     path=aspect[aggression].facet[]
+     [facet]
+         id=aggression_dusk
+         time_of_day=dusk
+         value=0.765
+     [/facet]
+ [/modify_ai]
+This can be deleted by referencing that id
+ [modify_ai]
+     side=1
+     action=delete  # or try_delete
+     path=aspect[aggression].facet[aggression_dusk]
+ [/modify_ai]
+
+It is, of course, unnecessary to add or delete a simple aspect like ''aggression'' in this way, as it can simply be reset by using another 'aggression=value' statement in an [ai] tag.  In fact, this can be done with any aspect.  If several facets are set for the same aspect for the same (or overlapping) turns and times of day, the one set up last takes effect.  Note, however, that this is not accomplished by modifying the existing facets, but by adding an additional facet to the aspect.  Deleting or changing a facet is, in principle, a cleaner method of dealing with this, although that usually won't make much of a difference unless the same aspect is changed many times throughout a scenario.
+
+A large number of helper macros for AI modifications is available in [http://www.wesnoth.org/macro-reference.xhtml#file:ai.cfg data/core/macros/ai.cfg].
+
+===Using [modify_ai] to Change Goals, Candidate Actions and Stages===
+
+For completeness, we mention here that [modify_ai] can also be used to add and delete AI [[AiWML#AI_Targets_and_Goals|goals]], [[General_RCA_AI_Howto#Available_Stages|stages]] and [[General_RCA_AI_Howto#RCA_AI_main_loop_stage_and_Candidate_Actions|candidate actions]] by using the following values for the '''path''' key:
+* ''goal[id_of_goal]'': Goal with specified id
+* ''goal[0]'': Goal 0 (first)
+* ''goal[1]'': Goal 1
+* ''goal[*]'': All goals
+* ''stage[id_of_stage]'': Stage with specified id
+* ''stage[0]'': Stage 0 (first)
+* ''stage[1]'': Stage 1
+* ''stage[*]'': All stages
+* ''stage[id_of_candidate_action_evaluation_loop_stage].candidate_action[id_of_candidate_action]'': Candidate action with specified id of stage with specified id.
+* ''stage[id_of_candidate_action_evaluation_loop_stage].candidate_action[*]'': All candidate actions of stage with specified id.
+
+Also see the helper macros in [http://www.wesnoth.org/macro-reference.xhtml#file:ai.cfg data/core/macros/ai.cfg].
+
+Finally note that [modify_ai] in [side][ai] is activated when the AI is first initialized.  It is guaranteed to happen before the AI acts for the first time, but otherwise it can happen at any time, for example, when the game is saved.  So, for example, you might see the uninitialized version of the config (with unapplied [modify_ai] tags) if using ':inspect' right after the scenario start.
+
+== See Also ==
+* [[Practical_Guide_to_Modifying_AI_Behavior]]
+* [[ReferenceWML]]
+* [[BuildingScenariosIndex]]
+
+[[Category: WML Reference]]

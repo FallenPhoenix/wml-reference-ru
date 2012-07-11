@@ -1,0 +1,36 @@
+{{WML Tags}}
+== Wiki Syntax ==
+
+==== Formatting ====
+
+This page is an example of how these wikis should be formatted:
+
+Description of the page
+
+* '''[tag]''' description of [tag]
+** '''key''': description of ''key''.
+"'''key'''" can refer either to the key ''key'' or the value of ''key''
+* '''key2''': description of ''key2''
+** '''value''': what happens when the attribute '''key2=value''' is set
+
+Example:
+ [tag]
+         key=0
+ [/tag]
+ key2=value
+
+==== Version Control ====
+
+This wiki describes the stable version of Wesnoth, but also has marked notes about the development version. See [[DevFeature]].
+
+==== Categorization ====
+
+WML reference pages should be placed into the category "WML reference."  This allows someone to easily bring up all the WML-related pages at once.
+
+To do this, add the text <nowiki>[[Category: WML Reference]]</nowiki> at the bottom of the page under the "See Also" section.
+
+== See Also ==
+
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]

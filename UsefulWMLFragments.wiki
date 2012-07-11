@@ -1,0 +1,49 @@
+== Useful WML Fragments ==
+
+Most of the things found here are macros (see [[PreprocessorRef]]) that must be copied into a scenario file or another file included first by the campaign, and then used in the scenario (or multiplayer map). Remember that a macro cannot be used at a point before it is defined.
+
+'''Note: some of the code here is outdated or otherwise poor. It's not advisable to blindly copy-paste code from here and expect it to work on recent Wesnoth versions or assume that the recent versions don't support a simpler and less hacky way of doing the same thing.'''
+
+Some things '''not''' to do here:
+* Don't add macros that duplicate things in [http://www.wesnoth.org/macro-reference.xhtml the core macro library].
+* Don't add macros that are trivial syntax shortcuts.
+* Don't add macros that generate unbalanced syntax fragments.
+
+Try to avoid adding pages here. It is better to find a category in which your code fits and add it to that page.
+
+=== Logic Structure Macros ===
+*[[WML Utilities]]: Macros to assist other macros. Overlay with Filter. Determine Opposite Coordinates. Find nearest hex(es)
+
+=== Campaign Tools ===
+*[[AlternateToDWML]]: Macros for alternate time-of-day schemes, including per-hour time-of-day.
+
+==== RPG Tools ====
+*[[A Shop Like Thing]]: How to add even more RPG elements to your scenarios.
+*[[CutsceneWML]]: Fixed MOVE_TO event (uses FIND_NEARBY from [[WML Utilities]]), move + exit to recall list, define character dialogue and a "main character", grant unlimited moves.*
+*[[An effect that changes icons]]: Wanted to change some attack's icon when the unit took an object, but there was no set_icon variable accepted? This enables it!
+
+==== Music Tools ====
+*[[WML Musical Moods]]: Groups the Wesnoth music (as of 1.7.x) into "moods" and defines macros for playing randomly songs from these pools and for quickly switching music.
+
+==== Unit Tools ====
+*[[WML Abilities]]: Knockback. Charm. Bloodlust.
+
+==== Item Tools ====
+*[[DroppableItem]]: Macros to drop items. Currently only macros for dropping items on unit death including a permenant item that can be picked up, and dropped, multiple times by different units. Also a macro removing objects from units.
+*[[Removing Items]]: A macro that removes objects from a unit.
+
+==== Map Tools ====
+*[[FloodWML]]: Macros to create a flood of a certain terrain type spreading across the map.
+
+=== Advanced WML ===
+*[[Advanced WML]]: Store Reachable Locations.
+
+=== Templates ===
+*[[WML Templates]]: Generic campaign, scenario and unit templates. <b>Obsolete; most of these won't work right.</b>
+
+== See Also ==
+
+* [[ReferenceWML]]
+
+
+[[Category: UsefulWMLFragments|*]]

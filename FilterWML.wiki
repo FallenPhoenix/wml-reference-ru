@@ -1,0 +1,129 @@
+{{WML Tags}}
+== Filtering in WML ==
+
+A ''filter'' is a special WML block.
+Filters are used to describe a set of units, hexes, weapons or something else.
+Filters are defined as matching something if all the keys in the filter match that thing.
+For example, if a unit filter contains two keys,
+a unit must match both of the keys in order to match the filter.
+
+A StandardUnit(Location, Side, ...)Filter is the place where the set of such keys and tags can appear. A StandardFilter sometimes needs an according surrounding tag but often doesn't. It should be mentioned at the place in the wiki where it's said that you can use at a certain code position a StandardFilter whether you need a surrounding tag or not.
+
+== Filtering Units ==
+
+Filters are often used in action tags (see [[EventWML]]).
+In this case the phrase "standard unit filter" is used in place of the set of standard keys.
+Sometimes a filter is used to find the first unit that matches the filter;
+for example, the '''[recall]''' tag recalls that unit.
+
+Standard unit filters are also used in the tags '''[filter]''' and '''[filter_second]'''.
+These are subtags of '''[event]''' which describe when the event should trigger.
+Most event names (see [[EventWML]]) have units related to them called "primary unit" and "secondary unit".
+In order for an event to be triggered, ''primary unit'' must match the filter contained in '''[filter]''',
+and ''secondary unit'' must match the filter contained in '''[filter_second]'''.
+
+See [[StandardUnitFilter]] for details.
+
+== Filtering Locations ==
+
+As you have seen, standard unit filter can contain a location filter.
+Several actions, such as '''[terrain]''', also use location filters.
+Location filters are represented on this site by the phrase "standard location filter".
+
+See [[StandardLocationFilter]] for details.
+
+== Filtering Sides ==
+Sometimes, it's needed to get a list of sides which satisfy certain criteria. For this, a side filter can be used.
+Side filters are represented on this site by the phrase "standard side filter".
+
+See [[StandardSideFilter]] for details.
+
+== Filtering Weapons ==
+
+Sometimes weapons are filtered on in WML.  See also [[EventWML]], [[EffectWML]], [[AnimationWML]].
+
+These keys are used as filter input for weapon filters.
+
+* '''range''': a range to filter
+** '''melee''': only melee weapons pass 
+** '''ranged''': only ranged weapons pass 
+* '''name''': filter on the attack's name.
+See '''data/units/''' or http://www.wesnoth.org/units/
+to find the name of a particular unit's attack.
+* '''type''': filter on the attack's type.
+Values are 'blade', 'pierce', 'impact', 'fire', 'cold', and 'arcane'.
+* '''damage''': filter on damage value. Can be a specific number or a list of ranges like 'damage=0-5,7-99'
+* '''special''': filter on the attack's special power.
+For values see [[AbilitiesWML]].
+
+== Filtering Terrains ==
+
+''This section describes basically the same as "Filtering Locations" above, namely a [[StandardLocationFilter]].''
+
+Use '''[filter_location]''' within '''[filter]''' , for example:
+
+ [event]
+     [filter]
+         [filter_location]
+             terrain=Ch 
+         [/filter_location]
+     [/filter]
+ [/event]
+
+At some places the terrains can be filtered with a 
+match list. The list is a comma separated list and matching will stop
+at the first matched [[TerrainCodesWML|terrain string]]. There's one special character
+''!'' which inverts the meaning of a match. Terrain strings can 
+use the wildcard * to match zero or more following letters, characters
+behind the * are not allowed and the result is undefined.
+
+Example 1: <br>
+ww* matches ww, www, wwW but not WWW <br>
+!, ww returns false if ww found and true if not <br>
+!, ww, wa, !, aa returns false if ww or wa found and true if aa found and false if none found.
+
+
+Example 2: <br>
+<nowiki>*</nowiki>^V* matches all village-terrain <br>
+Notice how the * can be used separately for both layers (base and overlay layers are separated by the ^-character).
+
+
+For a list of terrain types and their string codes see [[TerrainCodesWML|TerrainCodesWML]].
+
+== Filtering Vision ==
+
+The '''[filter_vision]''' tag allows you to filter locations based on whether or not the hex is obscured by fog or shroud from the point-of-view of a viewing side.
+
+* '''visible''':
+** '''yes''' (default): matches when the location is not obscured by fog or shroud for the ''viewing_side''
+** '''no''': matches when the location is obscured by fog or shroud for the ''viewing_side''
+* '''viewing_side''': the observing side, or list of observing sides
+** When multiple viewing sides are listed, all of the sides must pass the visibility check in order for the [filter_vision] filter to return a successful match.
+** When no viewing sides are listed, all enemy sides must pass the visibility check.
+*'''[[StandardSideFilter]]''' {{DevFeature1.11}} tags and keys; all matching sides must be able to see the unit/location. If an empty filter, all sides (instead of only all enemy sides) match. viewing_side= is renamed to just the [[StandardSideFilter]]'s side=.
+
+'''Example:''' This event will fire when the enemy (side 2) moves to a location within the player's field of vision:
+ [event]
+     name=moveto
+     first_time_only=yes
+     [filter]
+         side=2
+         [filter_vision]
+             viewing_side=1 
+         [/filter_vision]
+     [/filter]
+     [message]
+         speaker=unit
+         message="I am your enemy. I know that you can see me here."
+     [/message]
+ [/event]
+
+'''Note:''' This filter is only useful when the viewing side is under a fog or shroud. You ''can'' set a shroud over an AI side. This will allow you to use the vision filter from the point-of-view of an AI side. The fog/shroud does not currently affect AI movement patterns, but the AI algorithm may become constrained by fog/shroud in the future.
+
+== See Also ==
+
+* [[UnitTypeWML]]
+* [[EventWML]]
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]

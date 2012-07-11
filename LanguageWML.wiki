@@ -1,0 +1,63 @@
+{{WML Tags}}
+== The toplevel [language] tag ==
+
+The contents of the [language] tag associate strings with certain keywords used by the engine and some WML, such as attack types and ranges.
+
+The following keys and tags are recognized in [language] tags:
+
+* '''EASY''': string to associate with the EASY difficulty keyword.
+* '''NORMAL''': string to associate with the NORMAL difficulty keyword.
+* '''HARD''': string to associate with the HARD difficulty keyword.
+* '''NIGHTMARE''': string to associate with the NIGHTMARE difficulty keyword.
+* '''liminal_description''': string for the liminal alignment's description.
+* '''lawful_description''': string for the lawful alignment's description.
+* '''neutral_description''': string for the neutral alignment's description.
+* '''chaotic_description''': string for the chaotic alignment's description.
+* '''bridge_name''': comma-separated list of names to be used by the feature-labeling function for bridges.
+* '''road_name''': comma-separated list of names to be used by the feature-labeling function for roads.
+* '''river_name''': comma-separated list of names to be used by the feature-labeling function for rivers.
+* '''forest_name''': comma-separated list of names to be used by the feature-labeling function for forests.
+* '''lake_name''': comma-separated list of names to be used by the feature-labeling function for lakes.
+* '''mountain_name''': comma-separated list of names to be used by the feature-labeling function for mountains.
+* '''swamp_name''': comma-separated list of names to be used by the feature-labeling function for rivers.
+* '''village_name''': comma-separated list of names to be used by the feature-labeling function for villages.
+* '''range_melee''': string to associate with the melee range keyword.
+* '''range_ranged''': string to associate with the ranged range keyword.
+* '''range_$RANGE''': string to associate with whatever range $RANGE is in actual use. Refer to the [[LanguageWML#Examples|examples section]] for actual uses and examples.
+* '''type_$TYPE''': string to associate with whatever type $TYPE is in actual use. Refer to the the [[LanguageWML#Examples|examples section]] for actual uses and examples.
+
+== Examples ==
+
+=== Examples and actual uses of range_$RANGE ===
+
+Example of an actual use in mainline:
+ 
+ [language]
+     range_melee= _ "melee"
+ [/language]
+
+Example of an association of a string with the keyword for a '''very_long''' range in UMC:
+ 
+ [language]
+     range_very_long= _ "very long"
+ [/language]
+
+=== Examples and actual uses of type_$TYPE ===
+
+Example of an actual use in mainline:
+ 
+ [language]
+     type_arcane= _ "arcane"
+ [/language]
+
+Example of an association of a string with the keyword for an '''electric''' type in UMC:
+ 
+ [language]
+     type_electric= _ "electric"
+ [/language]
+
+== See Also ==
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

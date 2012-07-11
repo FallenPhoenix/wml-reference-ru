@@ -1,0 +1,38 @@
+{{WML Tags}}
+== the toplevel [terrain_type] tag ==
+
+The [terrain_type] tag describes a terrain in WML.
+Terrains are usually described in the terrain.cfg file
+
+the [terrain_type] tag has the following keys and subtags
+* '''symbol_image''': an image used for this terrain in the minimap
+* '''editor_image''': an image used for this terrain in the map editor; if not defined uses symbol_image
+* '''name''': the name of the terrain, a translatable string used for the display of terrain type in the game and the map editor
+* '''description''': the detailed description of the terrain, a translatable string used for the display of terrain type in the game and the map editor.  If this is not present, the game and editor will fall back to the '''name''' attribute.  The difference is that the name tends to describe the game effect of the terrain type (e.g., "Forest") but the description attribute also carries information about visual subtype (e.g. "Summer Deciduous Forest").
+* '''editor_name''': a detailed name for the terrain used only in the map editor. Terrains are presented in the editor as "''<editor_name>''/''<name>'' (''<aliases>'')" when this attribute is used.
+* '''string''': this is the string that represents the terrain in maps and scenarios
+* '''unit_height_adjust''': how much the unit graphic should be moved up or down when on that terrain
+* '''submerge''': float, between 0 and 1: specifies how much of the unit graphic should be submerged by the terrain
+* '''light''': signed value: this will modify local light level on that hex by that amount for gameplay
+* '''heals''': signed value: this value is the amount of HP a unit on this terrain will be healed at the start of every turn. (If set to true a unit on that terrain will be healed 8 HP at the start of every turn, this notation is deprecated and support might be removed at some point.)
+* '''gives_income''': if set to true, this terrain will give income every turn when flagged, as if it were a village
+* '''recruit_onto''': if set to true, it is possible to recruit or recall on that terrain
+* '''recruit_from''': if set to true it is possible to recruit when a unit that can recruit is on that terrain
+* '''aliasof''': comma separated string representing terrains that this terrain will be an alias of. This is a list of characters, with the + and - signs having special meanings. the string is read left to right taking the best value. when a minus sign is encountered, it starts taking the worst instead. the plus sign reverts it back to the best (note after a + or - a comma is also required. In order to include a + sign the entire line must be placed between double quotes.)
+* '''def_alias''': like ''aliasof'' but overides it for defense calculation only
+* '''mvt_alias''': like ''aliasof'' but overides it for movement calculation only
+* '''income_description''': for terrains with ''gives_income'' and owned by nobody this text is shown in the terrain description in the top bar before the brackets. This tag is optional, if not supplied Wesnoth will assume the terrain is a village and sets an appropriate message.
+* '''income_description_ally''': like ''income_description'' but if owned by an ally
+* '''income_description_enemy''': like ''income_description'' but if owned by an enemy
+* '''income_description_own''': like ''income_description'' but if owned by yourself
+* '''editor_group''': a comma separated list of editor_group ids to which this terrain belongs.
+* '''hidden''': (boolean) if set to 'yes', makes this terrain not appear in the map editor palettes.
+
+== See Also ==
+
+* [[ReferenceWML]]
+* [[TerrainCodesWML]]
+* [[EditorGroupWML]]
+
+
+[[Category: WML Reference]]

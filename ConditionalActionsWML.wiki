@@ -1,0 +1,139 @@
+{{WML Tags}}
+
+Part of [[ActionWML]], Conditional Actions WML is used to describe container actions that create branching and flow control for WML. The [[#Conditional Actions|conditional actions]] act as gatekeepers, encapsulating other actions with [[#Condition Tags|conditions]] which must be met before an action can take place. These conditional actions also contain the actions which will take place if those conditions are met and, in some cases, what actions will take place if they are ''not'' met.
+
+== Conditional Actions ==
+
+These actions describe actions that should be executed only if certain conditions are met.
+
+=== [if] ===
+
+Executes actions only if the contained [[#Condition Tags|conditions]] are met.
+
+* [[#Condition Tags|Condition Tags]]: Conditions which must be met for the actions in the '''[then]''' tag to be executed.
+
+* '''[then]''': Contains [[ActionWML|actions]] which should be executed if all conditions evaluate as true ''or'' if any single '''[or]''' tag evaluates as true.
+
+* '''[else]''': Contains [[ActionWML|actions]] which should be executed if any condition evaluates as false ''and'' '''all''' of the '''[or]''' tags evaluate as false.
+
+
+'''Attention''': There are tags named [if] and [else] inside [animation] (see [[AnimationWML#.5Bif.5D_and_.5Belse.5D|AnimationWML]]), which have a different syntax.
+
+=== [switch] ===
+
+The '''[switch]''' tag is a special case because it does not use [[#Condition Tags|Condition Tags]] to control whether actions are performed. Instead, it executes different sets of actions based on the value of a variable.
+
+* '''variable''': The name of the variable to check.
+* '''[case]''': Case tag which forms a block containing:
+** '''value''': The value to test the variable's value against. 
+This can be a comma separated list of values.
+** [[ActionWML|Action WML]]: Action WML to execute if the variable matches the value. (The rest of the '''[case]''' block after the '''value''' attribute.)
+* '''[else]''': Else tag which forms a block of [[ActionWML|Action WML]] to execute if no '''[case]''' block contains a '''value''' matching the value of the '''variable'''.
+
+Example usage:
+  [switch]
+     variable=foo
+     [case]
+        value="A"
+        ... WML if foo=A ...
+     [/case]
+     [case]
+        value="B"
+        ... WML if foo=B ...
+     [/case]
+     [else]
+        ... WML if not foo=A nor foo=B ...
+     [/else]
+  [/switch]
+
+=== [while] ===
+
+Like the '''[if]''' tag, executes actions only if conditions described in the contained [[#Condition Tags|conditions]] are met. Additionally, the '''[while]''' tag ''continues'' to execute the actions until the contained [[#Condition Tags|conditions]] are no longer met. Executes a maximum of 1024 iterations per invocation.
+
+* [[#Condition Tags|Condition Tags]]: Conditions which must be met for the actions in the '''[do]''' tag to be executed.
+
+* '''[do]''': contains [[ActionWML|actions]] that should be executed repeatedly until some condition is false.
+
+The '''[while]''' tag is useful for iterating over an array.
+An array is a list of values.
+The ''number''th value in the array '''array''' is stored in the WML variable '''''array''[number]'''.
+Note that if '''number''' is the value of the variable '''variable''',
+the expression '''$''array''[$variable]''' will return the ''number''th value in ''array''.
+
+==== 'FOREACH' Macro ====
+This macro simplifies the use of a '''[while]''' tag to create a ''for-each'' iteration format. This is useful, for example, when you want to iterate over each row in a table. To use it, use the [http://www.wesnoth.org/macro-reference.xhtml#FOREACH FOREACH] and [http://www.wesnoth.org/macro-reference.xhtml#NEXT NEXT] macros.
+
+==== 'REPEAT' Macro ====
+This macro simplifies the use of a '''[while]''' tag to execute the same  [[ActionWML|actions]] repeatedly for a specified number of times. To use it, use the [http://www.wesnoth.org/macro-reference.xhtml#REPEAT REPEAT] macro.
+
+=== [command] ===
+
+This tag is more of an Unconditional Action: when it is encountered, the [[ActionWML|actions]] in its content are simply executed once. In practice, this tag serves little purpose. However, it may be used to arrange actions together in logical groups, for example, with actions that are stored in an array and later inserted.
+(It is also used inside of [set_menu_item] and [option] of [[InterfaceActionsWML]].)
+
+== Condition Tags ==
+
+===True Condition Tags===
+These tags describe conditions which must be met before an action can take place. Some or all of them are used in the various [[#Conditional Actions|Conditional Actions]].
+
+; [have_unit]
+: A unit with greater than zero hit points matching this filter exists.
+:* [[StandardUnitFilter]] '''*''': Selection criteria. Do not use a [filter] tag.
+:* '''count''': ''(Optional)'' If used, a number of units equal to the value must match the filter. Accepts a number, range, or comma separated range. If not used, the default value is "1-99999".
+:* '''search_recall_list''': ''(Optional)'' If 'yes', search through recall list too. (Default is 'no')
+
+; [have_location]
+: A location matching this filter exists.
+:* [[StandardLocationFilter]]: Selection criteria.
+:* '''count''': ''(Optional)'' If used, a number of locations equal to the value must match the filter. Accepts a number, range, or comma separated range. If not used, the default value is "1-99999".
+
+; [variable]
+: Test the value of a WML [[VariablesWML|variable]] against another value.
+:* '''name''': The name of the variable to test.
+:* ''<comparison>'': '''One''' of the following keys must be used to compare the value of the named variable, represented as ''$name'' below, against another value:
+:** '''contains''': ''$name'' contains this string value.
+:** '''equals''': ''$name'' is equal (string wise) to this value.
+:** '''not_equals''': ''$name'' is not equal (string wise) to this value.
+:** '''numerical_equals''': ''$name'' is equal (numerically) to this value. 
+:** '''numerical_not_equals''': ''$name'' is not equal (numerically) to this value. '''*'''<br />'''*''' Using equals is faster. The point of numerical_equals and boolean_equals is not performance, it's representation. For instance, "1" and "1.0" are not equal as strings but they are equal as numbers; and "yes" and "true" are not equal as strings but they are equal as booleans. (This also explains why equals is faster: it is a straightforward comparison that doesn't try to understand what you have written.)
+:** '''greater_than''': ''$name'' is greater than this value.
+:** '''greater_than_equal_to''': ''$name'' is greater than or equal to this value.
+:** '''less_than''': ''$name'' is less than this value.
+:** '''less_than_equal_to''': ''$name'' is less than or equal to this value.
+:** '''boolean_equals''': ''$name'' has an equivalent boolean value. '''*'''
+:** '''boolean_not_equals''': ''$name'' does not have an equivalent boolean value. '''*'''
+====Boolean Values====
+When values are evaluated as boolean values they are checked to see if they are ''false'' or ''true''.
+
+* These values are evaluated as ''true'': '''"yes"''' and '''"true"'''
+* These values are evaluated as ''false'': '''"no"''', '''"false"''' and '''""'''(uninitialized)
+** However, in contexts where ''true'' is defined as the default value, an uninitialized value would be considered true. 
+
+'''Warning:''' Do not use "off", "on", integers, floating-point numbers or anything else than the above as booleans.
+
+=== Meta Condition Tags ===
+
+These tags aren't really conditions, themselves. Instead they are wrapped around condition tags to group them into multiple conditions that must all be met, lists of conditions that only one must be met, or conditions that must not be met. These are handled in order in any combination you can think of. One important thing to remember is if you are using '''[or]''' tags, the first conditional statement should ''not'' have an '''[or]''' tag wrapped around it.
+
+; [and]
+: A condition which must evaluate to true in addition to any others. Useful as a bracket for complex conditions, but not strictly necessary.
+:* [[#Condition Tags|Condition Tags]]: If these evaluate to true, the '''[and]''' tag evaluates to true.
+
+; [or]
+: A condition which, if it evaluates to true, is all that is necessary for the conditions to be met. In other words, if all other conditions are false, but one '''[or]''' condition is true, the conditions have been met for an [[:Category:ActionsWML|action]] to take place. (See [[AdvancedConditionalWML|Example]])
+:* [[#Condition Tags|Condition Tags]]: If these evaluate to true, the '''[or]''' tag evaluates to true. 
+
+; [not]
+: A condition which reverses the evaluation of the contained condition(s).
+:* [[#Condition Tags|Condition Tags]]: If these evaluate to true, the '''[not]''' tag evaluates to false. If these evaluate to false, the '''[not]''' tag evaluates to true.
+
+== See Also ==
+* [[VariablesWML]]
+* [[InternalActionsWML]]
+* [[DirectActionsWML]]
+* [[InterfaceActionsWML]]
+* [[EventWML]]
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]
+[[Category: ActionsWML]]

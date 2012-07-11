@@ -1,0 +1,505 @@
+{{WML Tags}}
+== The [event] Tag ==
+
+This tag is a subtag of the [scenario], [unit_type] and [era] tags which is used to describe a set of [[ActionWML|actions]] which trigger at a certain point in a scenario. When used in a [scenario] tag (also includes [multiplayer], [tutorial] and [test]), the event only occurs in that scenario. When used in a [unit_type] tag, the event will occur in all scenarios in which a unit of that type appears in (only after such a unit appears during the scenario, however). When used in an [era], the event will occur in any scenario which is played using that era.
+
+This tag has keys and child tags that control when and if the event actions will be triggered. Most important of these is the '''name''' key. Without it, no error will be raised but the event will never fire. Therefore, from a practical standpoint, it can be considered mandatory. All of the others can be used or not and the event actions will fire either way.
+
+'''Lexicon side note:''' ''The word "event" in the [event] tag itself may be considered an abbreviation of the word "event handler" because it is technically not a game "event" but an event '''handler''' for the game events fired with the given 'name'. However, this distinction is usually unimportant in most discussions and the event handlers are therefore simply referred to as "events" in this documentation.''
+
+=== The 'name' Key (Mandatory) ===
+
+Usage:
+ name=<value>
+
+This key defines which game event or trigger your [event] tag will be handling. This 'name' key should not be confused with a descriptive comment; it is rather a precise value which must match the predefined game event's name to be valid.
+
+'''Lexicon side note:''' ''It is not uncommon to refer to these values as the 'trigger' for an event and, furthermore, to call an event by its 'trigger' name. For example, in an event containing '''name=moveto''', a person might refer to the event as a ''''moveto''' event' and/or refer to the ''''moveto''' trigger' in the event or even talk about the 'event trigger' when referring to the '''moveto''' value of the 'name' key in that event. Some or all of this usage can, in fact, be found throughout this page.''
+
+The '''name''' key can accept a list of comma separated values describing when the event will be triggered.*  These values may be either predefined event types or  custom event names not matching any predefined type.
+
+For example:
+
+ name=attacker misses,defender misses
+
+''* Note that unless you use [[#first_time_only|first_time_only=no]], the event will fire only once, '''not''' once for each listed type.''
+
+==== Predefined 'name' Key Values ====
+
+All predefined event types are listed here along with a description of when this value will cause the event to be triggered. Any value ''not'' listed here is a custom event name which can be triggered only by a '''[fire_event]''' tag somewhere else. Spaces in event names can be interchanged with underscores (for example, '''name=new turn''' and '''name=new_turn''' are equivalent).
+
+; preload
+: Triggers before a scenario 'prestarts' and when loading a savegame -- before anything is shown on the screen at all. Can be used to set up the [[LuaWML|Lua]] environment: loading libraries, defining helper functions, etc.
+: '''Note:''' Unlike prestart and start, the preload event '''must be able to fire more than once!''' This is because it is triggered each time a savegame is loaded in addition to the initial time when it loads before the scenario 'prestart'. This means that it is effectively ''mandatory'' to have the [[#first_time_only|first_time_only=no]] key value in a preload event. 
+
+; prestart
+: Triggers before a scenario 'starts' -- before anything is shown on the screen at all. Can be used to set up things like village ownership. For things displayed on-screen such as character dialog, use '''start''' instead.
+: '''Note:''' ''This value makes the [[#first_time_only|first_time_only]] key irrelevant since, by definition, it can only fire once.''
+
+; start
+: Triggers after the map is shown but before the scenario begins -- before players can 'do' anything.
+: '''Note:''' ''This value makes the [[#first_time_only|first_time_only]] key irrelevant since, by definition, it can only fire once.''
+
+; new turn
+: Triggers at the start of every turn (not side turn). See also [[#first_time_only|first_time_only=no]]. Before any events of this type trigger, the value of the WML variable '''turn_number''' is set to the number of the turn that is beginning.
+
+; turn end
+: Triggers at the end of every turn (not side turn). See also [[#first_time_only|first_time_only=no]]. The WML variable '''side_number''' will contain the side that ended their turn.
+
+; turn ''X'' end
+: Triggers at the end of turn ''X''.
+
+; side turn
+: Triggers when a side is about to start its turn. Before events of this type trigger, the value of the WML variable '''side_number''' is set to the number of the side of the player about to take their turn. This is before any healing takes place for that side, before calculating income, and before restoring unit movement and status.
+
+; ai turn
+: Triggered just before the AI is invoked for a side. This is called after ''side turn'', and thus the WML variable '''side_number''' still holds the number of this side. Note that this event might be called several times per turn in case that fallbacks to human or droiding is involved. I.e. it happens at the middle of turn of human side 1 if the human player droids his side. It happens after the selection of ai to play the turn but before AI is told that new turn has come.
+: '''Note:'''  ''This event currently breaks replays since it is not explicitly saved in a replay and there is no AI involved in replays...''
+
+; turn refresh
+: Like '''side turn''', triggers just before a side is taking control but '''after''' healing, calculating income, and restoring unit movement and status.
+: Note that the turn refresh event does occur on turn 1, even though healing, income and unit refreshing do not.
+
+; turn ''X''
+: Triggers at the start of turn ''X''. It's the first side initialization event. 
+:Side initialization events go in the order of: 
+: 1) '''turn ''X''''' 
+:2) '''new turn''' 
+:3) '''side turn''' 
+:4) '''side ''X'' turn''' 
+:5) '''side turn ''X''''' 
+:6) '''side ''X'' turn ''Y''''' 
+:7) '''turn refresh''' 
+:8) '''side ''X'' turn refresh''' 
+:9) '''turn ''X'' refresh''' 
+:10) '''side ''X'' turn ''Y'' refresh'''
+
+; side ''X'' turn ''Y''
+: This event triggers at the start of turn ''Y'' of side X 
+
+; side ''X'' turn
+: This event triggers at the start of any turn of side X
+: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
+
+; side turn ''X''
+: This event triggers at the start of any side on turn X
+: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
+
+; side X turn Y refresh
+: This event triggers at the turn refresh for side X on turn Y
+
+; side ''X'' turn refresh
+: This event triggers at the turn refresh for side X
+: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
+
+; turn ''X'' refresh
+: This event triggers for any side at the refresh of turn X.
+: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
+
+; side turn end
+: Triggers after a side ends its turn. Like side turn, there are also some variations for specific combinations of side number and turn number. Here is the order in which the turn end events trigger:
+:1) '''side turn end''' 
+:2) '''side ''X'' turn end''' 
+:3) '''side turn ''X'' end''' 
+:4) '''side ''X'' turn ''Y'' end''' 
+:5) '''turn end''' 
+:6) '''turn ''X'' end''' 
+
+; time over
+: Triggers on turn ''turns''. (''turns'' is specified in [scenario])
+
+; enemies defeated
+: Triggers when all units with '''canrecruit=yes''' (that is, all leaders) not allied with side 1 are killed.
+
+; victory
+: In this scenario, any tag of the form '''[endlevel] result=victory [/endlevel]''' will be automatically preceded by all actions in this tag. It helps debugging if the victory event allows you to safely advance to any of the possible next maps after using the ":n" command. Scenarios where key units are picked up before the victory, or where some action chosen earlier determines which map to advance to, make it hard to quickly test scenarios in a campaign. (See also: [endlevel], [[DirectActionsWML]])
+
+; defeat
+: In this scenario, any tag of the form '''[endlevel] result=defeat [/endlevel]''' will be automatically preceded by all actions in this tag. (See also [endlevel], [[DirectActionsWML]])
+
+
+Filters (except [filter_condition] which is for all sorts of events) can be applied to the following event triggers (see [[FilterWML]]; see also below). The actions specified in the event tag will be executed only if the filter returns true. 
+These event triggers are all actions by units ('''moveto''', '''attack''') or things that happen to units ('''recruit''', '''advance'''). When one of these events is triggered, the position of the active unit (referred to as the '''primary unit''') is stored in the variables '''x1''' and '''y1''' and the position of any unit that primary unit does something to is stored in the variables '''x2''' and '''y2''' (this unit is referred to as the '''secondary unit''' below). '' These units are also automatically stored in the variables 'unit' and 'second_unit' as if they had been stored using the '''[store_unit]''' tag. see [[SingleUnitWML]]. weapon and second_weapon variables are available inside attack, attacker_hits, defender_hits, die and last_breath events. See [[VariablesWML#Automatically_Stored_Variables|automatically stored variables]] for more information.
+
+; moveto
+: Triggers after the primary unit moves. Typically this is used when the primary unit gets to a particular location and a filter for the location of the primary unit is included; remember that this is the location that the primary unit lands on, not the location it started on or any location it travels on. If the unit moves to a village, the capture event will be fired before this event. <br />''An '''[allow_undo]''' tag anywhere within a moveto event will cancel any lack of undo functionality the event would have caused. Note that undo functionality will only move the unit back to its former location; it will not undo other changes to the game caused by the event. Thus it is up to the scenario designer to use this tag correctly.'' $x2 and $y2 refer to the hex the unit came from.
+
+; sighted
+: '''important: "sighted" events are very buggy in general, especially if "delay shroud updates" is set to "yes". It is recommended to avoid using them at all costs, especially if you want to change the gamestate in that event (such as setting variables). Trying to document all the exceptions under which a sighted event doesn't fire or does not work as expected is futile - please keep that in mind.'''
+: '''Alternatives:''' It is sometimes possible to replace a sighted event by a moveto event with a [[StandardLocationFilter|location filter]] matching a nearby location. A [[FilterWML#Filtering_Vision|filter_vision]] filter may be useful in some cases. There exists a macro in mainline which provides a workaround: ON_SIGHTING, see http://www.wesnoth.org/macro-reference.xhtml
+: A '''sighted''' event is triggered when a fog or shroud is lifted from the primary ''unit''. This can happen when a ''second_unit'' moves to a nearby location and discovers the primary ''unit''. Alternatively, the primary ''unit'' might emerge "out of the mist" and be discovered simultaneously by all members of the enemy side: in this case, the ''second_unit'' is not set. (This is part of the sighted event's bugs.)
+
+: '''Note:''' The sighted event is ''only'' triggered when a unit moves from one location to another. When the player moves to attack an enemy unit and, in the process, removes the fog/shroud over an enemy unit, the sighted event does ''not'' fire. This makes the sighted event unreliable: It may or may not fire, depending on the user actions. (This may be part of the sighted event's bugs.)
+
+
+; attack
+: Triggers when the primary unit attacks the secondary unit.
+
+; attack end
+: Similar to '''attack''', but is triggered ''after'' the fight instead of before. Note that if either unit is killed during the fight, this event triggers before any '''die''' events.
+
+; attacker hits
+: Triggers when the the primary unit (the attacker) hits the secondary unit (the defender). The value of the WML variable '''damage_inflicted''' is set to the number of hitpoints inflicted by the attacker.
+
+; attacker misses
+: Same as ''attacker hits'', but is triggered when the attacker misses.
+
+; defender hits
+: Triggers when the primary unit (the attacker) is hit in retaliation by the secondary unit (the defender). The value of the WML variable '''damage_inflicted''' is set to the number of hitpoints inflicted by the defender.
+
+; defender misses
+: Same as ''defender hits'', but is triggered when the defender misses.
+
+; petrified
+: Triggers when the primary unit is hit by an attack with the 'petrifies' ability (See ''stones'', [[AbilitiesWML]]) by the secondary unit (the unit with the 'petrifies' ability).
+
+; last breath
+: Triggers when the primary unit is killed by the secondary unit, but before the death animation is triggered. Use this instead of name=die when you want the primary unit to make a final [message]. 
+
+; die
+: Triggers when the primary unit is killed by the secondary unit. ''Note: The primary unit is not removed from the game until the end of this event. The primary unit can still be manipulated, will block other units from taking its hex, and will still be found by standard unit filters (except [have_unit]). To prevent this behavior, you can use [kill] to remove the unit immediately. However, this will stop any (still unfired) other events that also match the unit from firing afterwards, so use with caution.'' If you want to the primary unit to make a final [message], use name=last_breath, see above.
+
+; capture
+: Triggers when the primary unit captures a village. The village may have been previously neutral, or previously owned by another side; merely moving into your own villages does not constitute a capture. This event will be fired before the moveto event. Villages becoming neutral (via [capture_village]) do not fire capture events. The variable $owner_side contains the previous owner side of the village. 0 means neutral.
+
+; recruit
+: Triggers when the primary unit is recruited (by the secondary unit). (That is, when a unit is recruited it will trigger this event and this event's filter will filter that unit.).
+
+; prerecruit
+: Triggers when the primary unit is recruited (by the secondary unit) but before it is displayed.
+
+; recall
+: Triggers after the primary unit is recalled (by the secondary unit).
+
+; prerecall
+: Triggers when the primary unit is recalled (by the secondary unit) but before it is displayed.
+
+; advance
+: Triggers just before the primary unit is going to advance to another unit.
+
+; post advance
+: Triggers just after the primary unit has advanced to another unit.
+
+; select
+: Triggers when the primary unit is selected. Also triggers when ending a move, as the game keeps the moving unit selected by selecting it again at the end of movement. ''Note: in networked multiplayer, these events are only executed by the client on which the event is triggered, leading to out of sync errors if you modify the game state in the event.''
+
+; menu item ''X''
+: Triggers when a WML menu item with id=''X'' is selected. ''Note: if the menu item has a [command], this event may be executed before or after the command; there is no guarantee.''
+
+==== Custom events ====
+
+An event with a custom name may be invoked using the [[InternalActionsWML#.5Bfire_event.5D|[fire_event]]] tag.  Normally you'll use such custom events as named subroutines to be called by events with predefined types.  One common case of this, for example, is that more than one '''sighted''' events might fire the same custom event that changes the scenario objectives.
+
+=== Optional Keys and Tags ===
+
+These keys and tags are more complex ways to filter when an event should trigger:
+
+==== first_time_only ====
+: Whether the event should be removed from the scenario after it is triggered. This key takes a [[ConditionalActionsWML#Boolean_Values|boolean]]; for example:
+: ''first_time_only=yes''
+:: Default behavior if key is omitted. The event will trigger the first time it can and never again.
+: ''first_time_only=no''
+:: The event will trigger every time the criteria are met instead of only the first time.
+
+==== id ====
+: If an id is specified, then the event will not be added if another event with the same id already exists. An id will also allow the event to be removed, see below.
+
+==== remove ====
+: Whether to remove an event instead of adding a new one. This key takes a [[ConditionalActionsWML#Boolean_Values|boolean]]; if true, then the contents of the event are ignored and the event with the specified id is removed instead. for example:
+ [event]
+     id=id_of_event_to_remove
+     remove=yes
+ [/event]
+
+==== [filter] ====
+: The event will only trigger if the primary unit matches this filter.
+:* [[StandardUnitFilter]]: selection criteria
+
+==== [filter_second] ====
+: Like [filter], but for the secondary unit.
+:* [[StandardUnitFilter]]: selection criteria
+
+==== [filter_attack] ====
+: Can be used to set additional filtering criteria for the primary unit and the secondary unit that are not generally available in a standard unit filter. Can be used in events ''attack'', ''attacker hits'', ''attacker misses'', ''defender hits'', ''defender misses'' and ''attack end''. For more information and other filter keys, see [[FilterWML]].
+:* '''name''': the name of the weapon used.
+:* '''range''': the range of the weapon used.
+:* '''special''': filter on the attack's special power.
+
+==== [filter_second_attack] ====
+: Like [filter_attack], but for the secondary unit.
+:* '''name''': the name of the weapon used.
+:* '''range''': the range of the weapon used.
+:* '''special''': filter on the attack's special power.
+
+==== [filter_condition] ====
+: This tag makes sense inside any sort of event - even those that don't have units, or custom events,... The event will only trigger if this condition evaluates to true.
+:* True Condition Tags and Meta Condition Tags as described in [[ConditionalActionsWML]].
+: note: This tag is meant to be used when the firing of an event shall be based on variables/conditions which cannot be retrieved from the filtered units.
+
+==== [filter_side] ====
+: The current side (usually the side $side_number) must match the passed [[StandardSideFilter]] for the event to fire.
+:* SSF tags and keys as arguments as described in [[StandardSideFilter]].
+: note: This tag makes most sense in side turn and turn refresh events. However, all wml events have a current side so one could also prevent e.g. a moveto event from firing if you put a [filter_side] tag there and the moving unit's side doesn't match.
+
+==== delayed_variable_substitution ====
+: This key is only relevant inside of a [[#Delayed Variable Substitution|nested event]] and controls when variable substitution will occur in those special case actions.
+
+=== Actions triggered by [event] ===
+
+After the trigger conditions have been met, all [[ActionWML|action tags]] within the [event] tag are executed in the order they are written in.
+
+There are 3 main types of actions:
+* direct actions ([[DirectActionsWML]]) which have a direct effect on gameplay
+* display actions ([[InterfaceActionsWML]]) which show something to the user
+* internal actions ([[InternalActionsWML]]) which are used by WML internally
+
+More details in [[ActionWML]].
+
+Several actions use standard filters to find out which units
+to execute the command on.  These are denoted by the phrases
+"standard unit filter" and "standard location filter".
+
+=== Nested Events ===
+
+There is one special type of action: event creation.  By placing an '''[event]''' tag inside another '''[event]''' tag, the nested event is spawned (created) when the parent (outer) event is encountered (when executing the contents of the parent event).
+
+([[#Nested Event Example|See Examples]])
+
+==== Delayed Variable Substitution ====
+
+Variable substitution for a nested event can happen either when it is spawned by the parent event or when it is triggered itself. This is controlled with the key '''delayed_variable_substitution''' which is used in the nested event.
+
+If this key is set to ''yes'', the variables in the nested event will contain values from the turn in which the ''nested'' event was triggered. ''This is the default behavior if the key is omitted.'' If set to ''no'', the variables in the nested event are set at the time the ''parent'' event is triggered.
+
+This behavior can be fine tuned with a special syntax when referencing variables. Instead of the normal '''$variable''' syntax, use '''$|variable''' to cause a variable to contain values relevant to the turn in which the nested event was triggered even when '''delayed_variable_substitution''' is set to ''no''. In this way you can have a mix of variables relevant to the parent and nested event trigger times.
+
+([[#Delayed Variable Substitution Example|See Examples]])
+
+== Multiplayer safety ==
+
+In multiplayer it is only safe to use WML that might require synchronization with other players because of input or random numbers (like [message] with input or options or [unstore_unit] where a unit might advance) in the following events. This is because in these cases WML needs data from other players to work right and/or do the same thing for all players. This data is only available after a network synchronization.
+
+List of synchronized events:
+* moveto
+* sighted 
+* attack
+* attack_end 
+* attacker hits 
+* attacker misses 
+* defender hits
+* defender misses 
+* stone
+* last breath 
+* menu item X
+* die
+* capture 
+* recruit
+* prerecruit 
+* recall 
+* prerecall 
+* advance 
+* post_advance 
+* new turn 
+* side turn 
+* turn X 
+* side X turn 
+* side X turn Y 
+* turn refresh 
+
+There is also the possibility of events that are normally synchronized when fired by the engine but can be non-synchronized when fired by WML tags from non-synchronized event. So when you are using them you must be extra careful. For example [unstore_unit] may trigger a unit advancement that will fire ''advance'' and ''post advance'' events.
+
+== A Trap for the Unwary ==
+
+You need to beware of using macros to generate events. If you include a macro expanding to an event definition twice, the event will be executed twice (not once) each time the trigger condition fires. Consider this code:
+
+ #define DOUBLE
+     [event]
+         name=multiply_by_2
+         {VARIABLE_OP 2_becomes_4 multiply 2}
+     [/event]
+ #enddef
+ 
+ {DOUBLE}
+ {DOUBLE}
+ 
+ {VARIABLE 2_becomes_4 2}
+ 		
+ [fire_event]
+     name=multiply_by_2
+ [/fire_event]
+ 
+ {DEBUG_MSG "$2_becomes_4 should be 4"}
+
+After it executes, the debug message will reveal that the variable has been set to 8, not 4.
+
+=== Event IDs ===
+
+This problem can be avoided by setting an '''id''' on the event, i.e.:
+
+ #define DOUBLE
+     [event]
+         name=multiply_by_2
+         id=doubler_event
+         {VARIABLE_OP 2_becomes_4 multiply 2}
+     [/event]
+ #enddef
+
+Events with the same ID will only be accepted once by the engine no matter how many times they are included, and will only be saved once to the scenario's savefile.  Events with an ID can also be removed by using the '''remove''' key, i.e.:
+
+ [event]
+     id=doubler_event
+     remove=yes
+ [/event]
+
+After that WML is encountered (at toplevel or after created from another event), the event with this ID is removed from the scenario wml, thus firing it has no effect.  After an event is removed, it can still be re-added later.
+
+== Miscellaneous Notes and Examples ==
+
+=== Primary/Secondary Unit Speaker Example ===
+
+In events, the primary unit can be referred to as '''unit''' and the secondary unit can be referred to as '''second_unit''' in [message] tags using the '''speaker''' key. For example:
+
+ [event]
+     name=die
+     [message]
+         speaker='''second_unit'''
+         message= _ "Hahaha! I finally killed you!"
+     [/message]
+ 
+     [message]
+         speaker='''unit'''
+         message= _ "It's not over yet! I'll come back to haunt you!"
+     [/message]
+ [/event]
+
+=== Nested Event Example ===
+
+An event is created for a portal that opens on turn 10. The parent (or 'outer') event executes on turn 10 at which point the nested moveto event is created. This nested event executes when a player steps on a certain spot.
+
+ [event]
+     name=turn 10
+ 
+     [event]
+         name=moveto
+ 
+         [filter]
+             x,y=5,8
+         [/filter]
+ 
+         # moving to 5,8 will trigger this event only on turn 10 and after
+     [/event]
+ [/event]
+
+An equivalent way of doing this would be to create a single moveto event with an '''[if]''' statement to check for turn number but using nested '''[event]''' tags is a convenient shortcut to accomplish this task without resorting to '''[if]''' statements.
+
+=== Delayed Variable Substitution Example ===
+
+This code will display a message showing the turn number on which the nested ''moveto'' event happens.
+
+ [event]
+     name=turn 10
+ 
+     [event]
+         name=moveto
+         delayed_variable_substitution=yes
+ 
+         [filter]
+             x,y=5,8
+         [/filter]
+ 
+         {DEBUG_MSG "Turn $turn_number"} 
+    [/event]
+ [/event]
+
+Since this is the default behavior for the '''delayed_variable_substitution''' key, the following example is identical.
+
+ [event]
+     name=turn 10
+ 
+     [event]
+         name=moveto
+ 
+         [filter]
+             x,y=5,8
+         [/filter]
+ 
+         {DEBUG_MSG "Turn $turn_number"} 
+    [/event]
+ [/event]
+
+The following code will always display "Turn 10" when the nested ''moveto'' event happens. This is because the variable substitution is done when the parent event is triggered and spawns the nested event, ''not'' when the nested event is triggered.
+ 
+ [event]
+     name=turn 10
+ 
+     [event]
+         name=moveto
+         delayed_variable_substitution=no
+ 
+         [filter]
+             x,y=5,8
+         [/filter]
+ 
+         {DEBUG_MSG "Turn $turn_number"} 
+    [/event]
+ [/event]
+
+Finally, the following example is identical to the first two in that it will display a message showing the turn number on which the nested ''moveto'' event happens, despite the fact that the '''delayed_variable_substitution''' key is set to ''no''. This is because the special '''$|variable''' syntax is used.
+
+ [event]
+     name=turn 10
+ 
+     [event]
+         name=moveto
+         delayed_variable_substitution=no
+ 
+         [filter]
+             x,y=5,8
+         [/filter]
+ 
+         {DEBUG_MSG "Turn $|turn_number"} 
+    [/event]
+ [/event]
+
+=== Multiple Nested Events ===
+
+Every delayed_variable_substitution=no causes a variable substitution run on the subevent where it occurs at the spawn time of this event and on all following subevents. For any specific event, variable substitution happens at least one time when the event is executed. For each delayed=no key appearing in itself or in an event of an "older" generation, which is not the toplevel event, an additional variable substitution run is made.
+ [event]# parent
+     name=turn 2
+     #delayed_variable_substitution=no # In the parent event, delayed= has no effect.
+ 
+     [event]# child
+         name=turn 3
+         delayed_variable_substitution=no # Causes variable substitution in the child, grandchild and great-grandchild event
+         # at execution time of the parent event = spawn time of the child event.
+ 
+         [event]# grandchild
+             name=turn 4
+             delayed_variable_substitution=yes # no variable substitution in the grandchild and great-grandchild event
+             # at execution time of the child event = spawn time of the grandchild event
+ 
+             [event]# great-grandchild
+                 name=turn 5
+                 {DEBUG_MSG $turn_number}# output: 2 - value from the variable substitution at execution time of the parent event,
+                 # caused by delayed=no in the child event
+ 
+                 {DEBUG_MSG $||turn_number}# output: "$turn_number"
+                 # Each variable substitution transforms a "$|" to a "$" (except when no | left).
+ 
+                 {DEBUG_MSG $|turn_number}# output: 5 - from the variable substitution at execution time
+                 # of the great-grandchild event
+             [/event]
+         [/event]
+     [/event]
+ [/event]
+
+== See Also ==
+
+* [[DirectActionsWML]]
+* [[InternalActionsWML]]
+* [[InterfaceActionsWML]]
+* [[FilterWML]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

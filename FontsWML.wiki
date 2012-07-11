@@ -1,0 +1,22 @@
+{{WML Tags}}
+== the toplevel [fonts] tag  ==
+
+
+The '''[fonts]''' tag describes fonts which are distributed alog with the wesnoth binary. Each font must be declared here to
+be used by the game.
+
+The '''[fonts]''' tag has an element, '''order''', and a possible child tag, '''[font]'''
+
+* '''order''': describes the order in which fonts are to be tried until the program finds one which contains the character
+to be displayed. ''order'' should be marked as translatable.
+* '''[font]''': the [font] tag describes one installed font. It contains the following elements:
+** '''name''': the filename of the font, without fonts/ prepended
+** '''codepoints''': a list of unicode codepoints (character codes) which are present in this font. This should be a list
+of comma-separated ranges, "ranges" being either a number, or a dash separated range (for example: "32-126").
+
+== See Also ==
+
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

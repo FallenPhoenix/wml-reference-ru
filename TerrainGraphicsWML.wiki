@@ -1,0 +1,91 @@
+{{WML Tags}}
+
+== The toplevel [terrain_graphics] tag ==
+
+For information about the multi-hex tiling system, see [[MultiHexTutorial]]
+
+In terrain graphics, in Wesnoth 1.8.x all images are assumed to be .png and relative to images/terrain/. For example, writing 'image=grassland' means that the image file is images/terrain/grassland.png.  In Wesnoth 1.9.x the .png extension is required.  This means that TerrainGraphicsWML is incompatible from 1.8.x to 1.9.x.
+
+The multi-hex tiling system adds a new top-level element to WML, [terrain_graphics].
+A building rule is used to specify images to place when terrains are in a certain formation.
+When a building rule is applied to a map, it is applied once to each coordinate on the map;
+when it is applied to a coordinate then that coordinate is considered the ''base''.
+All locations in '''[terrain_graphics]''' are relative to the base.
+
+The following keys/tags are recognized:
+* '''[tile]''': whenever a building rule is applied, each [tile] tag corresponds to a tile on the map. The corresponding tile must match each condition contained in [tile] for the [tile] tag to match. All [tile] tags must match in order for a rule to match. If the rule for a [tile] tag is applied, each action within [tile] will be executed on the tile corresponding to that [tile] tag
+** '''x''','''y''': standard coordinates - the location of the corresponding tile relative to the base.
+** '''pos''': a shortcut to specifying coordinates. Used in combination with ''map''
+** '''type''': a comma-separated list of terrain codes (See [[TerrainWML]], data/terrain.cfg). In order for a tile to match this condition, it must be one of the terrains specified. However, if the string is preceded by "!", the terrain must not be listed in order to match. If the string is '*', or if it is empty, any tile matches.
+** '''set_flag''': a comma-separated list of strings. Attaches flags from that list to the corresponding tile if the rule matches. The only difference a flag makes is being detected by ''has_flag'' and ''no_flag'' in [tile]. This is determined by the order of the [terrain_graphics] tags; a tag after another one cannot influence it. See also ''has_flag'', ''no_flag''
+** '''has_flag''': a comma-separated list of strings. Matches if all flags in that list are attached to the corresponding tile. Flags are attached using the ''set_flag'' key.
+** '''no_flag''': a comma-separated list of strings. Matches if none of the flags in that list are attached to the corresponding tile. Flags are attached using the ''set_flag'' key.
+** '''set_no_flag''': helper combining ''set_flag'' and ''no_flag''. Same effect as using them with the same flags. Added because it's the most common use; ''set_flag'' or ''no_flag'' can still be used to add flags in one group only. 
+** '''[image]''': images specified as a subtag to '''[tile]''' sets the images for a single tile.
+*** '''layer''': an integer, usually negative. The more negative it is, the earlier it is drawn, and thus the farther "back" it is when compositing the terrain images together.
+*** '''name''': the image to apply on this tile if appropriate
+*** '''random_start''' (default: yes): Tells engine to start animation at random point instead of at the beginning for every tile
+*** '''base''': specifies the point at which the image is considered to be for layering purposes.  ''base'' is specified as '''x,y''' where x and y indicate distances in pixels from the top-left corner of the '''image'''. This is translated to a certain pixel on the map, and all images with the ''base'' attribute are drawn from top-to-bottom in terms of these specified pixel positions '''on the map'''.
+*** '''[variant]''': an alternate image to use for differing times of day
+**** '''tod''': the time of day for which this variant applies. Accepts a comma separated list of times of day.
+**** '''name''': the image to apply on this tile if appropriate
+**** '''random_start''' (default: yes): Tells engine to start animation at random point instead of at the beginning for every tile
+* '''[image]''': image may also be used directly in the rule, to specify multihex images. The following additional attributes are recognized for multihex images (as well as all the ones for images within '''[tile]''').
+** '''center''': specifies the point which the image will be centered on. If it is not specified, the image will instead be aligned with the top left corner of the tile.
+* '''probability''': the percent probability for each position that if the position matches, then the rule will be applied. Default is 100(%).  See [[TerrainGraphicsTutorial#Cumulative_Probabilities|Cumulative_Probabilities]] for mathematical complications.
+* '''rotations''': 6 comma(''',''') separated input strings. A rule that contains this key is not actually checked against the terrain; it instead is used as a template to create 6 new rules, each corresponding to a rotated version of the current rule. Whenever a rotated version is applied, instances of @(at-sign)R0, @R1, ... @R6 in attributes in the [terrain_graphics] tag will be adjusted by the corresponding amount and replaced with the letters specified by that numbered rotation in the ''rotations'' list. Each value corresponds to the rotated version that is -Pi/3 (60° clockwise) from the previous version; the first value corresponds to the unrotated version.<br>For example, if '''rotations=n,ne,se,s,sw,nw''' and it is being rotated 120°, then "@R0"->"@R2"->"se", "@R1"->"@R3"->"s", ... "@R6"->"@R1"->"ne".<br>Basically the important thing is that this lets the rule be applied in any of the six hex-directions, allowing you to adjust the name of the image files automatically.
+* '''set_flag''','''has_flag''', '''no_flag''': shortcuts to putting these in the [tile] subtags; unbound attributes will apply to all [tile] subtags.
+* '''map''': a shortcut for defining [tile] tags with ''type'' conditions. Inputs a multi-line string value visually describing the map. The lines are cut into words of 4 characters, which correspond to [tile] tags. The line types alternate between lines corresponding to relatively even-abciss tiles and lines preceded by two spaces corresponding to relatively odd-abciss tiles. Every two lines represent 1 row on the map.
+
+=== Words ===
+
+A ''word'' is a 4-character shortcut to a [tile] tag. There are different types of words:
+* Usually a word is interpreted as being the input to the ''type'' key of the corresponding [tile]. That is, it creates a [tile] with the attribute '''type=''word'''''.
+* A word can also be a digit followed by 3 spaces. In this case, it is a shortcut to the [tile] with the attribute '''pos=''word'''''. This is called ''anchoring''.
+
+In 1.3, the format is basically the same but the following changes are made
+* A ''word'' no longer needs to be 4 characters but is comma separated and spaces and tabs may be used for padding
+* The 2 spaces for odd lines in no longer used, instead a leading comma is used on these lines (before the comma spaces and tabs are allowed for padding)
+* A ''word'' may only be a dot a star or an anchor. The terrain letter format was not used and hard to support in the new engine, so that support is dropped.
+
+== Examples ==
+
+To define a north-south 2-tile mountain, the following syntax can be used:
+
+ [terrain_graphics]
+     [tile]
+         x=0
+         y=0
+         type=Mm
+         set_no_flag="base"
+     [/tile]
+     [tile]
+         x=0
+         y=1
+         type=Mm
+         set_no_flag="base"
+     [/tile]
+     [image]
+          name="mountain-n-s.png"
+     [/image]
+ [/terrain_graphics]
+
+
+This represents a tile 1, and its six adjacent tiles 2, in the map notation.
+
+ .,   .,   .,   .
+ ,  .,   2,   .,   .
+ .,   2,   2,   .
+ ,  .,   1,   .,   .
+ .,   2,   2,   .
+ ,  .,   2,   .,   .
+
+== See Also ==
+* [[MultiHexTutorial]]
+* [[ReferenceWML]]
+* Ayin's [http://www.anathas.org/ayin/wesnoth/doc/terrain_graphics_wml detailed Terrain Graphics document]
+* [[TerrainGraphicsTutorial]] - First half of Ayin's document, wikified
+* [[TerrainGraphicsReference]] - Second (partial) half of Ayin's document, wikified
+
+
+[[Category: WML Reference]]

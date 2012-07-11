@@ -1,0 +1,100 @@
+{{CommandMode/Translations}}
+== Command Mode ==
+
+You can access command mode by typing ' ''':''' ' in a single player or multiplayer scenario.
+(Prior to version 1.1.1, you need to type shift - semicolon( ''';''' ). However this isn't possible on all keyboards; if your keyboard doesn't have ':' above ';' you can change the hotkey in the Preferences, or you could edit '''game.cfg''' by hand.')
+
+Note: you can highlight, copy, and paste text in debug mode.
+
+Several vi-like commands are available in command mode. They are defined in ''menu_events.cpp''. In the 1.5 branch, there is a ''':help''' command that lists all available commands, and ''':help ''foo''''' displays more info about command ''foo''. This is more reliable than the list that follows here:
+
+;<nowiki>:q!</nowiki>
+:quit the scenario (without prompting)
+;<nowiki>:w</nowiki>
+:save the game (without prompting)
+;<nowiki>:wq</nowiki>
+:save the game and quit the scenario (without prompting)
+;<nowiki>:refresh</nowiki>
+:redraw the screen
+;<nowiki>:droid</nowiki> [''side''] [on|off]
+:toggle player on ''side'' between human and AI player. The player/client who controls that side needs to issue this command. If you don't provide ''side'', the current side is assumed.
+;<nowiki>:muteall</nowiki>
+:toggles muting/silencing of all observers on/off
+;<nowiki>:mute</nowiki> [''username'']
+:mute a specific observer. If no ''username'' is supplied the muted usernames are displayed.
+;<nowiki>:unmute</nowiki> [''username'']
+:unmute a specific observer. If no ''username'' is given everyone is unmuted. (Doesn't effect the muteall setting.)
+;<nowiki>:kick</nowiki> ''username''
+:kick a user in multiplayer. They will be able to rejoin the game. Generally a friendly way to remove someone who is having connection or other difficulties.
+;<nowiki>:ban</nowiki> ''username''
+:kick and ban a user in multiplayer by the IP address used by that ''username''. Can be used on users not in the game but on the server. (Of course they won't be kicked then.)
+;<nowiki>:unban</nowiki> ''username''
+:unban a user by the IP address used by that ''username''. Can be used on users not in the game but on the server.
+;<nowiki>:control</nowiki> ''side'' ''username''
+:change the controller for ''side'' (write here the number of the side, the side must be controlled by you) to ''username'' (write here the nick of the player or observer)
+;<nowiki>:clear</nowiki>
+:clear chat messages
+;<nowiki>:debug</nowiki>
+:switch debug mode on (does not work in multiplayer). Debug mode is turned off by quitting the game or using the :nodebug command.
+;<nowiki>:theme</nowiki>
+:bring up theme selection menu
+;<nowiki>:nosaves</nowiki>
+:turns off the autosave function
+;<nowiki>:show_coordinates (or :sc)</nowiki>
+:Overlay x,y coordinates on map tiles. 1.5.5 onwards
+;<nowiki>:show_terrain_codes (or :tc)</nowiki>
+:Overlay terrain codes on visible map tiles. 1.5.5 onwards
+;<nowiki>:discover</nowiki>
+:Show all hidden unit descriptions in the in-game Help. 1.7.0 onwards
+
+===Extra Debugging Commands===
+[[DebugMode]] (:debug) enables additional commands in command mode:
+
+;<nowiki>:lua</nowiki> ''statement''
+: execute a Lua statement
+;<nowiki>:nodebug</nowiki>
+:disables debug-mode commands
+;<nowiki>:n</nowiki>
+:skip to next scenario by triggering a win event
+;<nowiki>:shroud</nowiki>
+:toggles shroud on/off (implemented since 1.3.10)
+;<nowiki>:fog</nowiki>
+:toggles fog on/off (implemented since 1.3.10)
+;<nowiki>:gold</nowiki> ''amount''
+:add ''amount'' gold to the current player's side
+;<nowiki>:create</nowiki> ''unit_type''
+:create a unit of type specified at last selected hex
+;<nowiki>:unit hitpoints=</nowiki>''amount''
+:edit units hitpoints
+;<nowiki>:unit experience=</nowiki>''amount''
+:edit units experience
+;<nowiki>:unit</nowiki> ''attribute=value''
+:when a unit is selected, this will set the unit's ''attribute'' to ''value''. See [[SingleUnitWML]] for possible values.
+;<nowiki>:unit</nowiki> ''advances=N''
+: when a unit is selected, this will advance (level up) the unit N times.
+;<nowiki>:set_var</nowiki> ''attribute=value''
+:this will set a WML variable to a given value
+;<nowiki>:show_var</nowiki> ''attribute''
+:this will display a popup with the content of the variable
+;<nowiki>:throw/fire</nowiki> ''event_name''
+:throw an event by name, like ''time over'' or ''enemies defeated''. (Only available in 1.3.5 or later.)
+;<nowiki>:inspect</nowiki>
+: show a gamestate inspector dialog which allows to see variable info, team info, ai info.
+;<nowiki>:cl</nowiki>
+:pops up a menu that allows you to move directly to a specified scenario.
+;<nowiki>:turn</nowiki> [''number'']
+:change the current turn to the specified number. If no number is provided, the turn number is increased by one.
+;<nowiki>:turn_limit</nowiki> [''number'']
+:change the turn limit for the current scenario to the specified number. If no number is provided, or it is -1, the turn limit is switched off.
+;<nowiki>:version</nowiki>
+:Report version and SVN revision level.
+
+== See Also ==
+
+* [[DebugMode]]
+* [[ChatCommands]]
+* [[ServerAdministration]]
+* [[DeveloperResources]]
+
+[[Category:Playing Wesnoth]]
+[[Category:Development]]

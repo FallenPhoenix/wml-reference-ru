@@ -1,0 +1,66 @@
+The purpose of this page is to list conventions of WML --
+that is, things that make WML more readable and flexible.
+
+== Use wmlscope, wmllint, and wmlindent ==
+
+The WML [[Maintenance_tools|maintenance tools]] will help you ensure that your WML is clean, up-to-date, and correct.  Use them early and often; they will save you a lot of trouble later by catching entire classes of WML bugs before a user can ever see them.
+
+== Macros ==
+
+Using macros is useful for decreasing the size of a file,
+and for making it clear that you are doing the same thing several times.
+It is economical to use '''[http://www.wesnoth.org/macro-reference.xhtml macros from the standard library]''' rather than writing your own whenever you can, but don't hesitate to write your own when the standard library does not do what you need.
+
+A good rule for when to write a macro is to use them whenever information or code is being duplicated and all the duplications might have to be changed in the same way later. For information on how to create and use macros, see [[PreprocessorRef]].
+
+Conventionally, your macro definitions should live in one or more files within a directory called utils under your main campaign directory.  Be sure to
+include that directory in your _main.cfg.
+
+== Indentation ==
+
+We used to have complicated recommendations for indentation.  Now we have a WML indenting program and much simpler rules.
+
+Be aware that no matter how you indent your WML, if it's accepted into mainline we are going to run <tt>wmlindent</tt> on it and smash it into the house style. We do this so our WML maintainers won't have to cope with lots of idiosyncratic indentation variants.  You can make your WML more readable by writing in the house style to begin with.
+
+# Indent each level with '''4 spaces'''. 
+# Indent attributes a level deeper than their parent tag.
+# Indent macros as though the <tt>#define/#enddef</tt> are an outermost level; that is, the macro body starts with one level of indenting. Same applies to <tt>#undef</tt>.
+# Don't indent <tt>#ifdef</tt>/<tt>#ifndef</tt>/<tt>#else</tt>/<tt>#endif</tt> at all
+# Indent comments at the same level as the text they go with.
+
+When in doubt, run <tt>wmlindent</tt> on your code.  See [[Maintenance tools]] for more description of this program.
+
+:'''Note:''' Although 4 spaces is the mainline style, there's absolutely ''nothing'' wrong with tabs either. Those of you who prefer a simpler Notepad program should not feel compelled to use spacebar and/or delete key four times the necessary amount when you can simply use tabs. In any case, it is very easy to convert these to the standard convention using <tt>wmlindent</tt>, so don't be scared to use your preferred method of indentation when working with WML. The most important thing to keep in mind is that your code should be uniformly indented, nested to the proper level, and using a form of whitespace that is easy for you to read, work with, and debug.
+
+== Naming files ==
+
+First of all, don't put spaces in filenames;
+this causes errors on some systems.
+Use underscores('''_''') instead.
+
+If the IDs of your scenarios are different from their names,
+name the files after the IDs, not the names.
+That way it is easier to tell which scenario is next.
+
+On some systems, filenames are case-sensitive. This means that if the ID has capital or lowercase letters, then the files must have identical capital or lowercase letters. 
+
+Use the scenario number and an underscore as a name prefix of your scenario files, and if you have more than 9 of these put 0 at the beginning of single-digit numbers. This will make them list in order, which is convenient for people trying to read your campaign.
+
+While many campaigns use the same sort of number prefixing for their map files, it's better not to if (as sometimes happens) your campaign needs to use the same map twice.
+
+== WML variables ==
+
+(For information about what WML variables are, see [[VariablesWML]].)
+These shouldn't be used except when necessary.
+[have_unit] tags can often be used instead.
+Also, make sure that your scenarios
+clear meaningless variables using [clear_variable].
+
+For variable values, use 'yes' and 'no' for boolean values
+rather than 1 and 0.
+It's clearer to people who don't know programming.
+
+== See Also ==
+* [[ReferenceWML]]
+
+[[Category:WML Reference]]

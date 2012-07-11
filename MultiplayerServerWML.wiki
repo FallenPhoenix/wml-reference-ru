@@ -1,0 +1,211 @@
+= Multiplayer Server WML =
+This page describes the [[WML]] used to communicate with the multiplayer server for Wesnoth, [[wesnothd]].
+
+== The handshake ==
+
+The client sends four bytes, then the server replies with four bytes. To get a new connection number, the client will send these four bytes: 0x00 0x00 0x00 0x00. The server then sends back the connection number (wesnothd calls this number the "socket number"). If the handshake is successful, the server will be the first to send a data package. All packages are in [http://en.wikipedia.org/wiki/Gzip gzip] format and are preceded by four bytes that specify the size of the package to come. Below you'll find information about what data the (unzipped) packages contain.
+
+== The login procedure ==
+
+* server request (optional)
+** '''[version]'''
+
+* client response
+** '''[version]'''
+*** '''version''': The client's version string.
+
+* server request
+** '''[mustlogin]'''
+
+* client response
+** '''[login]'''
+*** '''username''': The username the client would like to have.
+*** '''password_reminder''': If "yes" the client requests the server to send a password reminder for the provided username.
+*** '''password''': The hashed password, created from the password and salt received from the server. More information about how this password is being generated, including a real world example, can be found in the file [http://forum.wesnoth.org/download/file.php?id=41145 HashedPasswords.pdf] (885 KiB).
+
+* server response
+** '''[join_lobby]''' or
+** '''[error]'''
+*** '''message''': The error message.
+*** '''password_request''': If not empty the server asks the client to provide a password for its desired username.
+*** '''phpbb_encryption''': If "yes" the client will encrypt the password using phpbb's algorithm.
+*** '''random_salt''': Random salt sent to the client for mixing with the password hash.
+*** '''hash_seed''': Salt generated from the original hash that is required to recreate it.
+*** '''salt''': Salt generated from the original hash that is required to recreate it.
+*** '''force_confirmation''': Display an ok/cancel dialog with the content of the 'message' key.
+
+* server response
+** '''[gamelist]'''
+*** '''[game]''' (repeated)
+**** '''id''': A unique id of the game.
+**** '''name''': The title of the game.
+**** '''mp_scenario''': The id of the scenario.
+**** '''mp_era''': The id of the used era.
+**** '''mp_use_map_settings''': Does the game use the map settings specified in the scenario.
+**** '''mp_fog''': Does the game use fog.
+**** '''mp_shroud''': Does the game use shroud.
+**** '''mp_village_gold''': The number of gold per village.
+**** '''experience_modifier''': The experience setting.
+**** '''mp_countdown''': Does the game use a timer.
+**** '''mp_countdown_reservoir_time''': Upper limit of the possibly available time.
+**** '''mp_countdown_init_time''': Initial time.
+**** '''mp_countdown_action_bonus''': Time bonus per action.
+**** '''mp_countdown_turn_bonus''': Time bonus per turn.
+**** '''map_data''': The map data. ''Notice: not sent to lobby if the game uses shroud''
+**** '''hash''': The hash value of the map_data.
+**** '''observer''': Are observers allowed or not.
+**** '''human_sides''': The number of sides played by humans.
+**** '''slots''': The number of vacant/max slots.
+**** '''turn''': The current turn/max turn.
+** '''[user]''' (repeated)
+*** '''name''': The username of the player.
+*** '''game_id''': The ID of the game the player is in (version 1.3.7+svn).
+*** '''location''': The name of the game the player is in.
+*** '''available''': "yes" if the player is in the lobby; "no" if in a game.
+Many of the keys under [game] are described more indepth on the [[ScenarioWML]] page.
+
+== Error messages ==
+
+* '''[error]'''
+** '''message''': The error message.
+
+== Chat (lobby and in-game) ==
+
+* '''[message]'''
+** '''sender''': (optional - filled by the server) The sender of the message.
+** '''message''': The message itself.
+** '''room''': The room the message is from/to
+* '''[whisper]'''
+** '''receiver''': The receiver of the whisper
+** '''sender''': (optional - filled by the server) The sender of the whisper.
+** '''message''': The message itself.
+
+== Room commands ==
+Note: the room commands are in general and are subject to change.
+* '''[room_join]'''
+** '''room''': The room name to join
+** '''player''': (filled by server in response message sent to all room members) the player that joins the room
+** '''[members]''': member list sent to the player that joined
+*** '''[member]''': (repeated) members
+**** '''name''': This member's name
+* '''[room_part]'''
+** '''room''': The room name to part (leave). Leaving the lobby is not allowed.
+** '''player''': (filled by server in response message sent to all room members) the player that leaves the room
+* '''[room_query]''': specific room-related queries.
+** '''[rooms]''': List rooms created on the server, or
+** '''[names]''': List members of a given room
+*** '''room''': The room name (if applicable)
+** '''[persist]''': Check or set room persistance
+*** '''value''': (optional) set room persistance to this value (yes/no)
+* '''[room_query_response]''': contains specific response to a room_query.
+** '''message''': optional text message response
+** '''room''': room name (if applicable)
+** '''[rooms]''': room list
+*** '''[room]''': (repeated) rooms
+**** '''name''': This room's name
+** '''[members]''': member list
+*** '''[member]''': (repeated) members
+**** '''name''': This member's name
+
+== Nickname registration related commands (lobby and in-game) ==
+
+* '''[nickserv]'''
+** '''[register]'''
+*** '''password''': The password for the nickname.
+*** '''mail''': The email address for the nickname.
+** '''[drop]''': Drop this username.
+** '''[set]''': Set a detail (e.g. email address) for this nickname.
+*** '''detail''': The detail, e.g. "mail".
+*** '''value''': The new value for this detail, e.g. "user@edomain"
+** '''[info]''': Request info about another username.
+*** '''name''': The username.
+
+== Updating the lobby state ==
+
+* '''[gamelist_diff]''': server message - basically a diff from two [gamelist]s; the keys listed are the ones that actually occure in practice
+** '''index''': The index of a user.
+** '''[insert_child]''' A new user logged on.
+*** '''[user]'''
+**** '''name''': The name of the user.
+**** '''available''' "yes"
+*** '''[delete_child]''' A user logged off.
+** '''[change_child]'''
+*** '''[user]'''
+**** '''[insert]''': A user joined/left a game.
+***** '''available''': "yes" when the user left a game. "no" when the user joined a game
+***** '''location''': The name of the game the user joined.
+**** '''[delete]'''
+***** '''location''': "x" when a game was left.
+*** '''[gamelist]'''
+**** '''index''': Index of the game in question.
+**** '''[insert_child]''': A game started.
+***** '''[game]''' All the usual keys of [game] possible, see above.
+**** '''[delete_child]''': A game ended.
+***** '''[game]'''
+**** '''[change_child]''': Something changed in a game.
+***** '''[game]'''
+****** '''[insert]'''
+******* '''slots''': The number of free slots in the form: free/max slots
+******* '''turn''': The turn number in the form: current turn/max turns
+****** '''[delete]'''
+******* '''map''': "x" comes with every ''turn'' or ''slots'' change for games with shroud
+******* '''mp_scenario''': "x" comes with ''turn'' and ''slots'' changes for games with no scenario id
+
+* '''[observer]''' or '''[observer_quit]''': server message - players joining([observer_quit] - quitting the lobby "game")/quitting([observer] - joining the lobby "game") a game
+** '''name''': Username of the player/observer.
+
+== Game setup (the phase from creation to start) ==
+To create a game the client sends:
+* '''[create_game]'''
+** '''name''': The title of the game.
+
+followed by a message with the scenario options as under [game] (see above) plus the scenario data ([time], [era], [side], etc. see [[ScenarioWML]])
+
+* '''[join]'''
+** '''id''': The id of the game.
+** '''observe''': Join the game as an observer.
+
+* '''[scenario_diff]''': [[ScenarioWML]] diff (side changes, etc.)
+
+* '''[start_game]''': sent by the host to start a game
+* '''[leave_game]''': sent by the client when it leaves a game; sent by the server to make a client leave a game
+
+== In-game communication ==
+
+* '''[store_next_scenario]''': sent by the host - the scenario data (see [[ScenarioWML]]) to advance to the next scenario
+* '''[notify_next_scenario]''': sent by the server to tell players that the data for the next scenario is available
+* '''[load_next_scenario]''': sent by the client to request the data for the next scenario
+* '''[next_scenario]''': data for the next scenario (see [[ScenarioWML]]), sent by the server on request
+
+* '''[info]''': sent by the host on game end - info about the game state
+** '''type''': "termination" 
+** '''condition''': the termination reason
+
+* '''[change_controller]''': a player (un)droids one of his sides or assigns control to someone else (The host can assign control for any side.)
+** '''side''': the side to change controller
+** '''player''': the nickname of the player to take control
+** '''controller''': the new controller: "human" or "human_ai"
+** '''own_side''': "yes"
+
+If a player leaves this is sent to the host for all sides he owned.
+* '''side_drop''': The number of a side that dropped because a player left.
+* '''controller''': The controller of that side. ("ai", "network")
+
+* '''[muteall]''': the host mutes/unmutes all observers - toggles
+* '''[mute]''': the host mutes an observer - toggles
+** '''username''': the username of the observer - if not specified the servers returns a list of muted usernames
+* '''[kick]''' or '''[ban]''': the host kicks/bans a player/observer
+** '''username''': the username of the player/observer
+
+* '''[turn]'''
+** '''[command]''': (repeated) can contain all the tags you can find in a replay: [recruit], [move], [end_turn], etc.
+*** '''[speak]'''
+**** '''message''': text of the message
+**** '''id''': the sender
+**** '''team_name''': the name of the team the message is for - empty if it's a public message
+
+== Administrative commands ==
+* '''[query]'''
+** '''type''': The type of query. See [[ServerAdministration]] for details.
+
+[[Category:WML Reference]]

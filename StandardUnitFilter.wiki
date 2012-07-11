@@ -1,0 +1,70 @@
+From [[FilterWML]], this is the standard way of filtering units.
+
+When a unit filter is applied to a map, first it applies to all units on the field,
+based on their coordinates.
+Next it applies to units in the recall list.
+This is important to remember as it means, for example,
+that the tag '''[kill]''' can be used to kill units in the recall list.
+
+You can access the filtered unit within the filter as the ''$this_unit'' variable, see [[SingleUnitWML]] for the possible content of these variables
+
+The term [[StandardUnitFilter]] means that the set of such keys and tags (see below) can appear at that point. Often a [[StandardUnitFilter]] needs to be included in a [filter] tag. But many tags take the [[StandardUnitFilter]] directly as an argument, like [kill] and [have_unit]. See [[Special:WhatLinksHere/StandardUnitFilter]] for tags which can contain a StandardUnitFilter.
+
+
+
+The following attributes and sub-tags are allowed:
+
+* '''id''': unit matches the given id. This is the same as ''id'' in the [unit] tag. Note that it is independent of a unit's user-visible name, which can be internationalized independent of this (see [[SingleUnitWML]]). id= can be a comma-separated list, every unit with one of these ids matches.
+* '''speaker''': alias for id (no comma-separated list supported)
+* '''type''': matches the unit's type name (can be a list of types)
+* '''race''': the race of the unit type.<br>Mainline races are listed in data/core/units.cfg<br>{{DevFeature1.11}} In 1.11.0 and later, this can be a comma-separated list; the unit's race must match one of the given races
+* '''ability''': unit has an ability with the given id; see [[AbilitiesWML]]
+* '''side''': the unit is on the given side (can be a list)
+* '''has_weapon''': the unit has a weapon with the given name
+* '''canrecruit''': yes if the unit can recruit (i.e. is a leader)
+* '''gender''': female if the unit is female rather than the default of male
+* '''role''': the unit has been assigned the given role; see '''[role]''', [[InternalActionsWML]]
+* '''level''': the level of the unit
+* '''defense''': current defense of the unit on current tile (chance to hit %, like in movement type definitions)
+* '''movement_cost''': current movement cost of the unit on current tile
+* '''x,y''': the position of the unit. Note: there is a special case for units on the recall list such that x,y="recall,recall"
+* '''find_in''': name of an array or container variable; if present, the unit will not match unless it is also found stored in the variable
+* '''[filter_vision]''': this tests whether or not the unit is currently visible
+** '''visible''': yes or no, default yes. In Wesnoth 1.6.4 "yes" filters for units (visible or invisible) in visible locations. Filtering for unit (in)visibility requires "no". 
+** '''viewing_side''': the side(s) which you are checking if they are able to see (or not see) the unit. All sides listed here must pass the test. If no side is listed, it will check the visibility all enemy sides. (Deprecated in version 1.11.0)
+** {{DevFeature1.11}}: Use [[StandardSideFilter]] tags and keys instead of "viewing_side"
+* '''[filter_wml]''': this is WML level filter for the unit. In it, you can filter on anything that is in the WML description of a unit. This description can be found in any savegame also in [[SingleUnitWML]]. If the filter encounters a nested '''[not]''' tag, the attributes and containers inside the tag should not match for the upper filter to match. Note: [filter_wml] is especially slow, unless it contains only a child [variables], which is used for matching variables stored inside the unit.
+* '''[and]''': an extra unit filter. Unless the unit also matches the [and] filter, then it will not count as a match. ''Note: [and],[or], and [not] filters are considered after the containing filter; they are then processed in the order encountered.''
+* '''[or]''': an extra unit filter. If a unit matches the [or] filter, then it will count as a match regardless of conditions in previous filters or the containing filter.
+* '''[not]''': an extra unit filter. If a unit matches the [not] filter, then that unit will not be considered a match by the containing filter.
+* '''[filter_adjacent]''' with a StandardUnitFilter as argument; do not use a [filter] tag. If present the correct number of adjacent units must match this filter.
+**'''StandardUnitFilter''' tags and keys
+** '''count''': a number, range, or comma separated range; default "1-6"
+** '''adjacent''': a comma separated list of directions; default "n,ne,se,s,sw,nw"
+** '''is_enemy''': a boolean specifying whether the adjacent unit must be an enemy or an ally (optional)
+* '''[filter_location]''': [[StandardLocationFilter]] - the tile that the unit is standing on matches the location filter.
+*'''[filter_side]''': The currently filtered unit's side must match this [[StandardSideFilter]] for the unit to match.
+**[[StandardSideFilter]] tags and keys
+* '''formula''': [[FormulaAI]] like formula returning a boolean. The unit filtered is an implicit variable in the call.
+* '''lua_function''': the name of a [[LuaWML|Lua]] function in the global environment that takes a unit as an argument and returns true if the given unit matches the filter.
+
+== A Note about Re-Using the Same Attribute ==
+You are limited to having each attribute, such as '''id''', appear once or less in a [[StandardUnitFilter]]. However, this can be worked around. If you have several specific units you want excepted from matching, use a separate [or] subfilters for each one. Also you can use [not] subfilters. For example to kill ([kill] uses the standard unit filter) all units except Gwiti Ha'atel and Tanar you can do the following:
+  [kill]
+    [not]
+      id=Gwiti Ha'atel
+    [/not]
+    [not]
+      id=Tanar
+    [/not]
+  [/kill]
+:And similarly if you wanted to kill both Gwiti Ha'atel and Tanar, but no one else you could do the following:
+  [kill]
+    id=Gwiti Ha'atel
+    [or]
+      id=Tanar
+    [/or]
+  [/kill]
+
+
+[[Category: WML Reference]]

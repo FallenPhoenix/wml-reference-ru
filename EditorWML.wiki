@@ -1,0 +1,34 @@
+{{WML Tags}}
+Editor2, the new map editor in Wesnoth 1.5, has some adjustable behaviour that can de configured by the following WML. Note that this has very little to do with the "old", 1.4-era editor shipped as a separate executable.
+
+== The [brush] tag ==
+Each brush tag defines one brush. (0,0) is the hotspot, that is, the brush is always moved so the mouse is over the brush's (0,0) coordinate. The following keys and tags are recognized:
+* '''name''': name for the brush (will possibly show up in the tooltip for the brush)
+* '''image''': icon for the brush to de displayed on the toolbar
+* '''radius''': (int) include in the brushall hexes that are this or closer to the center of the brush, excluding the (0,0) point
+* '''[relative]''': include in the brush a single hex with coordinates relative from the center of the brush
+** '''x''': the relative x coordinate
+** '''y''': the relative y coordinate
+A brush that has neither  a radius nor any [relative] hexes will be empty which is not desired and a warning or error is to be expected.
+
+==The [editor_times] tag==
+The editor_times tag defines lighting presets (time-of-day) for the editor. The time-of-days should have different RGB values, otherwise extra aliases for the same RGB value set may be ignored. Standard time of day macros can be used.
+* '''[[TimeWML|[time]]]''' Time of day definitions
+
+==The [editor_music] tag==
+This tag defines the music playlist for the editor. Standard music macros can be used here.
+* '''[[InterfaceActionsWML|[music]]]''': Playlist item definitions
+
+==The [editor_tool_hint] tag ==
+This tag defines tooltips for the editor tools like paint, fill and select.
+* '''id''': tool (mouse action) id
+* '''text''': the tooltip text
+
+==The [editor_group] tag ==
+The editor_group tag defines a group of terrains displayed together on the terrain palette. Terrains must use a editor_group attribute from the list of ids specified in the editor_group tags. Custom terrains should be put in their own separate groups.
+* '''id''': the unique id of this group. Duplicates are ignored.
+* '''name''': a name for the group
+* '''icon''': an icon for the group
+* '''core''': whether this group is a "core" group. Non-core (UMC) groups are treated slightly differently by the editor -- a warning may be given to map authors, since maps using non-core terrains need special treatment in the scenario file to work properly. UMC groups should not define this attribute.
+
+[[Category: WML Reference]]

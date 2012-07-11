@@ -1,0 +1,91 @@
+{{WML Tags}}
+== The toplevel [help] tag  ==
+
+The [help] tag describes the Wesnoth help system.
+Each of the three subtags [toplevel], [section] and [topic] describe an element of the help system.
+
+* '''[toplevel]''': The toplevel tag denotes sections and topics that should be shown immediately when the "Help" button is clicked on (see the "help" action, [[ThemeWML]]).  The sections referenced within this tag are read recursively, including all subsections.
+** '''sections''': a list of IDs of the sections to include recursively.
+** '''topics''': a list of IDs of the topics to show as not being included in a section; i.e. top-level topics.
+* '''[section]''': The section tag describes a section in the help browser.  A section contains subsections and/or topics.
+** '''id''': is the unique ID for this section.
+** '''title''': (translatable) is the title of the section. It is displayed in the left menu.
+** '''sections''': is a list of IDs of the sections that should be this section's subsections.
+** '''topics''': is a list of IDs of the topics that should be included in this section. Topics will be included in the order listed unless sorting is requested.
+** '''generator''': provides the name of a function that will generate a list of topics and include them in this section. These topics will be included after topics listed on the '''topics''' key unless ''sort_topics'' is ''yes''.
+** '''sort_topics''': specifies whether or not to list the topics sorted by title or in the order listed on the '''topics''' key. '''yes''' indicates fixed and generated topics should be sorted together by title. '''no''' indicates that topics should appear in the order listed with fixed topics appearing before generated topics. '''generated''' indicates that fixed topics should not be sorted and will be followed by generated topics sorted by the generator. The default is '''generated'''.
+* '''[topic]''': The topic tag describes one topic, i.e, one help page.  The keys that are meaningful in the topic tag:
+** '''id''': is the unique ID for this topic.
+** '''title''': (translatable) is the title of the topic. It is displayed in the left menu and as a header in the text area.
+** '''text''': (translatable) is the contents of the topics. May contain markup described below.
+
+== Help System Topic Markup ==
+
+The markup that is allowed in the text key within a topic tag is in a WML-like markup language with angle brackets.
+
+It consists of plain text, interrupted with markup tags. Between paired start and end tags (like '''<jump> ... </jump>''') you can give keys and values like in WML, separated by spaces instead of newlines. For values containing spaces, surround them with single quotes. The "text content" of a tag, if any, is usually given by a ''text'' key. You can't nest tags within another tag.
+
+The following key/tags are accepted inside '''text''':
+* '''<ref>''': creates a cross reference to another topic, a cross reference will not show up if the topic it refers to is not visible.
+** '''dst''': the ID of the topic to reference.
+** '''text''': the text to display as a link to '''dst'''; i.e. when '''text''' is clicked on the page '''dst''' will be linked to.
+** '''force''': shows the cross reference even though the referred topic is not shown.
+* '''<jump>''': when this text is selected, the input position along the X axis is moved.  Can be used for example to create columns of things.  A jump is ignored if it would bring the input position to an invalid position.
+** '''to''': the X coordinate of the text area to jump to.  If it can't be done on the current row, the input position is moved down one line.
+** '''amount''': the number of pixels to jump forward
+* '''<img>''': insert an image in the topic
+** '''src''': the path to the image relative to the '''images/''' directory.
+** '''align''': the position of the image with respect to the page. Values are '''here''', '''left''', '''middle''', and '''right'''.
+** '''float''': whether the image should float(have text filled in around it) or not (be seen as included in a line).
+* '''<format>''': describes a group of text in a different format.  Can be used to describe different colors and font sizes.
+** '''bold''': whether the text should be displayed in bold('''bold''').
+** '''italic''': whether the text should be displayed in italics(''italics'').
+** '''color''': the color of the text.  Only a few colors are currently supported: '''white'''(default), '''green''', '''red''', '''yellow''', and '''black'''.
+** '''font_size''': the height of the text in pixels. Default 9(?)
+** '''text''': the text to be displayed using this format.
+* '''<italic>''': a shortcut to '''<format>''' which inputs only the '''text''' key.  Uses the attribute '''italic=yes'''
+* '''<bold>''': like <italic>, but uses '''bold=yes'''
+* '''<header>''': like <italic>, but uses both the attributes '''bold=yes''' and '''font_size=13'''(?)
+
+Example:
+ [help]
+   [toplevel]
+     sections=introduction,gameplay
+     topics=about
+   [/toplevel]
+   [section]
+     id=gameplay
+     sections=combat
+     topics=income_and_upkeep,time_of_day,terrain,victory_and_defeat
+   [/section]
+   [topic]
+     id=terrain
+     title=Terrain
+     text="<ref>dst=income_and_upkeep text='Link to Income and Upkeep topic'</ref>"
+   [/topic]
+   [topic]
+     id=victory_and_defeat
+     title= _ "Victory and Defeat"
+     text= _ "Pay careful attention to the <bold>text='Objectives'</bold> pop-up
+              box at the beginning of each scenario. Usually you will achieve
+              victory by killing all enemy leaders, and only be defeated by having
+              your leader killed. But scenarios may have other victory objectives
+              — getting your leader to a designated point, say, or rescuing someone,
+              or solving a puzzle, or holding out against a siege until a certain
+              number of turns have elapsed." + _"
+              
+              When you win a scenario, the map grays over and the
+              <bold>text='End Turn'</bold> button changes to
+              <bold>text='End Scenario'</bold>. You can now do things like changing
+              your save options or (if you are in a multiplayer game) chatting with
+              other players before pressing that button to advance."
+     
+   [/topic]
+ [/help]
+
+== See Also ==
+
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]

@@ -1,0 +1,340 @@
+{{WML Tags}}
+== Direct actions ==
+
+Direct actions are actions that have a direct effect on gameplay. They can be used inside of [[EventWML|events]].
+
+The following tags are actions:
+
+=== [endlevel] ===
+Ends the scenario.
+* '''result''': before the scenario is over, all events with ''name=result'' are triggered. If ''result=victory'', the player progresses to the next level; if ''result=defeat'', the game returns to the main menu. 
+
+When the result is "victory" the following keys can be used:
+* '''bonus''': whether the player should get bonus gold (maximum possible gold that could have been earned by waiting the level out). The default is bonus=yes.
+* '''carryover_report''': whether the player should receive a summary of the scenario outcome, the default is carryover_report=yes.
+* '''save''': whether a start-of-scenario save should be created for the next scenario, the default is save=yes. Do not confuse this with saving of replays for the current scenario.
+* '''replay_save''': whether a replay save for the current scenario is allowed, the default is replay_save=yes. If yes, the player's settings in preferences will be used to determine if a replay is saved. If no, will override and not save a replay.
+* '''linger_mode''': If ...=yes, the screen is greyed out and there's the possibility to save before advancing to the next scenario, the default is linger_mode=yes.
+* '''reveal_map''': (Multiplayer only) (Default is 'yes') If 'no', shroud doesn't disappear when game ended.
+* '''next_scenario''': (default specified in '''[scenario]''' tag) the ID of the next scenario that should be played.  All units that side 1 controls at this point become available for recall in ''next_scenario''.
+* '''carryover_percentage''': by default 80% of the gold is carried over to the next scenario, with this key the amount can be changed.
+* '''carryover_add''': if true the gold will be added to the starting gold the next scenario, if false the next scenario will start with the amount of the current scenario (after taxes) or the minimum in the next scenario. Default is false.
+* '''music''': (default specified in '''[scenario]''' or '''[game_config]''' tags) a comma-separated list of music tracks from which one will be chosen and played once after any events related to the end of level result are executed; by default, victory_music is used on victory, and defeat_music on defeat.
+* '''end_credits''': {{DevFeature1.11}} Whether to display the credits screen at the end of a single-player campaign. Defaults to ''yes''. Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
+* '''end_text''': (translatable) Text that is shown centered in a black screen at the end of a campaign. Defaults to "The End". Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
+* '''end_text_duration''': Delay, in milliseconds, before displaying the game credits at the end of a campaign. In other words, for how much time '''end_text''' is displayed on screen. Defaults to 3500. Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
+
+=== [unit] ===
+Places a unit on the map.  For syntax see [[SingleUnitWML]].
+* {{Short Note:Predefined Macro|GENERIC_UNIT}}
+* '''to_variable''':  spawn directly into a variable instead of on the map.
+
+=== [recall] ===
+Recalls a unit.  The unit is recalled free of charge, and is placed near the leader.
+* [[StandardUnitFilter]]: the first matching unit will be recalled.  If no units match this tag is ignored. Do not use a [filter] tag. If a comma separated list is given, every unit currently considered for recall is checked against all the types (not each single one of the types against all units).
+* '''x,y''': the unit is placed here instead of next to the leader.
+* '''show''': yes/no, default yes: whether the unit is animated (faded in) or instantly displayed
+* '''fire_event''': boolean yes|no (default no); whether any according prerecall or recall events shall be fired.
+* '''check_passability''': (boolean yes|no, default yes): If yes, checks for terrain passability when placing the unit (a nearby passable hex is chosen).
+
+=== [teleport] ===
+Teleports a unit on map. {{Short Note:Predefined Macro|TELEPORT_UNIT}}
+* '''[filter]''': [[StandardUnitFilter]] the first unit matching this filter will be teleported.
+* '''x,y''': the position to teleport to.
+* '''clear_shroud''': should shroud be cleared on arrival
+* '''animate''': should a teleport animation be played (if the unit doesn't have a teleport animation, it will fade out/fade in)
+* '''check_passability''': (boolean yes|no, default yes): normally, units will not be teleported into terrain that is impassable for them. Setting this attribute to "no" permits it.
+
+(Note: There is also a ability named teleport, see [[AbilitiesWML]].)
+
+=== [terrain_mask] ===
+Changes the terrain on the map.  See [[TerrainMaskWML]].
+
+=== [terrain] ===
+Changes the terrain on the map.
+* '''terrain''': the character of the terrain to use.  See [[TerrainCodesWML]] to see what letter a type of terrain uses.
+* [[StandardLocationFilter]]. This [[StandardLocationFilter]]'s terrain= key is used for the new terrain, filtering by terrain can be done with a nested [[StandardLocationFilter]]: [and]terrain=terrain_string_to_be_filtered_for.
+* '''layer''': (overlay|base|both, default=both) only change the specified layer.
+* '''replace_if_failed''': (default=no) When replacing just one layer failed, try to replace the whole terrain. If '''terrain''' is an overlay only terrain, use the default_base as base layer. If the terrain has no default base, do nothing.
+
+=== [gold] ===
+Gives sides gold.
+* '''amount''': the amount of gold to give.
+* '''side''': (default=1) the number of the side to give the gold to. Can be a comma-separated list of sides. note: Default side=1 for empty side= is deprecated.
+* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+* '''[filter_side]''' with a [[StandardSideFilter]] as argument {{DevFeature1.11}}: [gold][filter_side] is deprecated, use the new inline SSF.
+
+=== [unstore_unit] ===
+Creates a unit from a game variable, and activates it on the playing field.  This must be a specific variable describing a unit, and may not be an array -- to unstore an entire array, iterate over it.  The variable is not cleared.  See also [[InternalActionsWML#.5Bstore_unit.5D|[store_unit]]], [[ConditionalActionsWML#.5Bwhile.5D|[while]]] and [[InternalActionsWML#.5Bclear_variable.5D|[clear_variable]]].
+* '''variable''': the name of the variable.
+* '''find_vacant''': whether the unit should be placed on the nearest vacant tile to its specified location.  If this is set to 'no'(default), then any unit on the same tile as the unit being unstored will be destroyed. 
+* '''check_passability''': (boolean yes|no, default yes): If yes, checks for terrain passability when placing the unit. This key has no effect if find_vacant=no (no check performed then). Before 1.9 this key is always "no".
+* '''text''': (translatable) floating text to display above the unit, such as a damage amount
+* '''red''', '''green''', '''blue''': (default=0,0,0) the color to display the text in. Values vary from 0-255. You may find it convenient to use the {COLOR_HARM} or {COLOR_HEAL} macro instead. (Use {COLOR_HARM} or {COLOR_HEAL} instead of the whole red,green,blue= line.)
+* '''advance''': (default=true) if true the unit is advanced if it has enough XP. When modifying XP make sure to do it from inside a [[EventWML#Multiplayer_safety|synchronized event]] or it may lead to OOS errors especially when several advancement paths exist. Note that advance and post advance events are called, so infinite loops can happen.
+* '''fire_event''': (boolean yes|no, default no) Whether any advance/post advance events shall be fired if an advancement takes place, no effect otherwise.
+* '''x''' ,'''y''': override unit location, "x,y=recall,recall" will put the unit on the unit's side's recall list.
+Units can be unstored with negative (or zero) hit points. Such units will be automatically hit (and killed) in combat, but if given the chance to heal, they will have a minimum of one hit point after healing (regardless of how negative their hit points were). This is unusual-looking behavior, so often should be avoided.<!-- A known use-case is using [unstore_unit] to modify a unit during its last_breath event. -->
+
+=== [allow_recruit] ===
+Allows a side to recruit units it couldn't previously recruit.
+* '''type''': the types of units that the side can now recruit.
+* '''side''': (default=1) the number of the side that is being allowed to recruit the units. This can be a comma-separated list note: Default side=1 for empty side= is deprecated.
+* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+
+=== [allow_extra_recruit] ===
+Allows a leader to recruit units it couldn't previously recruit.
+These types add to the types the leader can recruit because of [side]recruit=.
+* '''extra_recruit''': the types of units that the unit can now recruit.
+* '''[[StandardUnitFilter]]''': All units matching this filter are modified. Does not match on recall list units.
+
+=== [disallow_recruit] ===
+Prevents a side from recruiting units it could previously recruit.
+* '''type''': the types of units that the side can no longer recruit.
+* '''side''': (default=1) the number of the side that may no longer recruit the units. This can be a comma-separated list note: Default side=1 for empty side= is deprecated.
+* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+
+=== [disallow_extra_recruit] ===
+Prevents a leader from recruiting units it could previously recruit.
+* '''extra_recruit''': the types of units that the side can no longer recruit.
+* '''[[StandardUnitFilter]]''': All units matching this filter are modified. Does not match on recall list units.
+
+=== [set_recruit] ===
+Sets the units a side can recruit.
+* '''recruit''': the types of units that the side can now recruit.
+* '''side''': (default=1) the number of the side that is having its recruitment set. This can be a comma-separated list. note: Default side=1 for empty side= is deprecated.
+* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+
+=== [set_extra_recruit] === 
+Sets the units a leader can recruit.
+* '''extra_recruit''': the types of units that the leader can now recruit.
+* '''[[StandardUnitFilter]]''': All units matching this filter are modified. Does not match on recall list units.
+
+=== [modify_side] ===
+Modifies some details of a given side in the middle of a scenario.  '''The following listed properties are the only properties that [modify_side] can affect!'''
+* '''side''': (default=1) the number of the side that is to be changed. note: Default side=1 for empty side= is deprecated.
+* '''[filter_side]''' with a [[StandardSideFilter]] as argument
+* '''income''': the income given at the begining of each turn.
+* '''recruit''': a list of unit types, replacing the side's current recruitment list.
+* '''team_name''': the team in which the side plays the scenario.
+* '''user_team_name''': a translatable string representing the team's description. This has no effect on alliances. Defaults to ''team_name''.
+* '''gold''': the amount of gold the side owns.
+* '''village_gold''': the income setting per village for the side.
+* '''controller''': the identifier string of the side's controller. Uses the same syntax of the ''controller'' key in the [[SideWML|[side]]] tag.
+* '''fog''': a boolean string (yes/no) describing the status of Fog for the side.
+* '''shroud''': a boolean string describing the status of Shroud for the side.
+* '''hidden''': a boolean string specifying whether side is shown in status table.
+* '''color''': {{DevFeature1.11}} a team color range specification, name (e.g. "red", "blue"), or number (e.g. "1", "2") for this side. The default color range names, numbers, and definitions can be found in data/core/team_colors.cfg.
+* '''[ai]''': replaces a side's AI parameters with the new specified ones. Uses the same syntax described in [[AiWML]].
+* '''switch_ai''': replaces a side ai with a new AI from specified file(ignoring those AI parameters above). Path to file follows the usual WML convention.
+* '''reset_maps''': {{DevFeature1.11}} If set to "yes", then the shroud is spread to all hexes, covering the parts of the map that had already been explored by the side, including hexes currently seen. (Seen hexes will be cleared at the end of most events; they can also be manually cleared with {{tag|InterfaceActionsWML|redraw}}.) This is only effective if shroud is on, but this is evaluated after shroud= (and before shroud_data=).
+* '''reset_view''': {{DevFeature1.11}} If set to "yes", then the fog of war is spread to all hexes, covering the parts of the map that had already been seen this turn by the side, including hexes currently seen, excluding hexes affected by multi-turn {{tag|DirectActionsWML|lift_fog}}. (Seen hexes will be cleared at the end of most events; they can also be manually cleared with {{tag|InterfaceActionsWML|redraw}}.) This is only effective if fog is on, but this is evaluated after fog=.
+* '''share_maps''': change the share_maps side attribute. Be sure to use shroud=yes for that side and have it as an ally
+* '''share_view''': change the share_view side attribute. Be sure to use fog=yes for that side and have it as an ally
+* '''shroud_data''': changes to the side's shroud, using the same format as when defining the [side].
+
+=== [modify_turns] ===
+Modifies the turn limit in the middle of a scenario.
+* '''value''': the new turn limit.
+* '''add''': if used instead of ''value'', specifies the number of turns to add to the current limit (can be negative).
+* '''current''': changes the current turn number after applying turn limit modifications, if any. It is not possible to change the turn number to exceed the turn limit (1 <= current turns <= max turns).
+
+=== [allow_end_turn] ===
+Allows human players to end their turn through the user interface if they were previously affected by the '''[disallow_end_turn]''' action. This action doesn't take any arguments.
+
+=== [disallow_end_turn] ===
+Disallows human players to end their turn through the user interface. This action doesn't take any arguments.
+
+=== [capture_village] ===
+Changes the ownership of a village.
+* [[StandardLocationFilter]]: all village locations matching the filter are affected.
+* '''side''': the side that takes control of the village. This side needs to have a leader (canrecruit=yes). If the side key is not given, the village will become neutral (unless [filter_side] is present, in which case that side fiter decides, see below).
+* '''[filter_side]''' with [[StandardSideFilter]] tags and keys as arguments; if both this tag and inline side= are present it's an error. Otherwise, the first matching side gets ownership (or the village becomes neutral if none match).
+* '''fire_event''' (boolean yes|no, default: no): Whether any capture events shall be fired.
+
+=== [kill] ===
+Removes all units (including units in a recall list) that match the filter from the game.
+* [[StandardUnitFilter]]: Selection criterion; do not use a [filter] tag.
+* '''animate''': if 'yes', displays the unit dying (fading away).
+* '''fire_event''': if 'yes', triggers any appropriate 'die' events (See [[EventWML]]). Note that events are only fired for killed units that have been on the map (as opposed to recall list).
+* '''[secondary_unit]''' with a [[StandardUnitFilter]] as argument. Do not use a [filter] tag. Has an effect only if fire_event=yes. The first on-map unit matching the filter becomes second_unit in any fired die and last breath events. If an on-map unit matches and if there are several units killed with a single [kill] tag, second_unit is this same unit for all of them. If no on-map unit matches or [secondary_unit] isn't present, the variable second_unit in each of the die and last breath events is always the same as the variable unit (the dying unit).
+
+=== [move_unit] ===
+works like the MOVE_UNIT macro.
+* [[StandardUnitFilter]] as argument; do not use a [filter] tag. All units matching the filter are moved. If the target location is occupied, the nearest free location is chosen.
+* '''to_x''' (unsigned integer): The units are moved to this x coordinate. Can be a comma-separated list, in which case the unit follows this given path during the move.
+* '''to_y''' (unsigned integer): The units are moved to this y coordinate. Can be a comma-separated list.
+* '''fire_event''' (optional, boolean yes|no, default no): Whether any according moveto events shall be fired. The target location ($x1, $y1 in the event) may not be the same location that the unit was tried to be moved to, if the original target location is occupied or impassable.
+* '''check_passability''' (boolean yes|no, default yes): Whether the terrain the unit is moved to should be checked for suiting the unit. (If it does not, a nearby suitable hex is chosen.)
+
+=== [modify_ai] ===
+Changes AI objects (aspects, goals, candidate actions or stages) for a specified side. See [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|AiWML]] for full description.
+
+* '''action''' (string): Takes values 'add', 'change', 'delete' or 'try_delete' to do just that for the AI object.
+* '''path''' (string): Describes which AI object is to be modified.  
+* '''[facet]''', '''[goal]''', '''[candidate_action]''' or '''[stage]''': Details about the AI object to be modified.
+* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+* '''[filter_side]''' with a [[StandardSideFilter]] as argument {{DevFeature1.11}}: [modify_ai][filter_side] is deprecated, use the new inline SSF.
+
+=== [modify_unit] ===
+works similar to the MODIFY_UNIT macro.
+* '''[filter]''' with a [[StandardUnitFilter]] as argument. All units matching this filter are modified. Matches on recall list units too.
+* Accepts generally the syntax inside of wml unit variables created by [store_unit] which can be viewed in a savefile or by using the :inspect command. Can add traits with immediate effect. Cannot remove things. Subtags with the same name must be written in the correct order to match them with the tag they are supposed to modify.
+example usage (see also the test scenario):
+ [modify_unit]
+     [filter]
+         type=Troll Rocklobber
+     [/filter]
+     hitpoints=10
+     [modifications]
+         [trait]
+             # first trait is unmodified
+         [/trait]
+         {TRAIT_HEALTHY}# second trait is replaced with the healthy trait
+     [/modifications]
+ [/modify_unit]
+
+The unit which is currently modified is accessible via $this_unit, e.g. hitpoints = "$($this_unit.hitpoints / 2)" to set the hitpoints of all units to half of their particular maxima. This this_unit variable is independent from the this_unit variable available in the SUF used to determine which units to modify (first all matching units are gathered, and then all those are modified).
+
+note: The syntax allowed is somehow vague. Just try things and possibly correct/add/modify this documentation. (a [http://forums.wesnoth.org/viewtopic.php?f=21&t=31676& forum thread] discusses some related issues).
+
+=== [transform_unit] ===
+transforms every unit matching the filter to the given unit type. Keeps intact hitpoints, experience and status. If the unit is transformed to a non-living type (undead or mechanical), it will be also unpoisoned.
+* [[StandardUnitFilter]]: do not use a [filter] tag.
+* '''transform_to''': the unit type in which all the units matching the filter will be transformed. If missing, the units will follow their normal advancement.
+
+=== [petrify] ===
+
+* [[StandardUnitFilter]] as an argument. Do not use a [filter] tag. All units matching this filter are petrified. Recall list units are included.
+
+=== [unpetrify] ===
+* [[StandardUnitFilter]] as an argument. Do not use a [filter] tag. All units matching this filter are unpetrified. Recall list units are included.
+
+=== [object] ===
+Gives some unit an object and removes all items on the tile the unit is on.
+* '''id''': (Optional) when the object is picked up, a flag is set for ''id''.  The object cannot be picked up if a flag for ''id'' has been set.  This means that any object with an id can only be used once, even if first_time_only=no is set for the event. This restriction is per level. In a campaign objects with the same id can be assigned once per level.
+* '''delayed_variable_substitution''' (boolean yes|no, default no): If set to "yes", the wml block contained in this [object] is not variable-substituted at execution time of the event where this [object] is within. You need this to work around a bug when adding ABILITY_TELEPORT via an [object] or when using [object][effect][filter]with a $this_unit (see http://gna.org/bugs/index.php?18893).
+* '''[effect]''': one or more effect elements may be listed.  See [[EffectWML]] for a description of [effect].
+* '''duration''':
+**if 'level', effects only last until the end of the level (note : 'level' is the scenario, so this doesn't mean it last until the unit levels-up). {{DevFeature1.11}} 'level' has been renamed to 'scenario'.
+**if 'forever' or not set, effects never wear off.
+** {{DevFeature1.11}} if 'turn', effects only last until the start of the units next turn (when the unit refreshes movement and attacks). (Like other start-of-turn behavior, objects with a duration of "turn" won't expire before turn 2.)
+* '''[filter]''' with a [[StandardUnitFilter]] as argument. The first unit found that matches the filter will be given the object. Only on-map units are considered. If no unit matches or no [filter] is supplied, it is tried to apply the object to the unit at the $x1,$y1 location of the event where this [object] is in. The case of no unit being at that spot is handled in the same way as no unit matching a given filter ([else] commands executed, cannot_use_message displayed)
+* '''[then]''': a subtag that lets you execute actions if the filter conditions are met.  The most common action that should be inside here is a '''[remove_item]''' tag, but you could probably put any tags that otherwise work in a [then] tag.
+* '''[else]''': a subtag that lets you execute actions if the filter conditions are *not* met.
+* '''silent''': whether or not messages should be suppressed. Default is "no".
+* '''image''': the displayed image of the object.
+* '''name''': (translatable) displayed as a caption of the image.
+
+* '''description''': (translatable) displayed as a message of the image.
+* '''cannot_use_message''': (translatable) displayed instead of '''description''' if no unit passes the filter test.
+
+=== [remove_shroud] ===
+Removes some shroud from the map for a certain side (only relevant for sides that have shroud=yes).
+* '''side''': (default=1) the side for which to remove shroud. This can be a comma-separated list of sides. note: Default side=1 for empty side= is deprecated.
+* '''[filter_side]''' with a [[StandardSideFilter]] as argument
+* [[StandardLocationFilter]]: the range of tiles for which shroud should be removed
+
+=== [place_shroud] ===
+Places some shroud on the map for a certain side (only relevant for sides that have shroud=yes).
+* '''side''': (default=1) the side for which to place shroud. This can be a comma-separated list. note: Default side=1 for empty side= is deprecated.
+* '''[filter_side]''' with a [[StandardSideFilter]] as argument
+* [[StandardLocationFilter]]: the range of tiles on which shroud should be placed
+
+=== [lift_fog] ===
+{{DevFeature1.11}}Lifts the fog of war from parts of the map for a certain side (only relevant for sides that have fog=yes), allowing a player to witness what occurs there even if that player has no units within vision range.
+* '''[filter_side]''' with a [[StandardSideFilter]] indicating which sides should be affected.
+* [[StandardLocationFilter]]: the tiles from which fog should be lifted.
+* '''multiturn''': ''yes/no, default:no''. The default (not multiturn) causes fog to be removed in the same way that normal vision works; the cleared tiles will remain cleared until fog is recalculated (which normally happens when a side ends its turn). When multiturn is set to "yes", the cleared tiles remain clear until {{tag||reset_fog}} cancels the clearing. This allows tiles to remain clear for multiple turns, or to be refogged before the end of the current turn (without also refogging all tiles). Multiturn lifted fog is not shared with allies (even when share_view=yes).
+
+=== [reset_fog] ===
+{{DevFeature1.11}}The primary use of this tag is to remove multiturn lifted fog (created by {{tag||lift_fog}}), which causes the fog to reset to what it would have been had WML not interfered. (That is, hexes that a side's units could not see at any point this turn will be re-fogged, while seen hexes remain defogged.)
+* '''[filter_side]''' with a [[StandardSideFilter]] indicating which sides should be affected.
+* [[StandardLocationFilter]]: the fog reset will be restricted to these tiles.
+* '''reset_view''': ''yes/no, default: no'' If set to "yes", then in addition to removing multiturn fog, the side's current view is canceled (independent of the SLF). This means that all hexes will become fogged for the side unless multiturn fog exists outside the tiles selected by the SLF. Normally, one would want the currently seen hexes to become clear of fog; this is done automatically at the end of many events, and it can be done manually with {{tag|InterfaceActionsWML|redraw}}.
+Omitting both the SSF and the SLF would cancel all earlier uses of [lift_fog].
+Additionally setting reset_view="yes" would cause the side's entire map to be fogged (unless an ally keeps hexes clear by sharing its view).
+
+=== [allow_undo] ===
+Allows the player to undo the event that this tag is inside.  Has an effect only inside moveto events.  If the move is undone, only the position of the unit will be restored; any altered variables or changes to the game will remain changed after the move is undone.  It is up to the scenario designer to avoid abusing this command.
+* Technically, if '''[allow_undo]''' is inside an '''[event]''' with ''first_time_only=yes'' (the default setting), and the user undoes the event, then the state of the game has changed in this way: the event will not fire a second time, even though the user undid the move the first time.
+
+=== [heal_unit] ===
+Heal a unit. The variable '''$heal_amount''' will be set to the exact number of points healed (i.e can be lesser than the parameter '''amount''' if the unit is fully healed). $heal_amount contains only the number of hitpoints the first unit that was found got healed.
+*  '''[filter]''': [[StandardUnitFilter]] All matching on-map units are healed. If no filter is supplied, it is tried to take the unit at $x1, $y1.
+*  '''[filter_second]''': [[StandardUnitFilter]] all the units matching the filter ''and'' having the ''heals'' ability will have their animation played (if ''animate'' is set to true) for each of the units healed.
+*  '''amount''': (integer, default full) the maximum points the unit(s) will be healed. Can't set below 1 or above max_hitpoints. If "full", sets hitpoints to max_hitpoints. Before 1.9 the default is 0.
+*  '''animate''': a boolean which indicate if the healing animations must be played. (default no)
+*  '''moves''': (integer, default 0) The maximum current movement points the units will be "healed". Can't set below 0 or above max_moves. If "full", sets moves to max_moves.
+* '''restore_attacks''': (boolean, default no) Whether the units' attacks_left should be reset to their max_attacks (usually 1).
+* '''restore_statuses''': (boolean, default yes) Whether standard statuses should be reset to "no". This affects poisoned, slowed, petrified and unhealable. Before 1.9 this is always "no".
+
+=== [harm_unit] ===
+Harms every unit matching the filter, for the specific damage amount.
+*  '''[filter]''': [[StandardUnitFilter]] all matching units will be harmed (required).
+*  '''[filter_second]''': [[StandardUnitFilter]] if present, the first matching unit will attack all the units matching the filter above.
+*  '''amount''': the amount of damage that will be done (required).
+*  '''alignment''': (default neutral) applies an alignment to the damage, this means that if alignment=chaotic, the damage will be increased at night and reduced at day.
+*  '''damage_type''': if present, amount will be altered by unit resistance to the damage type specified.
+*  '''kill''': (default yes) if yes, when an harmed unit goes to or below 0 HP, it is killed; if no its HP are set to 1.
+*  '''fire_event''': (default no) if yes, when a unit is killed by harming, the corresponding events are fired.
+*  '''animate''': (default no) if yes, scrolls to each unit before harming it and plays its defense (or attack, if it's the harmer) and death animations. Special values supported, other than the usual yes and no, are "attacker", that means only the harmer will be animated, and "defender", that means only the harmed units will be animated.
+*  '''[primary_attack], [secondary_attack]''': these set the weapon against which the harmed units will defend, and that the harming unit will use to attack, respectively (notice this is the opposite of '''[filter]''' and '''[filter_second]''' above). This allows for playing specific defense and attack animations. Both tags are expected to contain a [[FilterWML#Filtering_Weapons|Standard Weapon Filter]].
+*  '''delay''': if animate=yes, sets the delay (in milliseconds, default 500) between each unit harming.
+*  '''variable''': if present, the damage caused to the unit, altered by resistances, will be stored in a WML array with the given name, under the "harm_amount" key.
+*  '''poisoned, slowed, petrified, unhealable''': (default no) if yes, every harmed unit that doesn't already have such status will have it set.
+*  '''experience''': if yes, and there is an harmer, experience will be attributed like in regular combat.
+*  '''resistance_multiplier''': {{DevFeature1.11}} the harmed unit's resistance is multiplied by the supplied value; this means that a value lower than 1 increases it, and a value greater than 1 decreases it. Default value is 1, that means no modification.
+
+=== [time_area] ===
+How a day should progress in a given area. Everywhere not specified in a [time_area] tag is affected by the [time] tags in the [scenario] tag.
+* [[StandardLocationFilter]]: the locations to affect. ''note: only for [event][time_area]s - at scenario toplevel [time_area] does not support [[StandardLocationFilter]], only location ranges''
+* [[TimeWML]]: the new schedule.
+* '''id''': an unique identifier assigned to a time_area. Optional, unless you want to remove the time_area later. Can be a comma-separated list when removing time_areas, see below.
+* '''remove''': (boolean) yes/no value. Indicates whether the specified time_area should be removed. Requires an identifier. If no identifier is used, however, all time_areas are removed.
+
+=== [end_turn] ===
+End the current side's turn. The current event is finished before the turn is ended. Also, if the current event (where the tag appears) has been fired by another event, that event (and the complete stack of other possible parent events) is ended before [end_turn] comes into affect. Also, events following the event stack that fired [end_turn] are not omitted (e.g. [end_turn] is used by a side turn event and a turn refresh event does something afterwards).
+
+=== [replace_map] ===
+
+Replaces the entire map.
+* '''map''': Content of a wesnoth map file. example:
+ map="{campaigns/Heir_To_The_Throne/maps/01_The_Elves_Besieged.map}"
+* '''expand''': if 'yes', allows the map size to increase. The expansion direction is currently always bottom-right.
+* '''shrink''': if 'yes', allows the map size to decrease. If the map size is reduced, any units that would no longer be on the map due to its coordinates no longer existing will be put into the recall list.
+
+=== [replace_schedule] ===
+Replace the time of day schedule of the entire scenario.
+* [[TimeWML]]: the new schedule.
+
+=== [tunnel] ===
+
+Create a tunnel between some locations, later usable by units to move from source hex to target hex (using the movement cost of unit on the target terrain). ([http://forums.wesnoth.org/viewtopic.php?f=21&t=14749&p=405667&hilit=tunnel#p405667 source])
+
+* '''id''' identifier for the tunnel, to allow removing (optional).
+* '''remove''': (boolean) yes/no value. If yes, removes all defined tunnels with the same ID (then only id= is necessary). (default: no)
+* '''bidirectional''': (boolean) if yes, creates also a tunnel in the other direction. (default: yes)
+* '''always_visible''': (boolean) if yes, the possible movement of enemies under fog can be seen. (default: no)
+* '''[source]''': [[StandardLocationFilter]] the source hex(es) (required).
+* '''[target]''': [[StandardLocationFilter]] the target hex(es) (required).
+* '''[filter]''': [[StandardUnitFilter]] the units which can use the tunnel (required). Leave empty for "all units".
+
+(Note: The tunnel tag can also be used inside the [[AbilitiesWML|[teleport]]] ability, without remove= and id=).
+
+== Useful Macros ==
+There are some predefined macros that you find useful for direct actions. You can find a complete list along with a detailed explanation of how they work [http://www.wesnoth.org/macro-reference.xhtml here].
+* '''{MOVE_UNIT}''': Moves a unit to another location in the map and the player sees the movement (unlike [teleport])
+* '''{FULL_HEAL}''': Brings a unit to full HP
+* '''{LOYAL_UNIT}''': Create a loyal unit
+* '''{MODIFY_TERRAIN_MASK}''': Modify an area of terrain
+
+== See Also ==
+
+* [[InternalActionsWML]]
+* [[InterfaceActionsWML]]
+* [[EventWML]]
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]
+[[Category: ActionsWML]]

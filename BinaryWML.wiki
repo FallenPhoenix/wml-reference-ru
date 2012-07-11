@@ -1,0 +1,59 @@
+== Binary WML ==
+
+When sending WML over the network, it is compressed. This is a description of the used compression scheme. (Note: this comes mainly from a comment in binary_wml.cpp, the rest is reverse engineered from the source code and in some small parts from watching the network data - so it may be slightly incorrect)
+
+== Assumptions ==
+
+* most space is taken up by element names and attribute names
+* there are relatively few element names and attribute names that are repeated many times
+
+Therefore, data are never compressed, just the element and attribute names.
+
+== How it works ==
+
+Binary WML is a byte code. Each byte really is a command:
+* '''0''' Open element
+* '''1''' Close element
+* '''2''' Add new code
+* '''3''' Attribute
+* '''4..255''' Code
+
+The format of the commands is:
+* '''0 3 <name>''' Open element "name"
+* '''0 <C>''' Open element code[C]
+* '''1''' Close the current element
+* '''2''' <name> Dynamically add a new code for "name"
+* '''3''' <name> <data> Attribute "name" with value "data"
+* '''<C> <data>''' Attribute code[C] with value "data"
+where:
+* <name> and <data> are any byte sequences ended by a 0 byte.
+* <C> is a single byte with a value from 4 to 255
+
+== Binary data ==
+
+To send binary data (e.g. the campaign server when sending files), the <data> must escape any 0 bytes as a 0 byte marks the end of the data. It is done in this way:
+* 1 <x> -> <x-1>
+
+So for example:
+
+* 1 1 -> 0
+* 1 2 -> 1
+* 1 255 -> 254
+
+== Example ==
+
+Assume we have this WML to send:
+
+ [message]text=blah[/message]
+ [message]text=bleh[/message]
+
+Then we would construct the following byte stream:
+
+ <0> <2> m e s s a g e <0> <4> <2> t e x t <0> <5> b l a h <0> <1> <0> <4> <5> b l e h <0> <1>
+
+Or another variant without compression:
+
+ <0> <3> m e s s a g e <0> <3> t e x t <0> b l a h <0> <1> <0> <3> m e s s a g e <0> <3> t e x t <0> b l e h <0> <1>
+
+
+[[Category:Translations]]

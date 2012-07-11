@@ -1,0 +1,88 @@
+{{WML Tags}}
+== The Wesnoth Markup Language ==
+
+The Wesnoth Markup Language (WML) is used to code almost everything in Wesnoth, including scenarios, units, savefiles, and the user interface layout. WML files are simple, human-readable text files, usually with the .cfg extension, with similarities to INI files and XML. A major feature in WML are macros, which are alike those found in the C language and similarily are handled by a preprocessor. Implementation-wise, WML files are handled mainly by the ''config'' class (and ''simple_wml'' in [[wesnothd]]).
+
+This page is a collection of pointers to different common WML structures.  See [[AlphabeticalWML]] for a quick listing of all WML tags.  The more comprehensive [[BuildingScenariosIndex]] lists tags and keys.
+
+See [[BuildingScenarios]], [[BuildingCampaigns]] and [[BuildingUnits]]
+for a tutorial style overview.
+
+
+
+''Note: this reference may contain slight inaccuracies, might not list all existing keys and tags or might contain some deprecated syntax. If you find that this reference doesn't give you the answer to how to implement some feature in WML, the most reliable way is to look at the WML code of existing units and campaigns that have done so.''
+
+== How WML works ==
+
+* [[SyntaxWML]] the syntactical definition of WML, and how to use variables
+* [[PreprocessorRef]] the WML preprocessor syntax
+
+== WML toplevel tags ==
+
+* [[GameConfigWML]] the top level '''[game_config]''' tag
+* [[UnitsWML]] the top level '''[units]''' tag
+** [[UnitTypeWML]] how to describe a unit type
+** [[AnimationWML]] how to animate units
+* [[CampaignWML]] the top level '''[campaign]''' tag
+* [[ScenarioWML]] the top level tags '''[scenario]''', '''[multiplayer]''', '''[test]''', and '''[tutorial]'''
+** [[EventWML]] how to describe an event
+** [[SideWML]] how to describe a side
+** [[MapGeneratorWML]] the random map generator
+** [[TimeWML]] how to describe a day
+** [[IntroWML]] how to describe the intro screen
+* [[SavefileWML]] a description of the format of savegames
+** [[ReplayWML]] a description of the format of player actions such as moving a unit
+** [[StatisticalScenarioWML]] used to generate statistics of a savegame
+* [[PblWML]] a description of the format of server-uploadable campaigns
+* [[EraWML]] the top level '''[era]''' tag
+* [[TerrainWML]] the top level '''[terrain_type]''' tag
+* [[TerrainGraphicsWML]], the top level '''[terrain_graphics]''' tag
+* [[ThemeWML]] the top level '''[theme]''' tag
+* [[LanguageWML]] the top level '''[language]''' tag
+* [[LocaleWML]] the top level '''[locale]''' tag
+* [[HelpWML]] the top level '''[help]''' tag
+* [[BinaryPathWML]] the top level '''[binary_path]''' tag
+* [[FontsWML]] the top level '''[fonts]''' tag
+
+== Other WML tags ==
+
+* [[EventWML]] how to describe an event
+** [[FilterWML]] the construct to filter on units, locations, and weapons
+** [[ActionWML]] to describe the actions which occur when the event is fired
+*** [[ConditionalActionsWML]] actions that encapsulate conditional filters and the actions to execute if the conditions are met
+*** [[DirectActionsWML]] actions that directly affect gameplay: for example creating a unit
+**** [[SingleUnitWML]] how to describe a unit
+*** [[InternalActionsWML]] actions that WML uses internally: for example storing a variable
+*** [[InterfaceActionsWML]] actions that do not affect gameplay: for example displaying a message
+*** [[LuaWML]] how to code actions with the Lua language
+* [[AiWML]] how to describe parameters for AI
+* [[EffectWML]] the construct to modify a unit
+* [[AbilitiesWML]] a list of the different abilities a unit or weapon can have
+* [[DescriptionWML]] the structure of WML coded menus like the difficulty chooser of campaigns
+* [[EditorWML]] tags controlling the post-1.4 editor's behavior
+
+== Predefined macros == 
+
+Wesnoth ships with a library of predefined macros you should find useful in writing your own WML.  You can find a description of all such macros [http://www.wesnoth.org/macro-reference.html here].
+
+== Other ==
+
+* [[ReferenceWMLSyntax]] how this wiki and the pages it links to should be formatted
+* [[ConventionsWML]] how to make your WML more readable
+* [[UsefulWMLFragments]] Various pieces of WML for various purposes. If you have some WML you're proud of that you think others can use, add it here.
+* [[Maintenance tools]] for wmlindent, wmllint, wmlscope
+* [[CommandMode]] commands are not strictly speaking part of WML, these could be a little hard to find so there's a link here.
+* [[MultiplayerServerWML]] is used when communicating with the multiplayer server.
+* [[CampaignServerWML]] is used when managing contributed campaigns on the campaign server.
+* [[ImagePathFunctionWML]] is used when applying the team-color function to images.
+* [[BinaryWML]] how WML is sent over the network
+
+== See Also ==
+
+* [[BuildingMaps]] the text-based format for Wesnoth maps
+* [[TerrainCodesWML]] a list of all terrains
+* [[MultiHexTutorial]] a description of the multi-hex tiling system
+* [[IGNFileFormat]] a description of the ignore file format
+
+
+[[Category: WML Reference]]

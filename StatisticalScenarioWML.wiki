@@ -1,0 +1,102 @@
+{{WML Tags}}
+The [[SavefileWML|save file]] contains statistical information about all previously played scenarios; each one inside a [[#The_.5Bscenario.5D_tag|[scenario]]] tag.
+It also includes information about currently played scenario -- if the game was saved in the middle of scenario -- though this one will be re-calculated from replay.
+
+The statistics are recorded per scenario, per team, per unit type.
+Some of these statistics are available during game in "Statistics" menu option.
+Others are collected, but not currently displayed; this may later change.
+
+The recorded information includes:
+* number of units recruited
+* number of units recalled
+* number of units advanced
+* number of units killed
+
+== The [statistics] tag ==
+
+Top-level tag; appears directly in [[SavefileWML|save file]].
+
+Attribute:
+* '''mid_scenario''': whether the last scenario is currently being played
+
+Subtag:
+* ''[[#The_.5Bscenario.5D_tag|[scenario]]]'' -- recorded information for one played scenario
+
+The example statistics tag looks like this:
+
+ [statistics]
+   mid_scenario="false"
+   [scenario]
+     scenario="My first scenario"
+     [team]
+ 
+       # statistics about team 1 in first scenario
+ 
+     [/team]
+     [team]
+ 
+       # statistics about team 2 in first scenario
+ 
+     [/team]
+   [scenario]
+   [scenario]
+     scenario="My second scenario"
+     [team]
+ 
+       # statistics about team 1 in second scenario
+ 
+     [/team]
+     [team]
+ 
+       # statistics about team 2 in second scenario
+ 
+     [/team]
+   [scenario]
+ [statistics]
+
+
+== The [scenario] tag ==
+
+Appears in [[#The_.5Bstatistics.5D_tag|[statistics]]] tag.
+
+Attribute:
+* '''scenario''': the ID of the scenario whose results are recorded
+
+Subtag:
+* '''[[#The_.5Bteam.5D_tag|[team]]]''': recorded information for one team
+
+Teams must be in index order.
+Currently only the side 1 (index 0) statistics are displayed in game.
+
+== The [team] tag ==
+
+Appears in [[#The_.5Bscenario.5D_tag|[scenario]]] tag.
+
+Attributes:
+* '''damage_inflicted''': total damage inflicted by units on team
+* '''damage_taken''':total damage inflicted on units on team
+* '''recall_cost''': total cost of units that were recalled
+* '''recruit_cost''': total cost of units on team that were recruited
+
+Subtags:
+* '''[recruits]''': the set of units on [team] that were recruited in this scenario
+* '''[recalls]''': the set of units that were recalled in this scenario
+* '''[advances]''': "advancements"; the set of units on [team] that advanced in this scenario
+* '''[deaths]''': "losses"; the set of units on [team] that died in this scenario
+* '''[killed]''': "kills"; the set of units that were killed by units on [team]
+* '''[attacks]''': not displayed
+* '''[defends]''': not displayed
+
+The subtags describe numbers per unit type.
+For example the following information means that in given scenario the given team has recruited 3 Elvish Archers and 2 Elvish Fighters.
+
+ [recruits]
+   Elvish Archer="3"
+   Elvish Fighter="2"
+ [/recruits]
+
+== See Also ==
+* [[SavefileWML]]
+* [[ReferenceWML]]
+
+[[Category: WML Reference]]

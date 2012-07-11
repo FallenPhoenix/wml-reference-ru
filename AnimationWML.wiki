@@ -1,0 +1,650 @@
+{{WML Tags}}
+
+== Introduction ==
+
+This page covers unit animations. At any point in game, units are playing an animation. Even when the unit is standing, it is actually playing a single frame animation.
+
+This page will deal with the two problems of animations
+* How are animations chosen
+* What exactly is drawn
+
+
+
+== How animations are drawn ==
+=== Animations ===
+Any unit has a huge set of animations to choose from. Animations are WML blocks in the unit type, enclosed in either the generic type '''[animation]''' or some more specific tags such as '''[attack_anim]''' '''[idle_anim]''' and the like. An animation is what a unit displays when a given event is triggered, and a certain set of conditions are met such as
+* unit is attacking
+* unit is idling
+* unit is attacking (event) and uses a melee weapon (condition)
+* unit is attacking (event) and uses a melee weapon (condition) and opponent can't retaliate (condition)
+
+events and conditions are described entirely in the [animation] block, and will be discussed in the animation choice section.
+
+=== Frames ===
+    
+An animation is cut in frames. Frames are WML blocks that are contained either in '''[frame]''' WML blocks or in generic '''[xxx_frame]''' block. (the xxx part can be any string not starting with an underscore) the xxx part in the frame name is called the frame prefix. frames of the type '''[frame]''' are said to have an empty prefix
+
+A frame typically describes an image, where an how to render it. It can contain such things as
+* the image to display
+* how transparent should that image be
+* where to draw that image.
+
+At any given time, an animation will display one frame for each frame prefix it can find. I.e if your animation has both '''[frame]''' and '''[missile_frame]''' blocks, both will be displayed at the same time
+
+
+The frame with the empty prefix is special in many way. It is assumed to contain the image representing the unit itself, and as such the engine will heavily temper with it in multiple ways, such as providing a default image if none is available, or forcing the image to be green when the unit is poisoned
+
+=== Timing, Clock, Multiple animations ===
+When an animation is played it has an internal clock that is run. The step of this clock is the milisecond, and each frame is played for a given duration. Each animation also has a starting time which tells the animation engine at what value the animation clock should start
+
+This starting time is very important when multiple animations from different units are played synchronously  Typically a fight involves a unit playing its defense animation while the opponent plays it's attack animation (and a third might play its leading animation, too). In that case all animations have a common clock, and are played concurrently.
+
+The convention is that the "important time" (usually the time of the hit) is at time 0. everything before should be at negative time, everything after at positive time. This is a WML convention that is not enforced by the engine
+
+In that case, it is very important that these animations (which can have different lengths) be synchronized. Fight animations are synchronized around the point of impact, so they all reach time 0 when the attack lands (or misses). This is accomplished through the use of the '''start_time''' key of the '''[animation]''' tag.
+
+Just like the '''[frame]''' tag can have a prefix, so can the '''start_time''' key. A '''start_time''' key without prefix will affect a '''[frame]''' tag without prefix, while a '''start_time''' key with a prefix will affect a '''[frame]''' tag with the same prefix.
+
+==== Example Syntax ====
+    [attack_anim]
+        [filter_attack]
+            name=bow
+        [/filter_attack]
+        '''start_time'''=-350
+        '''missile_start_time'''=-150
+        [missile_frame]
+            duration=150
+            image="projectiles/missile-n.png"
+            image_diagonal="projectiles/missile-ne.png"
+        [/missile_frame]
+        [if]
+            hits=yes
+            [frame]
+                duration=350
+                sound=bow.ogg
+            [/frame]
+        [/if]
+        [else]
+            hits=no
+            [frame]
+                duration=350
+                sound=bow-miss.ogg
+            [/frame]
+        [/else]
+    [/attack_anim]
+
+=== The content of a frame ===
+==== Syntax summary ====
+ [frame]
+    duration=<integer>
+    begin=<deprecated,integer>
+    end=<deprecated,integer>
+    image=<string>
+    image_diagonal=<string>
+    image_mod=<string>
+    sound=<string>
+    halo=<progressive string>
+    halo_x=<progressive int>
+    halo_y=<progressive int>
+    halo_mod=<string>
+    alpha=<progressive float>
+    offset=<progressive float>
+    blend_color=<red, green, blue>
+    blend_ratio=<progressive float>
+    text=<string>
+    text_color=< red, green, blue >
+    submerge=<progressive float>
+    x=<progressive int>
+    y=<progressive int>
+    directional_x=<dev feature 1.9,progressive int>
+    directional_y=<dev feature 1.9,progressive int>
+    layer=<progressive int>
+    auto_hflip=<dev feature 1.9, boolean>
+    auto_vflip=<dev feature 1.9, boolean>
+    primary=<dev feature 1.9, boolean>
+ [/frame]
+
+==== Progressive parameters ====
+
+Some parameters above are marked as ''progressive'' This means that you can specify that during the time the frame is displayed, the parameter should smoothly slide from one value to an other.
+
+A typical example would be a unit progressively fading out, becoming transparent
+
+To do that, you could use:
+
+ alpha=1~0
+
+To make a frame, which is 900ms long, slide to transparent for 300ms, stay transparent for another 300ms and finally fade back to normal for 300ms, use:
+
+ alpha=1~0:300,0:300,0~1:300
+
+you could also specify it like that
+
+ alpha=1~0,0,0~1
+
+when a timing is missing, the engine will do its best to fill in in a fair way. 
+
+a progressive string has a similar syntax
+
+ halo=halo1.png:300,halo2.png:300,halo2.png:300
+
+==== Field Description ====
+
+** '''begin''': (deprecated) will be replaced by '''duration= <end - begin >'''
+** '''end''': (deprecated) see '''begin''' and also [[AnimationWML#Timing.2C_Clock.2C_Multiple_animations|Timing, Clock, Multiple animations]] section for coverage of '''start_time''' which combines with '''duration''' to replace '''begin=''' '''end='''.
+** '''duration''': how long the frame should be displayed. Use instead of '''begin=''' and '''end='''.
+** '''image''': the image to display during the frame.
+** '''image_diagonal''': the image to display when the attack occurs diagonally (directions ne,se,sw,nw).
+** '''image_mod''': a string modifications (see [[ImagePathFunctionWML]] ) that will be applied to all images
+** '''sound''': the sound to play when the frame begins. Can be a comma-separated list of sounds, in which case one of them is chosen randomly every time.
+** '''halo''': the halo to display at the time.
+** '''halo_x''': the position the halo is displayed in pixel relative to the unit's center.
+** '''halo_y''': the position the halo is displayed in pixel relative to the unit's center.
+** '''halo_mod''': a string modifications (see [[ImagePathFunctionWML]] ) that will be applied to all haloes
+** '''alpha''': transparency level to apply to the frame. This is a floating point progressive parameter ranging from 0.0 to 1.0.
+** '''offset''': the position of the image relative to the hex the unit is facing, 0.0 will display the unit in the center of the hex, 1.0 in the center of the faced hex, -1.0 at the center of the hex behind you. This is a progressive parameter.
+** '''blend_color''': a comma separated list of numbers representing a color in RGB (0-255); this color will be mixed to the frame to give it a tint.
+** '''blend_ratio''': this is a progressive parameter ranging from 0 to 1: 0 means no tint, 1 means target color only.
+** '''text''': if specified, floats a label with the given text above the unit (identical to the floating damage and healing numbers).
+** '''text_color''': the color of the above floating label.
+** '''submerge''': the part of the unit that should drawn with 50% opacity (for units in water)
+** '''x''': x offset applied to the frame
+** '''y''': y offset applied to the frame
+** '''directional_x''': the x offset, in pixels, applied to the frame in the direction the unit is facing
+** '''directional_y''': the y offset, in pixels, applied to the frame in the direction the unit is facing
+** '''layer''': layer used to draw the frame, see discussion bellow
+** '''auto_hflip''': should the image flip horizontally depending on sprite orientation
+** '''auto_vflip''': should the image flip vertically depending on sprite orientation
+** '''primary''': should the engine consider that frame as a primary frame (affected by visual effects like stone and poison)
+
+=== Drawing related animation content ===
+==== Syntax summary ====
+ [animation]
+   <animation choice related content>
+   [frame]
+     <frame content>
+   [/frame]
+   [frame]
+     <frame content>
+   [/frame]
+   start_time=<integer>
+   offset=<progressive float>
+   image_mod=<string>
+   blend_color=<r,g,b>
+   blend_ratio=<progressive float>
+   halo=<progressive_string>
+   halo_x=<progressive int>
+   halo_y=<progressive int>
+   halo_mod=<string>
+   submerge=<progressive float>
+   x=<progressive int>
+   y=<progressive int>
+   directional_x=<dev1.9,progressive int>
+   directional_y=<dev1.9,progressive int>
+   layer=<progressive int>
+   
+   [xxx_frame]
+     <frame content>
+   [/xxx_frame]
+   xxx_start_time=<integer>
+   xxx_image_mod=<string>
+   xxx_offset=<progressive float>
+   xxx_blend_color=<r,g,b>
+   xxx_blend_ratio=<progressive float>
+   xxx_halo=<progressive_string>
+   xxx_halo_x=<progressive int>
+   xxx_halo_y=<progressive int>
+   xxx_halo_mod=<string>
+   xxx_submerge=<progressive float>
+   xxx_x=<progressive int>
+   xxx_y=<progressive int>
+   xxx_directional_x=<dev1.9,progressive int>
+   xxx_directional_y=<dev1.9,progressive int>
+   xxx_layer=<progressive int>
+ 
+ [/animation]
+
+==== Parameter handling ====
+All drawing related parameters in '''[animation]''' can be matched with a corresponding parameter in  a '''[frame]''' block (or a '''[xxx_frame]''' block) The value provided in the animation will be used if no value is provided in the frame. 
+
+The point of these two level of parameters is to easily be able to specify a parameter at the animation level and override it for a special case of frame.
+
+== How animations are chosen ==
+Within a unit description block there are multiple animations. Each animation is meant to be played in a very special set of circumstances. We will discuss here how to tell the animation engine when a given animation should be played. 
+
+Let's take an example. Suppose we have a unit which has the skirmisher ability. We have the following movement animations :
+* a normal walking animation
+* a swimming animation when the unit is in water
+* a tiptoeing animation when moving next to an enemy unit
+
+Ok. most of the time it's easy to guess what animation should be. However if you are both in water and next to an enemy unit, the animation to play is not obvious.
+
+To solve that question, each animation has a number of filtering criteria. The engine follow the following rules to select an animation
+* Start with all animations
+* Drop all animations with a criteria that fails on the current situation
+* Take the animations that have the most matching criteria
+* If there are more than one animation remaining, take an animation randomly
+* If all animations have been dropped, the engine will provide a smart default.
+    
+here is a pseudo-code explanation of this algorithm:
+
+ foreach animation
+    animation_score = 0
+    foreach filter-criteria
+      if <criteria-fails> 
+          animation_score = -1;
+          break;
+      elsif <criteria-matches> 
+          animation_score++
+    endfor
+    if animation_score > max_score
+        <empty animation list>
+        max_score = animation_score;
+        push(animation,animation_list);
+    elsif animation_score = max_score
+        push(animation,animation_list);
+ endfor
+ <choose an animation randomly from animation_list>
+
+	
+Note that all animations don't have all the filters...
+
+so, if we have a unit with
+# an animation for water terrain
+# an animation for SE on grassland
+# an animation with no criteria
+# an animation for N,NE,NW,S,SW,SE
+# an animation for NW
+
+* 3. will never be taken, because 4. will always trump it
+* on water going NW, it can be 1. 4. 5.
+* on water, any direction but NW, it will be 1. or 4.
+* on SE grassland it will be 2.
+* on other grasslands, it will be 4. (4. or 5. if NW)
+
+=== Generic animation filters available for all animations ===
+* '''apply_to''': a list of comma separated keywords describing what event should trigger the animation (movement, attack...) the complete list is given below
+* '''value''': a list of comma separated integer, the meaning depends on the triggering event. the meaning is given with the list of event
+* '''value_second''': a list of comma separated integer, the meaning depends on the triggering event. the meaning is given with the list of event
+* '''terrain''': a list of comma separated terrain letters, the animation will only be used on these terrains.  See [[FilterWML#Filtering Terrains|Filtering Terrains]].  this has been replaced by '''terrain_type'''
+* '''terrain_type''': a list of comma separated terrain codes, the animation will only be used on matching terrains.  See [[FilterWML#Filtering Terrains|Filtering Terrains]].
+* '''[filter]''': this will filter using a [[StandardUnitFilter|standard unit filter]] on the animated unit. Note that matching all criterias in the filter will only earn you one point for animation selection, but that you can have multiple '''[filter]''' blocks in an animation.
+* '''[filter_second]''': this will filter using a [[StandardUnitFilter|standard unit filter]] on the unit in the hex faced. Note that matching all criteria in the filter will only earn you one point for animation selection, but that you can have multiple '''[filter_second]''' blocks in an animation. Also note that if the faced hex is empty, the whole filter will fail.
+* '''direction''': a list of directions (n,ne,se,s,sw,nw), the animation will only be used when acting or moving in this direction (the attack direction for attack animations, moving direction for movement animations, direction of lead unit for leading animations, and so on).
+* '''frequency''': this integer value allows to easily tweak the matching frequency of animations. The filter will fail n-1 times out of n, randomly. Note that unlike every other filter, matching this filter won't give an extra point.
+* '''[filter_attack]''': a standard attack filter to match on the attacker's attack. See  [[FilterWML#Filtering Weapons|Filtering Weapons]]. 
+* '''[filter_second_attack]''': a standard attack filter to match on the defender's attack. See [[FilterWML#Filtering Weapons|Filtering Weapons]]. Also note that if the defender doesn't have any weapon to retaliate with, this filter will always fail. 
+* '''hits''': filters attack animations based on whether the attack hits, misses or kills. Accepts a list of the following:
+** '''hit''': the attack hits, defender survives.
+** '''no''' or '''miss''': the attack misses.
+** '''kill''': the attack hits, defender dies.
+** '''yes''': is an alias of '''hit,kill'''.
+* '''swing''': a list of numbers representing the swing numbers this animation should match (numbered from 1). this has been replaced by value_second
+* '''base_score''': a number that will always be added to the score. Use with caution
+
+=== Events triggering animations and default animations ===
+==== standing ====
+This animation is triggered whenever any other animation is finished, and is played in loop until another animation is triggered
+
+this is the default "standing image" for the unit
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no standing animation is set a single frame animation based on the enclosing unit's '''image=''' field is used
+==== selected ====
+This animation is triggered whenever the unit is selected
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0.0~0.3:100,0.3~0.0:200" blend_color=255,255,255''
+==== recruited ====
+This animation is triggered whenever the unit is recruited or recalled
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''alpha=0~1:600''
+
+==== recruiting ====
+
+This animation is triggered for the leader when a unit is recruited or recalled
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+no default animation is needed
+
+note that is not triggered for WML triggered animations
+
+==== levelout ====
+This animation is triggered whenever the unit levels, before the unit is replaced by the new unit.
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0~1:600" blend_color=255,255,255''
+
+==== levelin ====
+This animation is triggered whenever the unit levels, after the unit is replaced by the new unit.
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="1~0:600" blend_color=255,255,255''
+
+==== movement ====
+This animation is used whenever a unit moves. There are multiple things to consider when dealing with movement animation
+* unit stay ''exactly'' 150ms in each hex. so you typically want to have an offset of ''0~1:150,0~1:150,0~1:150,0~1:150,0~1:150'' or something similar
+* when a unit enters a hex, the current anim is tested again.
+** if the current animation is still valid (i.e it passes all its filter) it is kept, whatever the final score is
+** if it fails, a new movement anim is searched
+
+''value='' contains the number of steps already taken
+
+''value_second='' contains the number of steps left
+
+if no animation is available, the default uses the standing animation(s) with ''offset="0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150"''
+
+==== pre_movement ====
+This animation is used before any unit movement
+
+''value='' is not used, and always contains 0 
+
+''value_second='' is not used, and always contains 0 
+
+==== post_movement ====
+This animation is used after any unit movement
+
+''value='' is not used, and always contains 0 
+
+''value_second='' is not used, and always contains 0
+
+==== pre_teleport ====
+This animation is triggered whenever the unit teleports, but before it has moved to the target hex
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="1~0:150" blend_color=255,255,255''
+==== post_teleport ====
+This animation is triggered whenever the unit teleports, but after it has moved to the target hex
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0~1:150" blend_color=255,255,255''
+==== healing ====
+This animation is triggered when the unit has healing powers and uses them
+
+''value='' is the number of points healed
+
+''value_second='' is not used, and always contains 0
+
+No default is provided by the engine
+==== healed ====
+This animation is triggered whenever the unit is healed for any reason
+
+''value='' is the number of points healed
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30" blend_color=255,255,255''
+and plays the sound ''heal.wav''
+==== poisoned ====
+This animation is triggered whenever the unit suffers poison dammage
+
+''value='' is the number of points lost
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30" blend_color=0,255,0''
+and plays the sound 'poison.ogg''
+==== defend ====
+This animation is triggered during a strike, of the unit receiving the blow
+
+''value='' is the number of point lost, if any
+
+''value_second='' is the number of the swing, starting from 1
+
+No default is provided by the engine
+==== attack ====
+This animation is triggered during a strike, of the unit giving the blow
+
+''value='' is the number of damage dealt, if any
+
+''value_second='' is the number of the swing, starting from 1
+
+if no animation is available, the default uses the standing animation(s) with ''offset="0~0.6:150,0.6~0:150"'' for melee attacks
+No default is provided for range attacks
+==== leading ====
+This animation is triggered for units with the leading special ability, when the unit they are leading is attacking
+
+''value='' is not used, and always contains 0
+
+''value_second='' is the number of the swing, starting from 1
+
+No default is provided by the engine
+
+
+==== resistance ====
+This animation is triggered for units with the resistance special ability affecting neighbouring fights, when the unit they are helping is defending
+
+''value='' is not used, and always contains 0
+
+''value_second='' is the number of the swing, starting from 1
+
+No default is provided by the engine
+
+==== death ====
+This animation is triggered when a unit die.
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+if no animation is available, the default uses the standing animation(s) with ''alpha=1~0:600'' and plays the sound in ''die_sound='' of the enclosing unit
+==== victory ====
+This animation is triggered when a unit finishes a fight by killing the other unit
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+No default is provided by the engine
+==== idling ====
+This animation is called when the unit has been using its standing animation for a random duration.
+
+''value='' is not used, and always contains 0
+
+''value_second='' is not used, and always contains 0
+
+No default is provided by the engine
+
+==== draw_weapon ====
+This animation is played before a fight
+
+''hit='' is set to HIT for the attacker and MISS for the defender
+
+No default is provided by the engine
+
+==== sheath_weapon ====
+This animation is played after a fight simultaneously for all surviving units
+
+No default is provided by the engine
+
+==== default ====
+
+This animation is never triggered, but is used as a base to create new animations
+
+''value='' is used depending of the type of animation it replaces
+
+''value_second='' is used depending of the type of animation it replaces
+
+A single animation made of the base frame is provided by the engine if no default animation is available
+
+==== extra animations ====
+Other values are never called by the engine. However they can be triggered by WML events allowing custom animations.
+
+Note that WML events can also trigger standard animations.
+''value='' is set from the WML event
+
+''value_second='' is set from the WML event
+
+== Shortcuts, tricks and quirks ==
+
+=== ''[if]'' and ''[else]'' ===
+
+Often, you need to do very slight variations in an animation (like a different sound depending on whether the unit hits or misses its attack), the '''[if]''' and '''[else]''' tags are meant to help you do that.  ('''Attention:''' These do not have the same syntax as the action tag [if] and its subtag [else] in [[ConditionalActionsWML]].)
+    
+Using these in an animation is equivalent to having multiple animations, one with the '''[if]''' block and one with each of the ''[else]'' blocks. Any filtering flags in these blocks will replace the toplevel filters. You can have multiple '''[if]''' blocks in an animation, but you can't nest an '''[if]''' inside another. These should be written directly inside the '''[animation]''' block. The following example would make the '''[frame]''' inside the '''[if]''' be played when the attack misses, and the '''[frame]''' inside the '''[else]''' be played when the attack hits (producing a different sound):
+
+    [if]
+        hits=no
+        [frame]
+            begin=-100
+            end=100
+            image="units/dwarves/lord-attack.png"
+            sound={SOUND_LIST:MISS}
+        [/frame]
+    [/if]
+    [else]
+        hits=yes
+        [frame]
+            begin=-100
+            end=100
+            image="units/dwarves/lord-attack.png"
+            sound=axe.ogg
+        [/frame]
+    [/else]
+
+note that this is very close to preprocessing and should be considered as such, especially with regard to scoring and animation selection
+
+=== Simplified animation blocks ===
+To simplify the most common animation cases, you can use different blocks instead of the generic '''[animation]''' block. These are also here for backward compatibility, but are not deprecated and fully supported
+
+some of these use extra tags which are translated in the normal ''value='' tag
+
+some of these define '''[xxx_frame]''' blocks where the frame prefix starts with an underscore. This is not allowed in normal WML (prefix starting with underscore is reserved for the engine internal use). It is here for clarity purpose
+
+* '''[leading_anim]''' is an animation with the following parameters automatically set
+ apply_to=leading
+* '''[recruit_anim]''' is an animation with the following parameters automatically set
+ apply_to=recruited
+* '''[recruiting_anim]''' is an animation with the following parameters automatically set
+ apply_to=recruiting
+* '''[standing_anim]''' is an animation with the following parameters automatically set
+ apply_to=standing,default
+note for 1.4 :''default'' doesn't exist in 1.4, but the semantic is the same.
+
+i.e: the animation will be used to build default animations
+* '''[idle_anim]''' is an animation with the following parameters automatically set
+ apply_to=idling
+* '''[levelout_anim]''' is an animation with the following parameters automatically set
+ apply_to=levelout
+* '''[levelin_anim]''' is an animation with the following parameters automatically set
+ apply_to=levelin
+* '''[healing_anim]''' is an animation with the following parameters automatically set
+ apply_to=healing
+ value=<damage= value>
+* '''[healed_anim]''' is an animation with the following parameters automatically set
+ apply_to=healed
+ value=<healing= value>
+ [_healed_sound_frame]
+    sound=heal.wav
+ [/_healed_sound_frame]
+* '''[poison_anim]''' is an animation with the following parameters automatically set
+ apply_to=poisoned
+ value=<damage= value>
+ [_poison_sound_frame]
+    sound=poison.ogg
+ [/_poison_sound_frame]
+* '''[movement_anim]''' is an animation with the following parameters automatically set
+ apply_to=movement
+ offset="0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150,0~1:150"
+* '''[pre_movement_anim]''' is an animation with the following parameters automatically set
+ apply_to=pre_movement
+* '''[post_movement_anim]''' is an animation with the following parameters automatically set
+ apply_to=post_movement
+* '''[draw_weapon_anim]''' is an animation with the following parameters automatically set
+ apply_to=draw_weapon
+* '''[sheath_weapon_anim]''' is an animation with the following parameters automatically set
+ apply_to=sheath_weapon_movement
+* '''[defend]''' is an animation with the following parameters automatically set
+ apply_to=defend
+ value=<damage= value>
+ <WML content>
+ [frame]
+    blend_color=255,0,0
+    blend_ratio="0.5:50,0.0:50"
+ [/frame]
+
+there are some subtil change compared to what is described above to avoid the red flash when value=0, but it should work as expected as far as WML author are concerned
+ 
+* '''[attack_anim]''' is an animation with the following parameters automatically set
+if the animation contains a missile frame
+
+ apply_to=attack
+ missile_offset="0~0.8"
+
+else
+
+ apply_to=attack
+ offset="0~0.6,0.6~0"
+
+* '''[death]''' is an animation with the following parameters automatically set
+ apply_to=death
+ [_death_sound_frame]
+    sound=<die_sound= of the enclosing [unit] tag>
+ [/_death_sound_frame]
+* '''[victory_anim]''' is an animation with the following parameters automatically set
+ apply_to=victory
+* '''[extra_anim]''' is an animation with the following parameters automatically set
+ apply_to=<flag= value of the anim>
+* '''[teleport_anim]''' will be cut into two at the clock-time 0
+everything before zero becomes an animation with the following parameters automatically set
+ apply_to=pre_teleport
+everything after zero becomes an animation with the following parameters automatically set
+ apply_to=post_teleport
+
+== Layering ==
+The ''layer'' progressive parameter allows the animation writer to choose in what order the animation should be drawn.
+
+this value must be between 0 and 100
+
+* the back of haloes is drawn with a value of 10
+* when unspecified, a animation is drawn with a value of 40
+* terrain elements that are supposed to go in front of units (castles) are drawn with a value of 50
+* orbs and status bars are drawn on layer 80
+* when unspecified missile frames are drawn on layer 90
+
+by changing these values, it is easy to have the unit display the way you want
+
+== Optimization ==
+
+there is a special flag that goes into the animation block (not the frame) 
+
+* ''offscreen'' a boolean saying if the unit's animation should be played when the unit is offscreen. You want the animation to play offscreen if the animation contains some usefull sound effects.This attribute defaults to true (play offscreen) except for standing and idle animations where it defaults to false
+
+== Cycling ==
+
+there is a special boolean parameter that can be put in an animation block (not the frame)
+
+* ''cycles'' a boolean value. if set to true the animation will cycles forever until it is replaced. That animation will not influence the end time of all related animations (for example a cycling defense animation will play normally but the overall duration of the fight animation will be only decided by the attack animation)
+
+== See Also ==
+
+* [[UnitTypeWML]]
+* [[ReferenceWML]]
+
+
+[[Category: WML Reference]]
