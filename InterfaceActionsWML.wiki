@@ -348,7 +348,7 @@ There are some predefined macros that you find useful for interface actions. You
 * '''{HIGHLIGHT_UNIT}''' Highlight a unit on the map. Use this to show important units
 * '''{HIGHLIGHT_IMAGE}''' Places and highlights an image on the map. Use this to show important items or locations
 * '''{SET_IMAGE}''' Places an image on the map which has no other function.
-* '''{QUAKE <soundfile>}''' Creates a tremor like screenshake and plays <soundfile>. ('''{TREMOR}''' is a deprecated version, equivalent to '''{QUAKE (rumble.ogg)}''')
+* '''{QUAKE <soundfile>}''' Creates a tremor-like screenshake and plays <soundfile>. For example, '''{QUAKE (rumble.ogg)}'''.
 * '''{FLASH_WHITE}''' Flash the screen white momentarily. You can also replace WHITE with RED, BLUE or GREEN for a different colour.
 
 == See Also ==

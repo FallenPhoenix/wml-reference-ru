@@ -128,6 +128,8 @@ Stores the starting location of a side's leader in a variable. The variable is a
 
 Stores time of day information from the current scenario into a WML variable container.
 
+* '''x, y''': Location to store the time for. Time areas matter, illumination does not.
+
 * '''variable''': (default='time_of_day') name of the container on which to store the information. The container will be filled with the same attributes found on [[TimeWML]].
 
 * '''turn''': (defaults to the current turn number) changes the turn number for which time of day information should be retrieved.
