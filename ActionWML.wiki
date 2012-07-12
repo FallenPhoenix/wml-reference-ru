@@ -1,32 +1,30 @@
-'''ActionWML''' is a summarizing term for all '''WML actions''' which can be used in events and some other places.
+'''ActionWML''' — обобщающий термин для всех '''WML-операций''', которые могут быть использованы в событиях и некоторых других местах.
 
-== Types of ActionWML ==
+== Виды ActionWML ==
 
 When a tag permits ActionWML as content, this means that it permits a sequence of any of the following tags:
 
-* direct actions ([[DirectActionsWML]]) which have a direct effect on gameplay
+* операции управления ([[DirectActionsWML]]) which have a direct effect on gameplay
 * display actions ([[InterfaceActionsWML]]) which show something to the user
-* internal actions ([[InternalActionsWML]]) which are used by WML internally
-* conditional actions ([[ConditionalActionsWML]]) which contain other actions, which then are (maybe) executed ([if], [switch], [while], [command])
-* [event] (see [[EventWML#Nested Events|EventWML]]) which creates a new event handler
-** note: [event] can also be a subtag of [unit], [era] and [scenario], where it would not be counted as ActionWML (but has nearly the same syntax).
+* внутренние операции ([[InternalActionsWML]]) which are used by WML internally
+* условные операции ([[ConditionalActionsWML]]) which contain other actions, which then are (maybe) executed ([if], [switch], [while], [command])
+* [event] (см. [[EventWML#Nested Events|EventWML]]), создающий новый обработчик события<br>note: [event] can also be a subtag of [unit], [era] and [scenario], where it would not be counted as ActionWML (but has nearly the same syntax).
 * [lua] ([[LuaWML]]) which contains Lua code to be executed, and
 * all tags created from lua with [[LuaWML:Events#wesnoth.register_wml_action|wesnoth.register_wml_action]] (if they don't fit in one of the categories above)
 
-When the ActionWML is executed, all its action tags are executed in order.
+Все операции ActionWML выполняются в порядке их указания.
 
-== Where ActionWML can be used ==
+== Где применимо ActionWML ==
 
-ActionWML can be used:
-* inside an [event], to define a event handler (see [[EventWML]]),
-* inside a [then] or [else] of an [if] tag (see [[ConditionalActionsWML]]),
-* inside a [case] or [else] of a [switch] tag  (see [[ConditionalActionsWML]]),
-* inside the [do] of a [while] tag  (see [[ConditionalActionsWML]]),
-* inside a [command] tag (in [option] or [set_menu_item] or directly as ActionWML) (see [[InterfaceActionsWML]]),
+ActionWML можно использовать:
+* внутри тега [event] для определения обработки событий (см. [[EventWML]]),
+* внутри [then] и [else] тега [if] (см. [[ConditionalActionsWML]]),
+* внутри [case] и [else] тега [switch] (см. [[ConditionalActionsWML]]),
+* внутри [do] тега [while] (см. [[ConditionalActionsWML]]),
+* внутри тега [command] (in [option] or [set_menu_item] or directly as ActionWML) (см. [[InterfaceActionsWML]]),
 * in certain Lua-created tags (if the registered WML action handler interprets the content as ActionWML).
 
-
-On most other places ActionWML code will either be ignored, give error messages or be interpreted differently (there may be some tags which are both ActionWML and have similar or different meanings in other places, like [event]).
+В остальных случаях код ActionWML выдаст ошибку, будет проигнорирован либо интерпретирован иначе (при совпадении имен тегов и атрибутов).
 
 
 [[Category:ActionsWML]]
