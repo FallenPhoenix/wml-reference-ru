@@ -60,7 +60,7 @@
 * '''animate''': if ''yes'', fades the unit in like when it's recruited/recalled.
 * '''[status]''' the status of the unit. This affects different features of the unit, for example whether the unit loses health each turn. Default for all keys is 'no', but this can be changed by the scenario or by special abilities (see [[AbilitiesWML]]). The Status Table displays the status of each unit using the three images '''misc/poisoned.png''', '''misc/slowed.png''' and '''misc/petrified.png'''; other keys do not appear in the Status Table.
 ** '''poisoned''': if 'yes', the unit loses 8 HP each turn. See also ''heals'', ''cures'', [[AbilitiesWML]].
-** '''slowed''': if 'yes', the unit has 50% of its normal movement and does half damage. When the controller of the unit's turn is over, ''slowed'' is set to 'off'  
+** '''slowed''': if 'yes', the unit has 50% of its normal movement and does half damage. When the controller of the unit's turn is over, ''slowed'' is set to 'no'  
 ** '''petrified''': if 'yes', the unit cannot move, attack, or be attacked.
 ** '''uncovered''': if 'yes', the unit has performed an action (e.g. attacking) that causes it to no longer be hidden until the next turn.
 ** '''guardian''': if 'yes', the unit will not move, except to attack something in the turn it moves (so, it only can move if an enemy unit gets within range of it). {{DevFeature1.11}} Does the same as '''ai_special = "guardian"'''.

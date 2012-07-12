@@ -88,6 +88,7 @@ Stores locations reachable by the given units. Can store either the movement, at
 
 ==== [store_time_of_day] ====
 Получает данные о времени суток. Целевой контейнер заполняется всеми атрибутами тега [[TimeWML|[time]]].
+* '''x, y''': Location to store the time for. Time areas matter, illumination does not.
 * '''turn''': Номер хода, для которого нужно узнать время суток (по умолчанию: текущий ход).
 * '''variable''': Имя контейнера, куда будет записана информация (по умолчанию: 'time_of_day').
 
