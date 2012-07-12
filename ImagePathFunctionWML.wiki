@@ -88,6 +88,14 @@ The multichannel syntax assumes all arguments are set to zero initially, so one 
 
 The single channel syntax behaves exactly the same, except that only single-channel modifications are made per function. However, one can stack them to produce the same behavior as ~CS(), e.g. ~R(r)~G(g)~B(b), but that tends to be just a performance loss.
 
+== Color-blend function ==
+{{DevFeature1.11}}
+Blends the image with the given color to produce a more controlled tinting effect than color-shifting, independently of the image's contents.
+=== Syntax ===
+'''~BLEND(r,g,b,o)'''
+
+The color is defined by the ''r'', ''g'', and ''b'' parameters (integers ranging from 0 to 255). The ''o'' (opacity) parameter controls the amount by which the given color will be blended into the image, and may be specified either as a factor from 0.0 to 1.0, or percentage up to 100%. Thus, ~BLEND(r,g,b,0.5) and ~BLEND(r,g,b,50%) are equivalent.
+
 == Lightmap color-shift function ==
 Performs per-pixel and per-channel color shifts using another image (a "lightmap") as source, allowing to create textured light effects.
 

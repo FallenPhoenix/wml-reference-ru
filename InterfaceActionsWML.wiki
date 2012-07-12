@@ -25,7 +25,7 @@ The following key/tags are accepted for [message]:
 * '''message''': (translatable) the text to display to the right of the image. ''message'' is sometimes multiple lines; if it is, be sure to use quotes(''' ' ''' or ''' " ''')
 * '''[show_if]''': if present then this message will only be displayed if the conditional statement in this tag is passed (see [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]])
 * '''side_for''': (default: all sides) comma-separated list of sides for who message is shown.
-* '''image''': (default: profile image of speaker) the image to display next to the message.
+* '''image''': (default: profile image of speaker) the image to display next to the message. Append ~RIGHT() if you want the image to appear on the right side.
 * '''caption''': (default: name of speaker) the caption to display beside the image. Name to be displayed. Note: use a translation mark to avoid wmllint errors.
 * '''scroll''': Boolean specifying whether the game view should scroll to the speaking unit. Defaults to ''yes''.
 * '''duration''': (default: 10) the minimum number of frames for this message to be displayed. (A frame lasts about 30 milliseconds.) During this time any dialog decisions will be disregarded.
@@ -199,6 +199,14 @@ Temporarily prevents the engine from displaying the given unit. The unit does no
 Stops the currently hidden units from being hidden.
 * [[StandardUnitFilter]]: Only the matching units will be unhidden
 
+=== [lock_view] ===
+{{DevFeature1.11}} Locks gamemap view scrolling for human players, so they cannot scroll the gamemap view until it is unlocked. WML or Lua actions such as '''[scroll_to]''' will continue to work normally, as they ignore this restriction; the locked/unlocked state is preserved when saving the current game.
+
+This feature is generally intended to be used in cutscenes to prevent the player scrolling away from scripted actions. 
+
+=== [unlock_view] ===
+{{DevFeature1.11}} Unlocks gamemap view scrolling for human players.
+
 === [scroll] ===
 Scroll a certain number of pixels in a given direction. Useful for earthquake/shaking effects.
 * '''x''', '''y''': the number of pixels to scroll along the x and y axis
@@ -207,11 +215,13 @@ Scroll to a given hex
 * '''x''', '''y''': the hex to scroll to
 * {{DevFeature1.11}} [[StandardLocationFilter]], do not use a [filter_location] sub-tag. If more than one location matches the filter, only the first matching location will be used.
 * '''check_fogged''': whether to scroll even to locations covered in fog or shroud. Possible values ''true'' (don't scroll to fog) and ''false'' (scroll even to fog), with ''false'' as the default.
+* {{DevFeature1.11}} '''immediate''': whether to instantly warp to the target hex regardless of the scroll speed setting in Preferences (defaults to ''false'').
 
 === [scroll_to_unit] ===
 Scroll to a given unit
 * [[StandardUnitFilter]]
 * '''check_fogged''': whether to scroll even to locations covered in fog or shroud. Possible values ''true'' (don't scroll to fog) and ''false'' (scroll even to fog), with ''false'' as the default.
+* {{DevFeature1.11}} '''immediate''': whether to instantly warp to the target hex regardless of the scroll speed setting in Preferences (defaults to ''false'').
 === [select_unit] ===
 Selects a given unit.
 * [[StandardUnitFilter]]: The first unit found will be selected.
@@ -335,7 +345,6 @@ Displays a message in the chat area.
 
 == Useful Macros ==
 There are some predefined macros that you find useful for interface actions. You can find a complete list along with a detailed explanation of how they work [http://www.wesnoth.org/macro-reference.xhtml here].
-* '''{FLOATING_TEXT}''' Float some text over a unit similar to the damage numbers.
 * '''{HIGHLIGHT_UNIT}''' Highlight a unit on the map. Use this to show important units
 * '''{HIGHLIGHT_IMAGE}''' Places and highlights an image on the map. Use this to show important items or locations
 * '''{SET_IMAGE}''' Places an image on the map which has no other function.

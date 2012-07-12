@@ -48,7 +48,7 @@ Example usage:
 
 === [while] ===
 
-Like the '''[if]''' tag, executes actions only if conditions described in the contained [[#Condition Tags|conditions]] are met. Additionally, the '''[while]''' tag ''continues'' to execute the actions until the contained [[#Condition Tags|conditions]] are no longer met. Executes a maximum of 1024 iterations per invocation.
+Like the '''[if]''' tag, executes actions only if conditions described in the contained [[#Condition Tags|conditions]] are met. Additionally, the '''[while]''' tag ''continues'' to execute the actions until the contained [[#Condition Tags|conditions]] are no longer met. Executes a maximum of 65536 iterations per invocation.
 
 * [[#Condition Tags|Condition Tags]]: Conditions which must be met for the actions in the '''[do]''' tag to be executed.
 
@@ -111,21 +111,30 @@ When values are evaluated as boolean values they are checked to see if they are 
 
 '''Warning:''' Do not use "off", "on", integers, floating-point numbers or anything else than the above as booleans.
 
-=== Meta Condition Tags ===
+=== Meta-Condition Tags ===
 
-These tags aren't really conditions, themselves. Instead they are wrapped around condition tags to group them into multiple conditions that must all be met, lists of conditions that only one must be met, or conditions that must not be met. These are handled in order in any combination you can think of. One important thing to remember is if you are using '''[or]''' tags, the first conditional statement should ''not'' have an '''[or]''' tag wrapped around it.
+These tags aren't really conditions, themselves. Instead they are wrapped around condition tags to group them into multiple conditions that must all be met, lists of conditions that only one must be met, or conditions that must not be met. These are handled in top-to-bottom order in any combination you can think of. One important thing to remember is if you are using '''[or]''' tags, the first conditional statement should ''not'' have an '''[or]''' tag wrapped around it.
 
 ; [and]
-: A condition which must evaluate to true in addition to any others. Useful as a bracket for complex conditions, but not strictly necessary.
+: A condition which must evaluate to true in addition to any other conditions that precede it. This is useful as a bracket for complex conditions, but not strictly necessary.
 :* [[#Condition Tags|Condition Tags]]: If these evaluate to true, the '''[and]''' tag evaluates to true.
 
 ; [or]
-: A condition which, if it evaluates to true, is all that is necessary for the conditions to be met. In other words, if all other conditions are false, but one '''[or]''' condition is true, the conditions have been met for an [[:Category:ActionsWML|action]] to take place. (See [[AdvancedConditionalWML|Example]])
+: A condition which, when false, has no effect, but when true, allows previously failed conditions to be ignored. 
 :* [[#Condition Tags|Condition Tags]]: If these evaluate to true, the '''[or]''' tag evaluates to true. 
 
 ; [not]
-: A condition which reverses the evaluation of the contained condition(s).
+: Similar to [and], but its contents must be false. Thus it reverses the evaluation of its contents. Since a normal condition tag without contents is always considered true, an empty [not] is always considered false.
 :* [[#Condition Tags|Condition Tags]]: If these evaluate to true, the '''[not]''' tag evaluates to false. If these evaluate to false, the '''[not]''' tag evaluates to true.
+
+
+When multiple meta-conditions are encountered one after another in a containing tag, the evaluation order is as follows:
+# the immediate contents of the containing tag are evaluated first to determine if there is a successful match known as a "true" condition
+# this true or false result is combined with the top meta-condition to produce another true or false result
+# this result is combined with the next meta-condition, and so on. However, if the engine recognizes that no remaining meta-conditions might reverse the result, it will cleverly skip them.
+# if the final result is a successful match, then the [[:Category:ActionsWML|action]] will take place.
+
+For more details on use of meta-conditions, see [[AdvancedConditionalWML|these examples]].
 
 == See Also ==
 * [[VariablesWML]]

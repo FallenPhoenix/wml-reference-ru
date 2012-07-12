@@ -67,6 +67,8 @@ The following keys are recognized:
 
 * '''moves''': number of movement points the unit has left. Default is the movement for its unit type.
 
+* '''attacks_left''': number of attacks the unit has left. Default is equal to the attacks key for its unit type, that usually is 1 (see ''max_attacks'' below).
+
 * '''resting''': whether the unit has not moved yet this turn. Used to decide whether to give a unit rest healing.
 
 * '''role''': used in standard unit filter ([[FilterWML]]). Can be set using [role] (see [[InternalActionsWML]]).
