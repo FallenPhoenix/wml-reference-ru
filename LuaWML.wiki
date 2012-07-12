@@ -265,6 +265,8 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Display#wesnoth.float_label|wesnoth.float_label]]
 * [[LuaWML:Display#wesnoth.select_hex|wesnoth.select_hex]]
 * [[LuaWML:Display#wesnoth.scroll_to_tile|wesnoth.scroll_to_tile]]
+* [[LuaWML:Display#wesnoth.lock_view|wesnoth.lock_view]]
+* [[LuaWML:Display#wesnoth.view_locked|wesnoth.view_locked]]
 * [[LuaWML:Display#wesnoth.play_sound|wesnoth.play_sound]]
 * [[LuaWML:Display#wesnoth.set_music|wesnoth.set_music]]
 * [[LuaWML:Display#wesnoth.show_dialog|wesnoth.show_dialog]]

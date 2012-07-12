@@ -175,10 +175,10 @@ These event triggers are all actions by units ('''moveto''', '''attack''') or th
 : Triggers when the primary unit is recalled (by the secondary unit) but before it is displayed.
 
 ; advance
-: Triggers just before the primary unit is going to advance to another unit.
+: Triggers just before the primary unit is going to advance to another unit, or advance by AMLA.
 
 ; post advance
-: Triggers just after the primary unit has advanced to another unit.
+: Triggers just after the primary unit has advanced to another unit, or advance by AMLA.
 
 ; select
 : Triggers when the primary unit is selected. Also triggers when ending a move, as the game keeps the moving unit selected by selecting it again at the end of movement. ''Note: in networked multiplayer, these events are only executed by the client on which the event is triggered, leading to out of sync errors if you modify the game state in the event.''

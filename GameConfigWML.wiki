@@ -36,7 +36,7 @@ The following keys are recognised
 * '''energy_image''': (standard 'misc/bar-energy.png') the images used to display hp/xp bars.
 * '''moved_ball_image''': (standard 'misc/ball-moved.png') the orb image to add on top of the hp bar for player's moved units; see 'Orbs', [[WesnothManual]]
 * '''unmoved_ball_image''': (standard 'misc/ball-unmoved.png') like '''moved_ball_image''', but for player's unmoved units
-* ''partmoved_ball_image''': (standard 'misc/ball-partmoved.png') like '''moved_energy_image''', but for player's partially moved units
+* '''partmoved_ball_image''': (standard 'misc/ball-partmoved.png') like '''moved_energy_image''', but for player's partially moved units
 * '''flag_image''': (standard 'image/flag'terrain/flag-1.png:150,terrain/flag-2.png:150,terrain/flag-3.png:150,terrain/flag-4.png:150') the default flag animation to mark captured villages (if no custom flag is defined in the [side] tag). By example, this animation has 4 frames of 150ms each. An automatic side-coloring is applied. 
 * '''flag_icon_image''': (standard 'flags/flag-icon.png') the default flag icon to indicate the side playing in the statusbar (if no custom flag_icon is defined in the [side] tag). An automatic side-coloring is applied. 
 

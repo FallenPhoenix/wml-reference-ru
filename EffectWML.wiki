@@ -66,6 +66,8 @@ The following keys and subtags are always recognized:
 ** '''add''': adds an image path function without removing any existing ones.
 * '''ellipse''': Change the image used for the unit's ellipse.
 **'''ellipse''' : the new image to use.
+* {{DevFeature1.11}} '''halo''': Change the image used for the unit's halo.
+**'''halo''': the new image to use.
 
 == See Also ==
 

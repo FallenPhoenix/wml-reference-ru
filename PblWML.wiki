@@ -41,7 +41,7 @@ The following keys are recognized for .pbl files:
 === translate ===
 : If set to '''true''', the add-on will be sent to and updated with [[WesCamp|WesCamp-i18n]]. (NOTE: this is a new and experimental function, which will automatically update the translations in your add-on. Make sure you make backups of your add-on in case of problems.)
 
-: You should make sure your add-on complies with some very specific [[WesCamp#How_to_contribute_to_this_Project|conventions]] required to ease the process for translators.
+: You should make sure your add-on complies with some very specific [[WesCamp#Preparing_your_add-on_for_WesCamp|conventions]] required to ease the process for translators as well as technical requirements.
 
 === type ===
 : Indicates the type of the add-on, used for the downloads manager dialog. Possible values are:

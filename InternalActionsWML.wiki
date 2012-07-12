@@ -132,6 +132,12 @@ Stores time of day information from the current scenario into a WML variable con
 
 * '''turn''': (defaults to the current turn number) changes the turn number for which time of day information should be retrieved.
 
+==== [store_turns] ====
+
+Stores the turn limit (the maximum number of turns). If there is no limit, this stores ''-1''.
+
+* '''variable''': (default='turns') the name of the variable in which to store the turn limit.
+
 ==== [store_unit] ====
 
 Stores details about units into a [[VariablesWML#Container|container]] variable. When a unit is stored, all keys and tags in the unit definition may be manipulated, including some others, with [[InternalActionsWML#.5Bset_variable.5D|[set_variable]]]. A sample list of these tags and keys can be found [[InternalActionsWMLUnitTags|here]]. If you have a doubt about what keys are valid or what the valid value range is for each key, code a [store_unit] event, save the game, and examine what keys are in the file (or just examine the '''[unit]''' tag(s) in any save file).
