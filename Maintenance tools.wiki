@@ -1,13 +1,12 @@
-The Wesnoth source code distribution includes a couple of tools intended to help authors maintain campaigns, faction & unit packs, and other WML resources. These
-are:
+The Wesnoth source code distribution includes a couple of tools intended to help authors maintain campaigns, faction & unit packs, and other WML resources. These are:
  
-; wmlscope: a cross-reference lister, useful for finding unresolved macro and resource-file references.
+; wmlscope: a cross-reference lister, полезный для обнаружения неверных ссылок на макросы и файлы ресурсов.
 
-; wmllint: a utility for sanity-checking WML syntax and porting your old WML to the current version of WML.  
+; wmllint: средство для проверки WML-синтаксиса и портирования устаревших файлов на новую версию.
 
 ; wmlindent: a utility for reindenting WML to a uniform style.
 
-You will need a Python interpreter on your system to use these tools.  Linux, *BSD, and Mac OS/X should already have Python installed; for Windows it's a free download
+Для использования этих инструментов необходим установленный интерпретатор Python.  Linux, *BSD, and Mac OS/X should already have Python installed; for Windows it's a free download
 from http://www.python.org.  You will also need to know how to run command-line tools on your system.
 
 All three tools will require you to supply a <i>directory list</i>.  This is a set of directories containing the WML files you want to work on.
@@ -16,7 +15,7 @@ This page is intended as ducementation for users.  A developer's-eye discussion 
 
 <u>Note to Windows Users:</u> This means you have to run it from the '''Command Line'''. The command line may be reached by hitting Start, then Run, then "cmd" or "command" depending on your version of Windows.
 
-Example uses:
+Пример использования:
  python wmllint path\to\files
  python wmlindent path\to\files
 

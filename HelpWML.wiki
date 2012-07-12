@@ -1,53 +1,61 @@
+'''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/HelpWML тут]. >'''
 {{WML Tags}}
-== The toplevel [help] tag  ==
+== Тег верхнего уровня [help] ==
 
-The [help] tag describes the Wesnoth help system.
+Тег служит для описания справочной системы "Веснота".
 Each of the three subtags [toplevel], [section] and [topic] describe an element of the help system.
 
-* '''[toplevel]''': The toplevel tag denotes sections and topics that should be shown immediately when the "Help" button is clicked on (see the "help" action, [[ThemeWML]]).  The sections referenced within this tag are read recursively, including all subsections.
-** '''sections''': a list of IDs of the sections to include recursively.
-** '''topics''': a list of IDs of the topics to show as not being included in a section; i.e. top-level topics.
-* '''[section]''': The section tag describes a section in the help browser.  A section contains subsections and/or topics.
-** '''id''': is the unique ID for this section.
-** '''title''': (translatable) is the title of the section. It is displayed in the left menu.
-** '''sections''': is a list of IDs of the sections that should be this section's subsections.
-** '''topics''': is a list of IDs of the topics that should be included in this section. Topics will be included in the order listed unless sorting is requested.
+* '''[toplevel]''': The toplevel tag denotes sections and topics that should be shown immediately when the "Help" button is clicked on (see the "help" action, [[ThemeWML]]). Разделы, указанные в данным теге, считываются рекурсивно.
+** '''sections''': Список разделов верхнего уровня (по id).
+** '''topics''': Список статей верхнего уровня.
+* '''[section]''': Описывает раздел справочника. Каждый раздел может содержать статьи и подразделы.
+** '''id''': Уникальный идентификатор раздела.
+** '''title''': Заголовок раздела, отображаемый в списке. Поддерживает локализацию.
+** '''sections''': Список подразделов.
+** '''sections_generator'''
+** '''sort_sections'''
+** '''topics''': Список статей, относящихся к данному разделу.
 ** '''generator''': provides the name of a function that will generate a list of topics and include them in this section. These topics will be included after topics listed on the '''topics''' key unless ''sort_topics'' is ''yes''.
-** '''sort_topics''': specifies whether or not to list the topics sorted by title or in the order listed on the '''topics''' key. '''yes''' indicates fixed and generated topics should be sorted together by title. '''no''' indicates that topics should appear in the order listed with fixed topics appearing before generated topics. '''generated''' indicates that fixed topics should not be sorted and will be followed by generated topics sorted by the generator. The default is '''generated'''.
-* '''[topic]''': The topic tag describes one topic, i.e, one help page.  The keys that are meaningful in the topic tag:
-** '''id''': is the unique ID for this topic.
-** '''title''': (translatable) is the title of the topic. It is displayed in the left menu and as a header in the text area.
-** '''text''': (translatable) is the contents of the topics. May contain markup described below.
+** '''sort_topics''': Определяет, должны ли статьи упорядочиваться по алфавиту, или в порядке, указанном в '''topics'''.
+*** ''yes'': Фиксированные и генерируемые статьи сортируются вместе в алфавитном порядке.
+*** ''no'': indicates that topics should appear in the order listed with fixed topics appearing before generated topics.
+*** ''generated'' (по умолчанию): indicates that fixed topics should not be sorted and will be followed by generated topics sorted by the generator.
+* '''[topic]''': Описывает статью справочника (справочную страницу).
+** '''id''': Уникальный идентификатор статьи.
+** '''title''': Отображаемое название статьи. Поддерживает локализацию. Используется как для списка, так и заглавия текстовой области.
+** '''text''': Содержимое статьи. Поддерживает локализацию и форматирование, которое описано ниже.
 
-== Help System Topic Markup ==
+
+== Разметка статей ==
 
 The markup that is allowed in the text key within a topic tag is in a WML-like markup language with angle brackets.
 
 It consists of plain text, interrupted with markup tags. Between paired start and end tags (like '''<jump> ... </jump>''') you can give keys and values like in WML, separated by spaces instead of newlines. For values containing spaces, surround them with single quotes. The "text content" of a tag, if any, is usually given by a ''text'' key. You can't nest tags within another tag.
 
 The following key/tags are accepted inside '''text''':
-* '''<ref>''': creates a cross reference to another topic, a cross reference will not show up if the topic it refers to is not visible.
-** '''dst''': the ID of the topic to reference.
-** '''text''': the text to display as a link to '''dst'''; i.e. when '''text''' is clicked on the page '''dst''' will be linked to.
-** '''force''': shows the cross reference even though the referred topic is not shown.
+* '''<ref>''': Создает перекрестную ссылку на другую статью, a cross reference will not show up if the topic it refers to is not visible.
+** '''dst''': Идентификатор целевой статьи.
+** '''text''': Текст ссылки на '''dst'''; т.е. при клике на '''text''' открывается страница '''dst'''.
+** '''force''': Указывает, что ссылка должна отображаться даже если целевая страница скрыта или отсутствует.
 * '''<jump>''': when this text is selected, the input position along the X axis is moved.  Can be used for example to create columns of things.  A jump is ignored if it would bring the input position to an invalid position.
 ** '''to''': the X coordinate of the text area to jump to.  If it can't be done on the current row, the input position is moved down one line.
 ** '''amount''': the number of pixels to jump forward
-* '''<img>''': insert an image in the topic
-** '''src''': the path to the image relative to the '''images/''' directory.
-** '''align''': the position of the image with respect to the page. Values are '''here''', '''left''', '''middle''', and '''right'''.
+* '''<img>''': Вставляет изображение.
+** '''src''': Путь к файлу рисунка относительно папки '''images/'''.
+** '''align''': Расположение рисунка на странице. Допустимые значения: '''here''', '''left''', '''middle''', и '''right'''.
 ** '''float''': whether the image should float(have text filled in around it) or not (be seen as included in a line).
-* '''<format>''': describes a group of text in a different format.  Can be used to describe different colors and font sizes.
-** '''bold''': whether the text should be displayed in bold('''bold''').
-** '''italic''': whether the text should be displayed in italics(''italics'').
-** '''color''': the color of the text.  Only a few colors are currently supported: '''white'''(default), '''green''', '''red''', '''yellow''', and '''black'''.
-** '''font_size''': the height of the text in pixels. Default 9(?)
-** '''text''': the text to be displayed using this format.
-* '''<italic>''': a shortcut to '''<format>''' which inputs only the '''text''' key.  Uses the attribute '''italic=yes'''
-* '''<bold>''': like <italic>, but uses '''bold=yes'''
-* '''<header>''': like <italic>, but uses both the attributes '''bold=yes''' and '''font_size=13'''(?)
+* '''<format>''': Вставляет текст в указанном формате.
+** '''bold''': Жирный шрифт.
+** '''italic''': Курсивный шрифт.
+** '''color''': Цвет текста. В настоящее время поддерживаются только слежующие цвета: ''white'' (по умолчанию), ''green'', ''red'', ''yellow'', и ''black''.
+** '''font_size''': Высота шрифта в пикселах (по умолчанию: 9?).
+** '''text''': Текст, отображаемый с использованием данного форматирования.
+* '''<italic>''': Ярлык на '''<format>''' с параметром '''italic=yes'''. Принимает только атрибут '''text'''.
+* '''<bold>''': То же самое, но с параметром '''bold=yes''' вместо курсива.
+* '''<header>''': То же самое, но с двумя параметрами — '''bold=yes''' и '''font_size=13'''(?)
 
-Example:
+
+== Пример ==
  [help]
    [toplevel]
      sections=introduction,gameplay
@@ -83,8 +91,8 @@ Example:
    [/topic]
  [/help]
 
-== See Also ==
 
+== Смотрите также ==
 * [[ReferenceWML]]
 
 

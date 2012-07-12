@@ -1,36 +1,30 @@
+'''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/IntroWML тут] >'''
 {{WML Tags}}
-== The [story] tag ==
+== Тег [story] ==
 
-The '''[story]''' tag is a series of images and text to display as the first part of the intro screen.
+Тег '''[story]''' описывает заставку сценария, состоящую из серии экранов. Каждый такой экран описывается тегом '''[part]''', и может содержать какой-то отрывок текста и иллюстрацию к нему. С помощью кнопок со стрелками игроки могут "перелистывать" экраны вперед и возвращаться к предыдущим.
 
-'''[part]''' is a special tag recognized only beneath '''[story]'''. Each '''[part]''' represents one image and text.
-The part is displayed until the user clicks on the "Next>>>" button.
+Тег '''[part]''' одержит следующие дочерние элементы:
+* '''background''': Основное, фоновое изображение экрана.
+* '''scale_background''': Определяет, нужно ли растягивать фоновое изображение. По умолчанию 'yes'.
+* '''[image]''': Дополнительный рисунок, отображаемый поверх фонового. Можно указывать и несколько таких тегов.
+** '''x''', '''y''': Позиция, в которой должен отображаться рисунок. Координаты указываются в пикселах оригинального фонового изображения, но если оно может растягиваться в зависимости от разрешения, то накладные рисунки всегда имеют фиксированный размер.
+** '''centered''': При значении ''yes'' рисунок размещается так, чтоб по указанным в '''x''' и '''y''' координатам находился его центр (по умолчанию отсчет идет от верхнего левого угла рисунка).
+** '''file''': Файл изображения.
+** '''delay''': Задержка перед отображением рисунка.
+* '''story''': Текст истории. Поддерживает локализацию.
+* '''text_layout''': Определяет, в какой части экрана должен отображаться текст истории. Допустимые значения: ''top'', ''middle'' и ''bottom''; последнее используется по умолчанию.
+* '''show_title''': Определяет, нужно ли наверху отображать заголовок (по умолчанию это название сценария).
+* '''title''': Задает особый заголовок в альтернативу названию сценария. Если указан, автоматически устанавливается атрибут '''show_title=yes'''.
+* '''title_alignment''': Определяет позицию отображения заголовка. Возможны значения ''left'', ''center'' и ''right''; по умолчанию используется первое.
+* '''music''': Позволяет сменить музыкальный трек.
+* '''sound''': Звук, воспроизводимый единожды при отображении экрана. Можно указать и список файлов — тогда движок будет рандомно выбирать один из них.
 
-The following key/tags are recognized for '''[part]''':
-* '''background''': the image to display. Story images are usually created specially for this purpose, except for the map.
-* '''scale_background''': Whether to scale the background, default yes.
-* '''story''': (translatable) the text to display below the image.
-* '''show_title''': whether to display the title of the scenario at the top
-* '''title''': specifies a custom title to display instead of the name of the scenario. If specified, it implies '''show_title=yes'''.
-* '''music''': change to this music
-* '''sound''': a list of sound files; the engine will choose one at random and play it once while displaying the story part.
-* '''[image]''': an image to display.
-** '''x''', '''y''': the location in pixels to draw the image. The x,y pixel location is relative to the image specified in background, but not in a normal way.  The background image is scaled up or down to fill the screen resolution, but images are never scaled in size.  Their coordinates, however, are scaled.  It's basically a big pain in the rear.  Example: I have a background image at 640x480 and an overlay at 640x480.  To horizontally center the overlay on a 1024x768 screen, I want to position it at x=192.  This is because 1024-640 = 384 total extra pixel space, then 384/2 = 192.  This results in equal space on both sides of the overlay.  However, now you have to account for the background scaling.  The background image at 640 is scaled up to 1024, a scaling factor of 1.6.  All image locations are also scaled up, so the overlay is not drawn at x=192, rather it is drawn at x=192*1.6 or x=307!  To compensate for this, divide the desired pixel location by the scaling factor.  In the example, x_compensated=192/1.6 or x_compensated=120.
-** '''centered''': If "yes", use the center of the image when placing at the x,y coordinates, which is useful since this image is not scaled like the background is (and by centering no need to worry about this).
-** '''file''': the image to display.
-** '''delay''': the time to delay drawing this image.
-* '''text_layout''': specifies the area of the screen where the story text will be displayed. It allows the ''top'', ''middle'' and ''bottom'' values; the latter is used by default.
-* '''title_alignment''': specifies the alignment of the title box. It allows the ''left'', ''center'' and ''right'' values; the first is used by default.
+Из универсальных тегов внутри '''[story]''' разрешены '''[deprecated_message]''', '''[wml_message]''', '''[image]''', и '''[insert_tag]''' (учтите, что сообщения от первых двух в любом случае появятся только после отображения игровой карты). Также для создания нелинейных заставок внутри '''[story]''' и '''[part]''' можно использовать условные теги '''[if]'''/'''[then]'''/'''[else]''' и '''[switch]'''/'''[case]'''. Остальные теги в этом контексте не поддерживается.
 
-The '''[deprecated_message]''', '''[wml_message]''', '''[image]''', and '''[insert_tag]''' tags are allowed beneath '''[story]'''.  Most other WML tags will not be recognized in this context. Note, however, that messages produced by the first two tags will not appear in the game interface until the actual game map appears.
-
-The only other tags currently recognized within '''[story]''' and '''[part]''' are '''[if]'''/'''[then]'''/'''[else]''' and '''[switch]'''/'''[case]'''. These can be used to show parts conditionally on the values of variables.
-
-See also the journey and battle macros, in [[UtilWML]]
-
-== See Also ==
+== Смотрите также ==
 
 * [[ReferenceWML]]
-
+* The journey and battle macros, in [[UtilWML]]
 
 [[Category: WML Reference]]

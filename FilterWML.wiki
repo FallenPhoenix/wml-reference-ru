@@ -9,7 +9,7 @@ a unit must match both of the keys in order to match the filter.
 
 A StandardUnit(Location, Side, ...)Filter is the place where the set of such keys and tags can appear. A StandardFilter sometimes needs an according surrounding tag but often doesn't. It should be mentioned at the place in the wiki where it's said that you can use at a certain code position a StandardFilter whether you need a surrounding tag or not.
 
-== Filtering Units ==
+== Фильтрация бойцов ==
 
 Filters are often used in action tags (see [[EventWML]]).
 In this case the phrase "standard unit filter" is used in place of the set of standard keys.
@@ -22,39 +22,35 @@ Most event names (see [[EventWML]]) have units related to them called "primary u
 In order for an event to be triggered, ''primary unit'' must match the filter contained in '''[filter]''',
 and ''secondary unit'' must match the filter contained in '''[filter_second]'''.
 
-See [[StandardUnitFilter]] for details.
+Подробности смотрите в [[StandardUnitFilter]].
 
-== Filtering Locations ==
+== Фильтрация локаций ==
 
 As you have seen, standard unit filter can contain a location filter.
 Several actions, such as '''[terrain]''', also use location filters.
 Location filters are represented on this site by the phrase "standard location filter".
 
-See [[StandardLocationFilter]] for details.
+Подробности смотрите в [[StandardLocationFilter]].
 
-== Filtering Sides ==
+== Фильтрация игровых сторон ==
+
 Sometimes, it's needed to get a list of sides which satisfy certain criteria. For this, a side filter can be used.
 Side filters are represented on this site by the phrase "standard side filter".
 
-See [[StandardSideFilter]] for details.
+Подробности смотрите в [[StandardSideFilter]].
 
-== Filtering Weapons ==
+== Фильтрация атак ==
 
 Sometimes weapons are filtered on in WML.  See also [[EventWML]], [[EffectWML]], [[AnimationWML]].
 
-These keys are used as filter input for weapon filters.
-
+These keys are used as filter input for weapon filters:
 * '''range''': a range to filter
-** '''melee''': only melee weapons pass 
-** '''ranged''': only ranged weapons pass 
-* '''name''': filter on the attack's name.
-See '''data/units/''' or http://www.wesnoth.org/units/
-to find the name of a particular unit's attack.
-* '''type''': filter on the attack's type.
-Values are 'blade', 'pierce', 'impact', 'fire', 'cold', and 'arcane'.
+** '''melee''': Только ближние атаки.
+** '''ranged''': Только дальние атаки.
+* '''name''': filter on the attack's name.<br>See '''data/units/''' or http://www.wesnoth.org/units/ to find the name of a particular unit's attack.
+* '''type''': Тип повреждений. Значения: ''blade'', ''pierce'', ''impact'', ''fire'', ''cold'' и ''arcane''.
 * '''damage''': filter on damage value. Can be a specific number or a list of ranges like 'damage=0-5,7-99'
-* '''special''': filter on the attack's special power.
-For values see [[AbilitiesWML]].
+* '''special''': filter on the attack's special power. For values see [[AbilitiesWML]].
 
 == Filtering Terrains ==
 
@@ -120,8 +116,7 @@ The '''[filter_vision]''' tag allows you to filter locations based on whether or
 
 '''Note:''' This filter is only useful when the viewing side is under a fog or shroud. You ''can'' set a shroud over an AI side. This will allow you to use the vision filter from the point-of-view of an AI side. The fog/shroud does not currently affect AI movement patterns, but the AI algorithm may become constrained by fog/shroud in the future.
 
-== See Also ==
-
+== Смотрите также ==
 * [[UnitTypeWML]]
 * [[EventWML]]
 * [[ReferenceWML]]

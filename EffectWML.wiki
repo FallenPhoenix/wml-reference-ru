@@ -1,10 +1,11 @@
-{{WML Tags}}
-== the [effect] tag ==
+'''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/EffectWML тут] >'''
 
-The tag [effect] is used to describe one modification to a unit. Any number of [effect] tags can be used to describe a complete modification. Modifications are permanent changes to a unit; currently there is no way of removing a modification.
+=== тег [effect] ===
 
-The following keys and subtags are always recognized:
-* '''[filter]''': only apply this effect if the affected unit matches. See [[StandardUnitFilter]] for details.
+Тег [effect] используется для описания одной модификации бойца. Any number of [effect] tags can be used to describe a complete modification. Modifications are permanent changes to a unit; currently there is no way of removing a modification.
+
+Поддерживаются следующие теги и аттрибуты:
+* '''[filter]''': only apply this effect if the affected unit matches. См. [[StandardUnitFilter]].
 * '''unit_type''': only apply this effect if the affected unit's type name matches the value. (can be a list)
 * '''unit_gender''': only apply this effect if the affected unit's gender name matches the value. (can be a list)
 * '''times''': describes how many times the effect is applied. The default is to apply the effect once. Other possible value : "per level" which means that the effect is applied level times, where level is the unit level.
@@ -13,9 +14,9 @@ The following keys and subtags are always recognized:
 * '''new_attack''': will use all other keys and tags as the description of an attack that will be added to the unit. See [attack] in [[UnitTypeWML]].
 * '''remove_attacks''': remove the matching attacks. All tags from the attack filter construct will be used to match the attack; see [[FilterWML]]. Do not use a [filter] tag otherwise it will not work properly.
 * '''attack''': find an attack and modify it.  All tags from the attack filter construct will be used to match the attack; see [[FilterWML]].  After that, the following keys and tags can be used to modify the attack.  Note: do not use a [filter] tag.  Just put the keys you want to filter on inside the [effect] tag.
-** '''set_name''': change the attack's name (ie identifier).
-** '''set_description''': change the attack's description (ie displayed name). 
-** '''set_type''': change the attack type. The standard values are '''blade''', '''pierce''', '''impact''', '''fire''', '''cold''', and '''arcane'''.
+** '''set_name''': изменяет идентификатор атаки.
+** '''set_description''': изменяет отображаемое наименование атаки.
+** '''set_type''': изменяет тип повреждений атаки. Стандартные значение: '''blade''', '''pierce''', '''impact''', '''fire''', '''cold''' и '''arcane'''.
 ** '''[set_specials]''': change the attack's specials. The specials to add are given exactly as in the [specials] tag.
 *** '''mode''': if '''append''', adds the given specials to the attack. If '''replace''', replaces the existing specials with the given ones. Default '''replace'''.
 ** '''remove_specials''': remove the listed specials. The value of this key is the coma-separated list of the id of the specials to remove. This key is always evaluated before a [set_specials] tags in the same [effect]
@@ -23,12 +24,12 @@ The following keys and subtags are always recognized:
 ** '''increase_attacks''': increases the number of attack strikes. Like '''increase_damage''', it can be positive or negative, or a percentage.
 ** '''attack_weight''': change the attack's attack_weight. See [attack] in [[UnitTypeWML]] for explanations about attack_weight.
 ** '''defense_weight''': change the attack's defense_weight. See [attack] in [[UnitTypeWML]] for explanations about defense_weight.
-* '''hitpoints''': modifies the unit's HP and/or max HP.
-** '''increase''': the amount to increase the unit's HP.
-** '''heal_full''': if present  and not set to "no" the unit will be put back to full HP.
-** '''increase_total''': will increase the total HP of the unit.  Can be specified either as a negative or a positive value.  It can also be specified as a percentage of the current total; i.e. "-50%" will cut max HP in half.
+* '''hitpoints''': модифицирует текущее и/или максимальное здоровье бойца.
+** '''increase''': увеличивает текущие ЗД на указанное значение.
+** '''heal_full''': при установке в 'yes' здоровье бойца полностью восстанавливается.
+** '''increase_total''': увеличивает максимальное ЗД на указанное число. Можно использовать как положительные, так и отрицательные значения. Также можно указывать в процентах от максимального, т.е. "-50%" отнимет у бойца половину здоровья.
 ** '''violate_maximum''': it the unit ends up with more than its max HP after these modifications, and this key is present (set to any non-null value, ex. '''yes'''), the unit's HP won't be lowered to its max HP.
-* '''movement''': modifies the unit's movement points.
+* '''movement''': изменяет единицы передвижения бойца.
 ** '''increase''': maximum movement is increased by this amount. It can be positive, negative, or specified as a percentage.
 ** '''set''': maximum movement is set to a specific value.
 * '''max_experience''': affects the amount of XP the unit needs for the next level.
@@ -69,8 +70,8 @@ The following keys and subtags are always recognized:
 * {{DevFeature1.11}} '''halo''': Change the image used for the unit's halo.
 **'''halo''': the new image to use.
 
-== See Also ==
 
+== Смотрите также ==
 * [[UnitTypeWML]]
 * [[ReferenceWML]]
 * [[AnimationWML]]

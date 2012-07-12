@@ -1,5 +1,5 @@
 {{WML Tags}}
-== the [campaign] tag ==
+== тег [campaign] ==
 
 <!--
 
@@ -46,7 +46,7 @@ This page describes how the campaign is displayed in the "Campaign" menu, and ho
 * '''end_text''': (translatable) Text that is shown centered in a black screen at the end of a campaign. Defaults to "The End".
 * '''end_text_duration''': Delay, in milliseconds, before displaying the game credits at the end of a campaign. In other words, for how much time '''end_text''' is displayed on screen. Defaults to 3500.
 
-== See Also ==
+== Смотрите также ==
 
 * [[PreprocessorRef]]
 * [[ScenarioWML]]

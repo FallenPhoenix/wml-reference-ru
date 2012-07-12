@@ -1,31 +1,30 @@
+'''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/EraWML тут]. >'''
 {{WML Tags}}
-== The [era] top level tag ==
+== Тег [era] ==
 
-This tag describes one era. An era is a set of teams to play in multiplayer.
+Тег описывает одну игровую эру, т.е. набор фракций для мультиплеера, который можно выбрать при создании игры.
 
-In the multiplayer game creation screen, an era is chosen by the host by the 'Era' option button.
+Поддерживаются следующие ключи и теги:
+* '''id''': Идентификатор эры. Должен быть уникальным. Не влияет на геймплей.
+* '''name''': Отображаемое название эры.
+* <span id="require_era">'''require_era'''</span>: Определяет, требуется ли установка эры для присоединения к играм, в которых она используется (по умолчанию: yes).
+* '''[multiplayer_side]''': Описывает одну фракцию. This tag contains many of the same keys as a [side] tag (A description of the [side] tag can be found in [[SideWML]]). When a multiplayer game is played, then the [side] tag for the scenario is merged with the keys(currently, not tags) of the [multiplayer_side] tag of the faction which the side chose.
+** '''id''': Идентификатор фракции. Внутри эры должен быть уникален. Не влияет на геймплей.
+** '''name''': Отображаемое название фракции; см. [[DescriptionWML]]. Ко вложенным в него изображениям цвет стороны не применяется.
+** '''image''': Значок фракции, отображаемый в меню. Использует цвет игровой стороны.
+** '''flag_rgb''': Обычно используется [http://www.wesnoth.org/macro-reference.xhtml#MAGENTA_IS_THE_TEAM_COLOR MAGENTA_IS_THE_TEAM_COLOR].
+** '''random_faction''': При значении ''yes'' фракция и лидер будут случайно выбираться из других фракций (по умолчанию: no).
+** '''choices''': Задает список фракций, которые могут выпасть при '''random_faction=yes'''. Если список пуст (по умолчанию), то может выпасть любая из нерандомных фракций текущей эры.
+** '''except''': Задает список фракций, которые не могут выпасть при '''random_faction=yes''' (по умолчанию: пусто).
+** '''leader''': Список бойцов, которые могут быть выбраны в качестве лидера фракции.
+** '''random_leader''': Альтернативный список для случайного выбора лидера. При пустом значении (по умолчанию) для этого используется параметр '''leader'''.
+** '''type''': Тип лидера по умолчанию. Можно использовать и значение 'random'.
+** '''recruit''': Список бойцов (через запятую), которых можно вербовать, играя за данную фракцию.
+** '''terrain_liked''': an unseparated list of terrains (см. [[TerrainCodesWML]]). On random maps, these terrains will determine which keep the side is assigned, attempting to put it near the listed terrains.
+* '''[event]''': Смотрите [[EventWML]]. События, описанные внутри тега [era] будут работать в любом сценарии при игре на данной эре.
 
-The following key/tags are recognized for '''[era]'''
-* '''id''': ID of the era - must be unique. No gameplay effect
-* '''name''': displayed name of the era.
-* <span id="require_era">'''require_era'''</span>: whether clients are required to have this era installed beforehand to be allowed join a game using this era. Possible values 'yes' (the default) and 'no'.
-* '''[multiplayer_side]''': a faction in the era. This tag contains many of the same keys as a [side] tag (A description of the [side] tag can be found in [[SideWML]]). When a multiplayer game is played, then the [side] tag for the scenario is merged with the keys(currently, not tags) of the [multiplayer_side] tag of the faction which the side chose.
-** '''id''': faction ID - must be unique to your era. No gameplay effect
-** '''name''': a description that Wesnoth displays as the option selecting that faction; see [[DescriptionWML]]. Any image in this description will ''not'' use the team color.
-** '''image''': an image to display in the option. This image will use the team color.
-** '''flag_rgb''': often set by [http://www.wesnoth.org/macro-reference.xhtml#MAGENTA_IS_THE_TEAM_COLOR MAGENTA_IS_THE_TEAM_COLOR]
-** '''leader''': a list of unit types. When this faction is chosen, the side can choose any of these unit types to be the side's leader (i.e. "Choose your Leader"). They will also have the option of having one of these types being chosen randomly.
-** '''random_leader''': if this list of types is present, it would use this list to instead to choose a random leader. If not it would use '''leader'''
-** '''random_faction''': default 'no'. If 'yes', then when this faction is chosen, another non random faction will be randomly chosen instead. The leader will also be chosen randomly.
-** '''choices''': Empty by default. If non-empty and the faction has '''random_faction=yes''', it is the list of the IDs of the non random factions that will be choosen randomly. If empty, any faction can be chosen.
-** '''except''': Empty by default. If the faction has random_faction=yes, it is the list of the IDs of the non random factions that will not be choosen randomly.
-** '''type''': the unit type of the default leader for the side. This must be present. 'random' is a valid value here and will cause a random leader choice by default.
-** '''recruit''': a comma-separated list of unit types this faction can recruit.
-** '''terrain_liked''': an unseparated list of terrains (see [[TerrainCodesWML]]). On random maps, these terrains will determine which keep the side is assigned, attempting to put it near the listed terrains.
-* '''[event]''': any [event]s written inside the [era] tag will get included into scenarios that are played using this era. See [[EventWML]].
 
-== See Also ==
-
+== Смотрите также ==
 * [[ReferenceWML]]
 * [[SideWML]]
 

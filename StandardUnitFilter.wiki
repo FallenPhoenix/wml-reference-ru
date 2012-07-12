@@ -21,7 +21,7 @@ The following attributes and sub-tags are allowed:
 * '''ability''': unit has an ability with the given id; see [[AbilitiesWML]]
 * '''side''': the unit is on the given side (can be a list)
 * '''has_weapon''': the unit has a weapon with the given name
-* '''canrecruit''': yes if the unit can recruit (i.e. is a leader)
+* '''canrecruit''': yes if the unit can recruit (т.е. является лидером).
 * '''gender''': female if the unit is female rather than the default of male
 * '''role''': the unit has been assigned the given role; see '''[role]''', [[InternalActionsWML]]
 * '''level''': the level of the unit

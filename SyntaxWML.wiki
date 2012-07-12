@@ -1,17 +1,22 @@
-{{WML Tags}}
+'''WML (The Wesnoth Markup Language)''' - язык, разработанный специально для игры [[Битва за Веснот]]. На нём закодировано почти всё, включая сценарии, юниты, файлы сохранения и пользовательский интерфейс. WML файлы просты, понятны, обычно имеют расширение .cfg и похожи на INI и XML файлы.
 
-The '''Wesnoth Markup Language''' ('''WML''') is used to code almost everything in Wesnoth, including scenarios, units, savefiles, and the user interface layout. WML files are simple, human-readable text files, usually with the .cfg extension, with similarities to INI files and XML.
-For guidelines on keeping these files easily human-readable, see [[ConventionsWML#Indentation|ConventionsWML]].
+== Базовый синтаксис ==
 
-== Tag and Attribute Structures ==
+WML является построчным языком, то есть перевод на другую строку является концом выражения. Строки, содержащие открывающие и закрывающие теги (см. ниже) не могут содержать другой текст. Когда Вы устанавливаете атрибуты (об этом тоже позже), весь текст до знака равно содержит название ключа, а весь текст после, до конца строки - значение. Соответственно, перевод на другую строку должен находиться между двумя строками <code>key=value</code>, иначе имя нового ключа будет воспринято как продолжение значения предыдущего ключа.
+Тип перехода на новую строку должен быть во всём файле одинаков, чтобы не запутать игру (обычно такая проблема возникает когда файл редактируется под разными ОС, так как Windows, Linux и Mac завершают строки по разному).
 
-WML has a syntax containing two basic elements: ''tags'' and ''attributes''. Furthermore, ''attributes'' consist of ''keys'' and ''values''. For example:
+Последовательные пробелы в WML обычно трактуются как одинарный, более того, во многих случаях вообще наличие пробела не обязательно. (Однако, правильная расстановка отступов важна для читабельности файлов; подробнее смотрите [[ConventionsWML#Indentation|ConventionsWML]]). Более того, во многих случаях пробелы просто игнорируются. В то же время в некоторых случаях, когда для человека пробелы не важны, для игры они играют важное значение и не игнорируются. Если Вы не знаете, как в вашем случае будут интерпретироваться пробелы - просто скопируйте их из рабочего файла. Если речь идёт о тексте, который не будет показан пользователю, зачастую полезно заменить пробелы на нижнее подчёркивание, что позволяет обойти эту проблему.
+
+Комментарии начинаются со знака решётки (<code>#</code>). Если после знака решётки не расположена [[PreprocessorRef#Preprocessor_directives|директива препроцессора]], то весь текст после этого знака будет проигнорирован движком WML.
+
+== Структура тегов и атрибутов ==
+Синтаксис WML содержит два основных элемента: ''теги'' и ''атрибуты''. Сами ''атрибуты'' состоят из ''ключей'' и ''значений''. Например:
   [tag]
       key=value
   [/tag]
 
-''Tags'' are used to partition information, while the data is contained in the ''attributes''. ''Keys'' identify the type of data to be stored and ''values'' are the actual data stored. When WML is processed, the tag identifies some unit of information, such as an action to perform or even an entire campaign. This gives a context for the attributes within the tag. For each <code>key=value</code> line within a tag, the attribute identified by <code>key</code> has its data set to <code>value</code>.
-Also allowed inside a tag is another tag. The inner tag is considered the child of the outer tag, as in the following example.
+''Теги'' используются для группировки информации, тогда как сами данные содержатся в ''атрибутах''. ''Ключи'' определяют тип данных, который должен быть сохранён, а сами данные хранятся в ''значениях''. В процессе обработки WML теги определяют единицы информации, такие как действия, которые должны быть предприняты или даже содержимое всей компании. Они определяют контекст атрибутов, расположенных внутри этого тега. Для каждой строки <code>key=value</code> в пределах тега атрибут с именем <code>key</code> получает значение <code>value</code>.
+Можно располагать тег внутри другого тега. Внутренний тег содержит потомка внешнего тега, как в данном примере:
   [parent_tag]
       key1=value1
       [child_tag]
@@ -19,16 +24,15 @@ Also allowed inside a tag is another tag. The inner tag is considered the child 
       [/child_tag]
   [/parent_tag]
 
-Every tag describes something different about the game; different tags work differently, with the allowed tags defined by context. There are several "[[ReferenceWML#WML_toplevel_tags|top-level tags]]" that are allowed when not inside any other tag, and each tag defines which child tags (and which keys) it recognizes. Unrecognized tags and keys, such as the result of typos, sometimes produce error messages, but at other times they are ignored.
+Каждый тег описывает свою часть игры; разные теги работают по разному, что позволяет тегам быть зависимыми от контекста. Есть различные "[[ReferenceWML#WML_toplevel_tags|теги верхнего уровня]]", которые могут располагаться вне других тегов; каждый тег определяет допустимые для него теги потомков. Встретив неопознанный тег игра прекращает обработку WML, но есть некоторые ситуации (в частности [[FilterWML]]) в которых неопознанные теги просто игнорируются. Для получения списка всех тегов со ссылками на их описания смотрите страницу [[AlphabeticalWML]].
 
-''Keys should not be confused with variables!'' A common mistake among beginners is to make up undocumented key names. Instead, consult the WML Reference to find allowed key names for each tag. For a list of all tags with links to their documentation, see [[AlphabeticalWML]] or the "WML Tags" navigation box.
+Атрибуты, которые могут быть определены в теге зависят от самого этого тега. Установка значений для допустимых ключей определяет поведение тега. Неопознанные ключи просто игнорируются.
 
-Also, tag and key names follow a special format. They will contain only alphanumeric characters and underscores; in particular, they will not contain <code>+</code>, <code>-</code>, or whitespace. The values, however, may contain such characters when needed.
+Теги и имена ключей могут состоять только из букв, цифр и символа нижнего подчёркивания. <code>+</code>, <code>-</code>, или пробел в их именах недопустимы.
+Значения же таких ограничений не имеют.
 
-
-=== Tag Amendment Syntax ===
-
-Inserting a plus sign (<code>+</code>) before a tag name allows one to append to an earlier tag (the most recent with the same name) rather than starting a new tag. This allows attributes to be added or replaced.
+=== Синтаксис исправления тега ===
+Добавление плюса перед именем тега позволяет прикрепить его к предыдущему тегу (обычно, с тем же именем) вместо того чтобы объявить новый тег. Таким образом Вы можете добавлять в тег новые атрибуты или переписывать уже имеющиеся.
   [tag]
       key=value
   [/tag]
@@ -36,58 +40,54 @@ Inserting a plus sign (<code>+</code>) before a tag name allows one to append to
       key=value
   [/tag]
 
-* All keys in the ''+tag'' will be set to the given values. If the keys did not exist in the most recent [tag] then they are added to that [tag]; otherwise their values will replace the old values in the most recent [tag].
+* Всем ключам в ''+tag'' будут присвоены заданные значения. Если ключ в этом теге ещё не существует, то он будет в него добавлен. В противном случае его значение будет изменено на новое.
 
-* Any child tags of the ''+tag'' will be appended to the children of the most recent [tag]. To be clear: none of those original child tags will be altered by this operation, since this is an "append" and not a "merge."
+* Любые потомки ''+tag''`a будут добавлены в качестве потомков к последнему тегу. Имейте ввиду, что оригинальные потомки будут изменены, так как происходит добавление, а не слияние."
 
-* It is now possible to reopen any number of tags that are one inside another.
+* Вы не можете изменять дочерний тег после того, как закрыт родительский. И использование нескольких [+tag] в одной строке не продвинет Вас в более вложенные области тега. Однако это ограничение может быть изменено в будущих версиях игры.
 
-=== Multiple Assignment Syntax ===
-
-It is possible to set multiple attributes on a single line. This is done by listing the associated keys, followed by an equal sign, followed by the desired values.
+=== Синтаксис множественного присваивания ===
+Существует возможность задать несколько атрибутов на одной строке. Это можно сделать перечислив необходимые ключи слева от знака присваивания а справа перечислив соответствующие значения:
   [tag]
       key1,key2,key3=value1,value2,value3
   [/tag]
-would be the same as:
+то же самое что и:
   [tag]
       key1=value1
       key2=value2
       key3=value3
   [/tag]
-* If there are extra keys, they will be set to an empty value. If there are extra values the last key will be set to the comma-separated list of all remaining values.
+* Если в списке присутствуют лишние ключи, то им будет присвоено пустое значение. Если есть лишние значения, то последний ключ получит все эти значения, разделённые запятыми.
 
-=== Special Attribute Values ===
+=== Значения специальных атрибутов ===
+Хотя значением атрибута может быть только соответствующий текст, оно может быть задано различными способами, в зависимости от цели использования..
+* '''key = "value"''': ''значение в кавычках'' - это значение, заключённое в кавычки, как ни странно. Это бесполезно для значений, располагающихся на одной строке, так как они так и интерпретируются. Однако кавычки Вам понадобятся для определение значения на нескольких строчках (чтобы перевод строки не завершал ввод значения). Кроме того, кавычки могут использоваться для того, чтобы лишить некоторые знаки их специального значения и чтобы не отбрасывались нужные пробелы. В правильном WML кавычки никогда не создадут Вам проблем.
+* '''key = _"value"''': ''[[translatable|значение, подлежащее переводу]]'' это значение, которое подлежит переводу и должно быть использовано для всех текстов, которые показываются пользователю (чаще всего встречается в [story], [message], name= key при определении юнитов). Такое значение заключено в кавычки и ему предшествует нижнее подчёркивание (_). В терминах синтаксиса WML оно похоже на значение в кавычках, но оно не [[ConditionalActionsWML#Condition_Tags|сравнимо с другими значениями]]. Эти значения предназначены для отображения на экране, тогда как значения в кавычках лучше подходят для внутренних данных.
+* '''key = "value1" + "value2"''': ''конкатенация строк'' осуществляется с помощью знака сложения (<code>+</code>). Если знак сложения находится вне кавычек, то это значит, что строка/значение справа будет прикреплена к строке/значению слева. Для включения плюса в само значение его надо заключить в кавычки. На самом деле кавычки не обязательны для применения конкатенации,но их рекомендуется использовать чтобы легко можно было определить где начинается и заканчивается значение и обнаружить некоторые виды ошибок.
+* '''key = "quoted ""double quoted value"" value"''': ''двойные кавычки'' могут быть использованы для того, чтобы включить знак кавычек в значение в кавычках. Двойные кавычки выдают один знак кавычек и не прерывают цитирование значения (они не обязательно должны быть парными).
+* '''key = $variable''': a ''замещение переменной'' устанавливает значение ключа равным значению указанной WML переменной. На это указывает знак доллара (<code>$</code>) и это лишь частный случай замещения переменной, так как переменные могут быть замещены внутри других значений. [[#Variable_Substitution|Тут]] Вы найдёте больше информации о значениях, основанных на WML переменных. (Учтите, что некоторые ключи должны иметь в качестве значения имя переменной, а не её значение; в таком случае не надо использовать знак доллара.) ''Замещение переменной поддерживается лишь в некоторых контекстах, таких как [[IntroWML]] и [[EventWML]].
+* '''key = "$(formula-expression)"''': ''формула'' устанавливает значение ключа в результат вычисления формулы. На это указывает занк доллара (<code>$</code>) за которым идёт выражение в скобках. Смотрите [[FormulaAI]] для более подробной информации о формулах, типах данных, и встроенных функциях. Кавычки вокруг формул не необходимы во всех случаях, но рекомендуется их использовать, тем более что кавычки - единственный способ использовать плюс (<code>+</code>) внутри формулы (без кавычек плюс будет обозначать операцию конкатенации). ''Формулы поддерживаются только там, где возможны замещения переменных.''
 
-Although an attribute's value can be just text corresponding to the function of its key, a value can also be encoded in many other ways, each with a specific purpose.
-* '''key = "value"''': a ''quoted value'' is a value surrounded by quotes. This is often unnecessary as single-line values are typically interpreted as intended. However, quotes are required in order to specify a multiple-line values (a line break inside quotes does not end the value). Quotes may also be required to cancel the special meaning of other characters, and they prevent spaces from being stripped. It is never wrong to use quotes with correct WML.
-* '''key = _"value"''': a ''[[translatable|translatable value]]'' is a value that is subject to translations, and should be used for all text intended to be shown to a player (most notably seen in [story], [message], and the name= key in unit definitions). A translatable value is surrounded by quotes and preceded by an underscore (_). In terms of WML syntax, it behaves very much like a quoted value, other than being unsuitable for [[ConditionalActionsWML#Condition_Tags|comparisons to other values]]. Translatable values are intended for display on the screen, while quoted values are better suited for internal data.
-* '''key = "value1" + "value2"''': ''string concatenation'' is performed with the plus sign (<code>+</code>). If a plus sign appears outside quotes in a value, it means that the string/value on its right will be appended to the string/value on its left.  To have an actual plus sign in a value, the string containing the <code>+</code> character must be surrounded by quotes (a quoted value or a translatable value). Quotes are not strictly necessary around the pre-concatenated values, but they are advisable so that it is easy to tell where the values begin and end and to spot some kinds of mistakes.
-* '''key = "quoted ""double quoted value"" value"''': ''doubled quotes'' can be used to create quote marks within a quoted or translatable value. The doubled quote mark in the value produces one quote mark in the stored data and does not terminate the quoted value. (These do not necessarily need to be used in pairs.)
-* '''key = $variable''': a ''variable substitution'' sets the key to the value of the indicated WML variable. This is indicated by the dollar sign (<code>$</code>) and is really just  a special case of general variable substitution, as variables can be substituted within other values. See [[#Variable_Substitution|below]] for more information on values based on WML variables. (Note that some keys require their data to be a variable name, not the variable's value; in that case there would be no dollar sign.) ''Variable substitution is supported in only a few contexts, such as in [[IntroWML]] and [[EventWML]].
-* '''key = "$(formula-expression)"''': a ''formula expression'' sets the key to the value of the processed formula. This is indicated by a dollar sign (<code>$</code>) followed by a parenthesized expression. See [[FormulaAI]] for more information on formula basics, data types, and built-in functions. Quotes around the formula are not strictly necessary in all cases, but they are advisable, particularly since quotes are the only way to use a plus sign (<code>+</code>) within a formula (without quotes, the plus sign represents string concatenation). ''Formula expressions are only supported where variable substitution is.''
+== Переменные ==
+Переменные в WML используются для сохранения данных, которые могут понадобиться позже. Каждая переменная имеет уникальное имя, которое может содержать только буквы, цифры и знак нижнего подчёркивания. После того, как переменная создана, она продолжает существовать до завершения компании или до явного её уничтожения.
+Три основные манипуляции, которые мы можем провести с переменными WML - это присвоение значения, получение значения и удаление переменной.
+* Присвоение значения переменной сохраняет это значение в данной переменной. Это делается с помощью тега [[InternalActionsWML|[set_variable]]] или [[PreprocessorRef|макроса]] типа <tt>{VARIABLE}</tt>.
+* Запрос к переменной возвращает последнее сохранённое в ней значение (либо пустую строку, если значение не присвоено). Он осуществляется через помещенный перед именем переменной символ доллара: <tt>$variable</tt>, а четко указать конец имени переменной можно с помощью вертикальной черты: <tt>$variable|</tt>.
+* Очистка переменной удаляет её из памяти WML-движка. Это полезно для уменьшения объема используемой памяти, так как все используемые переменные прописываются в файлах в сохранений ;) Для удаления переменной используется тег [[InternalActionsWML|[clear_variable]]] или [[PreprocessorRef|макрос]] <tt>{CLEAR_VARIABLE}</tt>.
 
-== Variables ==
-
-Variables in WML are used to store data for later retrieval. Each variable is identified by its name, which may contain only alphanumerics and underscores. Once created, a variable persists until the end of a campaign unless explicitly cleared.
-
-The three basic manipulations of WML variables are assigning a value, querying the value, and clearing the variable.
-* Assigning a value to a variable stores that value in the variable. This is done with tags like {{tag|InternalActionsWML|set_variable}} or with [[PreprocessorRef|macros]] like <tt>{VARIABLE}</tt>.
-* Querying a variable returns the last value stored in it (or the empty string, if no value was). This is done by prefixing the variable name with a dollar sign, as in <tt>$variable</tt>, and sometimes ending the variable name with a pipe character, as in <tt>$variable|</tt>.
-* Clearing a variable makes the WML engine forget about that variable. This is useful for reducing overhead, since all used variables are stored in saved games. This is done with {{tag|InternalActionsWML|clear_variable}} or the <tt>{CLEAR_VARIABLE}</tt> [[PreprocessorRef|macro]].
-
-=== Kinds of Variables ===
-==== Scalar ====
-A scalar variable can store a single string or number.
+=== Виды переменных ===
+==== Скалярные ====
+Скалярные переменные могут содержать единичную строку или число.
 
   [set_variable]
       name=my_variable
       value="sample value"
   [/set_variable]
 
-The full name of a scalar variable is its given name, in this case ''my_variable''. Note that the value of the variable can be translatable or even a formula expression ([http://wiki.wesnoth.org/SyntaxWML#Special_Attribute_Values Special Attribute Values]).
+Полное имя скалярной переменной - это то имя, которое Вы ей даёте, в нашем случае - ''my_variable''. Обратите внимание, что значение пременной может быть переводимым и даже содержать формулы ([http://wiki.wesnoth.org/SyntaxWML#Special_Attribute_Values Special Attribute Values]).
 
-==== Array ====
-An array variable is a numbered sequence of container variables. There are some specific tags that assign array information, for example [store_unit] and [store_locations]. One could create an array using [set_variable] like this:
+==== Массивы ====
+Массивы - это пронумерованная последовательность переменных. Есть несколько специальных тегов для задания информации в виде массива, например [store_unit] и [store_locations]. Можно создать массив и при помощи [set_variable]:
   [set_variable]
       name=my_awesome_array[0].x
       value=10
@@ -101,7 +101,7 @@ An array variable is a numbered sequence of container variables. There are some 
       value=14
   [/set_variable]
 
-However, when working with arrays, it is usually easier to make use of [set_variables]. This would be written as follows:
+В любом случае при работе с массивами чаще оказывается проще использовать [set_variables]:
   [set_variables]
       name=my_awesome_array
       [value]
@@ -115,18 +115,18 @@ However, when working with arrays, it is usually easier to make use of [set_vari
       [/value]
   [/set_variables]
 
-If <tt>foo</tt> is the name of an array, <tt>foo[0]</tt> is the full name of its first container variable, <tt>foo[1]</tt> the full name of its second, and so on. <tt>foo.length</tt> is the special variable that always stores the number of containers in the array <tt>foo</tt>. Hence, if the value stored in <tt>foo.length</tt> is 18, the last container in the array would be <tt>foo[17]</tt>. If you try to query an array as if it were a container, then it will simply use the first index[0]. Thus $foo.bar would be the same as $foo[0].bar
+Если <tt>foo</tt> - имя массива, то <tt>foo[0]</tt> - это полное имя первой переменной в этом массиве, <tt>foo[1]</tt> - полное имя второй переменной и т.д. <tt>foo.length</tt> - это специальная переменная, которая содержит длину массива, т.е. количество содержащихся в нём переменных. Однако, так как нумерация идёт с нуля, если значение <tt>foo.length</tt> равно 18, значит, последний элемент массива называется. Если Вы хотите обратиться к массиву как к контейнеру, то используйте index[0], поэтому $foo.bar то же самое, что и $foo[0].bar
 
-''Note'': Do not attempt to store a scalar value to the explicit index of an array, which is a container of scalar variables. Hence referring to a variable named <tt>foo[3]</tt> as if it were a scalar one is illegal; instead, you would use <tt>foo[3].value</tt> to store a scalar value. (While it may appear to work to an extent if you ignore this rule, it may also cause undefined behavior. For example, loading a text save of a game that contains such variables will fail with a WML error.)
+''Внимание'': Не пытайтесь сохранить скалярное значение в элемент массива, которые является контейнером скалярных переменных. Поэтому обращение к переменной с именем <tt>foo[3]</tt> как если бы она была скалярной неверно; вместо этого используйте <tt>foo[3].value</tt> для сохранения скалярного значения. (Так как в некоторых случаях ошибки при этом не возникает, Вы можете получить непредсказуемое поведение. Например, загрузка названия сохранения такой игры может вызвать ошибку WML.)
 
-==== Container ====
-A container variable can store any number of scalar and/or array variables. There are tags to assign specific information, for instance [store_side]. To refer to a variable <tt>bar</tt> stored in a container <tt>foo</tt> you would write <tt>foo.bar</tt>. An explicit index inside an array is also considered a container.
+==== Контейнер ====
+Контейнеры могут содержать любое количество скалярных переменных или массивов. Есть теги для присвоения специальной информации, например, [store_side]. Для того, чтобы обратиться к переменной <tt>bar</tt>, сохранённой в контейнере <tt>foo</tt> надо написать <tt>foo.bar</tt>. Конкретный индекс в массиве тоже можно рассматривать как контейнер.
 
-=== Conditionals ===
-Variables and be compared with and used in a conditional block by [variable] within an [if] or [while] tag. For more information, please refer to [[ConditionalActionsWML]].
+=== Условия ===
+Переменные могут быть сравнены между собой и могут участвовать в тегах [if] или [while]. Более подробно это описано в [[ConditionalActionsWML]].
 
-=== Variable Substitution ===
-Whenever using a $ in front of a variable name, the content which has previously been put into this variable name is used instead of the name of the variable. For example:
+=== Подстановка переменных ===
+Когда перед именем переменной стоит знак $, то вместо этого имени подставляется содержимое этой переменной. Например:
   [event]
       name=turn 1
       [set_variable]
@@ -139,47 +139,46 @@ Whenever using a $ in front of a variable name, the content which has previously
       [/message]
   [/event]
 
-The WML code above will cause Delfador to say "Hello, Konrad... How are you?" on turn 1.
+Этот WML код определяет сообщение, которое Делфадор скажет на первом ходу - "Hello, Konrad... How are you?".
 
-When writing scenario events ([[EventWML]]), a scalar variable can generally be substituted into the right-hand of any '''key=value''' assignment. If the provided value contains a <tt>$</tt>, the WML engine with interpret what is between the rightmost <tt>$</tt> and the next <tt>|</tt> as a full variable name to be queried, and replace <tt>$''variable''|</tt> with the result of this query.
+Когда Вы программируете события сценария ([[EventWML]]), скалярная переменная может спокойно быть замещена в правой части выражения '''key=value'''. Если в этом выражении WML движок встречает знак <tt>$</tt>, то всё, что между ним и знаком <tt>|</tt>, трактуется как полное имя переменной и на это место подставляется значение этой переменной.
 
-In certain situations, the <tt>|</tt> that marks the end of the variable name to be queried can be omitted. The exact rule is: if there is no |, variable names span letters, digits, underlines, balanced square brackets and some periods. Doubled periods and some periods that would result in an illegal variable name will not be included. If the variable name ends up being empty (e.g. when using $|), then it will be replaced by just $, giving you an easy way to include a dollar sign in an interpolated string.
+В некоторых случаях знак <tt>|</tt>, означающий конец имени переменной может быть опущен. Правило таково: если нет знака |, то имена переменных могут содержать буквы, цифры, знак нижнего подчёркивания, парные квадратные скобки и точки.  Все остальные знаки, например, две точки подряд, не включаются в имя переменной. Если имя переменной не указано (при использовании $|), вместо этого будет подставлен только знак $, что позволяет легко добавить знак доллара в интерпретируемую строку.
 
-==== Literal Mode ====
+==== Текстовый (сырой) режим ====
+Есть несколько мест, где какая-либо замена и подстановка нежелательна. В таких случаях знак <tt>$</tt> не имеет никакого специального значения. Для этого используется следующий синтаксис:
+* значение '''literal=''' внутри [set_variable]
+* содержимое '''[literal]''' внутри [set_variables]
 
-There are a few places where the substitution mode is literal. In these places, attribute value are used exactly as provided, nothing is substituted, and the <tt>$</tt> will not have special significance. The following places use the literal mode:
-* value of '''literal=''' inside [set_variable]
-* contents of '''[literal]''' inside [set_variables]
+=== Автоматически сохраняемые значения ===
+* '''side_number''': количество сторон, за которые играют люди (может быть пустым в начале сценария или в предстартовых событиях)
+* '''turn_number''': номер текущего хода (может быть пустым в начале сценария или в предстартовых событиях)
+* '''x1''': x-координата локации, где произошло последнее событие
+* '''y1''': y-координата локации, где произошло последнее событие
+* '''x2''': x-координата локации, которое было присвоено в последнем событии
+* '''y2''': y-координата локации, которое было присвоено в последнем событии
+* '''unit''': в событии - юнит, находящийся в локации $x1,$y1
+* '''second_unit''': в событии - юнит, находящийся в локации $x2,$y2
+* '''this_unit''': в стандартном фильтре юнитов - юнит, рассматриваемый как подходящий под этот фильтр
+* '''damage_inflicted''': в событиях attacker_hits и defender_hits - количество нанесённого ущерба
+* '''weapon''': в событиях attack, attacker_hits, defender_hits, die и last_breath, тут содержится информация об оружии которое используется/использовалось юнитом в локации $x1,$y1. Содержит аттрибуты из [attack], см [[UnitTypeWML]].
+* '''second_weapon''': в событиях attack, attacker_hits, defender_hits, die и last_breath, тут содержится информация об оружии которое используется/использовалось юнитом в локации $x2,$y2. Содержит аттрибуты из [attack], см [[UnitTypeWML]].
 
-=== Automatically Stored Variables ===
-* '''side_number''': the number of the current player's side (may be empty during start or prestart events)
-* '''turn_number''': the number of the current turn (may be empty during start or prestart events)
-* '''x1''': this is the x-coordinate of the location where the most recent event was triggered
-* '''y1''': this is the y-coordinate of the location where the most recent event was triggered
-* '''x2''': this is the x-coordinate of the location that assisted in triggering the most recent event
-* '''y2''': this is the y-coordinate of the location that assisted in triggering the most recent event
-* '''unit''': inside an event, this is the unit at $x1,$y1
-* '''second_unit''': inside an event, this is the unit at $x2,$y2
-* '''this_unit''': inside a standard unit filter, this is the unit currently being considered for a possible match
-* '''damage_inflicted''': inside attacker_hits and defender_hits events, this is the amount of damage that was inflicted
-* '''weapon''': inside attack, attacker_hits, defender_hits, die and last_breath events, this is some information about the weapon that is/was being used by the unit at $x1,$y1. It contains the attributes from [attack], see [[UnitTypeWML]].
-* '''second_weapon''': inside attack, attacker_hits, defender_hits, die and last_breath events, this is some information about the weapon that is/was being used by the unit at $x2,$y2. It contains the attributes from [attack], see [[UnitTypeWML]].
+Внимание: автоматически сохраняемые контейнеры и массивы сохраняют значения после того, как был осуществлен к ним доступ. Это означает, что Вы можете получить неверный результат, например, если убивается юнит в $x1,$y1 как первое действие в событии moveto, а затем Вы пытаетесь получить зачение $unit.something. Это может быть исправлено путём "бессмысленного" досупа, например, добавив юниту 0 очков здоровья.
 
-Note: Automatically stored container and array variables are only stored once that one of their attributes is accessed for the first time. This means that one can sometimes get wrong results, for instance by killing the unit at $x1,$y1 as first action in a moveto event and then accessing $unit.something. This can be worked around by previously making a dummy access, such as adding 0 to hitpoints.
+=== Тег [variables] ===
 
-=== The [variables] tag ===
+Тег [variables] используется в сохранённых играх для описания текущего значения каждой переменной, а в файлах сценариев - для установки начальных значений переменным на старте.
 
-The [variables] tag is used in saved games to describe the current value of each variable, and in scenario files for assigning initial values to variables at scenario start.
+Присвоение скалярным переменным происходит с использованием атрибута, где ключ атрибута - имя переменной, а значение - значение, которое надо сохранить в ней.
 
-A scalar variable is assigned using an attribute, where the attribute's key is the variable's given name, and the attribute's value is the value to be stored in the variable.
+Контейнерам значение присваивается при помощи соответствующего тега, например для переменной '''foo''' это будет тег [foo].
 
-A container variable with given name ''foo'' is assigned using a [foo] tag that contains the definitions for the contained variables.
+Для присвоения значения массиву с именем '''foo''' Вы должны использовать тег [foo] несколько раз, тогда первый раз он описывает foo[0], затем foo[0] и т.д.
 
-An array variable with given name ''foo'' is assigned using several [foo] tags, where the first tag describes foo[0], the second foo[1], ...
+=== Сохранение переменных в юнитах ===
 
-=== Storing variables inside units ===
-
-Sometimes it is useful to store a custom WML variable inside a unit. Units stored with the [[InternalActionsWML#.5Bstore_unit.5D|[store_unit]]] command have a '''unit.variables''' sub-container where custom variables related to that unit may be saved. (Remember to [[DirectActionsWML#.5Bunstore_unit.5D|[unstore_unit]]] for the changes to be kept.) One benefit of this approach is that the unit may then be [[FilterWML|filtered]] based on the value, for example:
+Иногда полезно хранить собственные WML переменные в юните. Юнит сохраняемый при помощи команды [[InternalActionsWML#.5Bstore_unit.5D|[store_unit]]] имеет субконтейнер '''unit.variables''', где и можно сохранить переменные для этого юнита. (Не забывайте использовать [[DirectActionsWML#.5Bunstore_unit.5D|[unstore_unit]]] для сохранения изменений.)Один из плюсов такого подхода в состоит в том, что юнит затем может быть [[FilterWML|отсеян]] на основании этого значения:
  [filter]
    [filter_wml]
      [variables]
@@ -188,8 +187,8 @@ Sometimes it is useful to store a custom WML variable inside a unit. Units store
    [/filter_wml]
  [/filter]
 
-=== Variable Usage Examples ===
-Consider a saved game with the following [variables] tag (or a freshly started scenario with that tag)
+=== Примеры использования переменных ===
+Рассмотрим сохранённую игру со следующим тегом [variables] (или только начатый сценарий с этим тегом)
  [variables]
      attitude_of_elves=hate
      attitude_of_dwarves=love
@@ -197,19 +196,19 @@ Consider a saved game with the following [variables] tag (or a freshly started s
      current_opponent=elves
  [/variables]
 
-Then, 
+Тогда, 
  [message]
     message="Oh, I see $current_opponent|! They surely $attitude_of_$current_opponent|| us!"
  [/message]
-displays the message
+отобразит следующее сообщение:
  Oh, I see elves! They surely hate us!
 
-Consider another game with variables
+Рассмотрим другую игру с переменными:
  [variables]
      our_side=1
      their_side=2
  [/variables]
-where side 1 has 75 gold, and side 2 50 gold. Then, 
+где у стороны 1 75 золота, а у стороны 2 - 50. Тогда, 
  [store_side]
      side=$our_side
      variable=we
@@ -243,14 +242,14 @@ where side 1 has 75 gold, and side 2 50 gold. Then,
  [clear_variable]
      name=they
  [/clear_variable]
-displays the messages
+Отобразит такое сообщение:
  We have 75 gold, they have 50 gold.
  This should be easy!
-If side 2 had 100 gold instead, the same code would display the messages
+Если же у стороны 2 будет 100 золота, мы увидим это:
  We have 75 gold, they have 100 gold.
  This will not be easy!
 
-The code
+Код
  [store_unit]
      [filter]
          canrecruit=yes
@@ -264,19 +263,15 @@ The code
  [clear_variable]
      name=leader
  [/clear_variable]
-always displays a true sentence.
+Будет отображать правду ;).
 
-You may find more complicated examples of variable use in the [[UsefulWMLFragments]] section.
+Более сложные примеры использования переменных можно увидеть в разделе [[UsefulWMLFragments]].
 
-== Comments ==
-
-Comments are indicated by starting a line with a pound sign (<code>#</code>). Unless the line forms a valid [[PreprocessorRef#Preprocessor_directives|preprocessor directive]], all text after the pound sign will be ignored by the WML engine.
-
-== See Also ==
+== Смотри также ==
 
 * [[PreprocessorRef]]
 * [[ConventionsWML]]
 * [[SavefileWML]]
 * [[ReferenceWML]]
 
-[[Category: WML Reference]]
+[[Category: WML руководство]]

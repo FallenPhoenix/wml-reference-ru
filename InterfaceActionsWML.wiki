@@ -1,4 +1,5 @@
-{{WML Tags}}
+'''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/InterfaceActionsWML тут] >'''
+
 == Interface actions ==
 
 Part of [[ActionWML]], interface actions are actions that do not have a direct effect on gameplay;
@@ -41,7 +42,7 @@ The following key/tags are accepted for [message]:
 ** '''text''': text that is written into the field in the beginning
 * Check [[EventWML#Multiplayer_safety]] to find out in which events you can safely use '''[option]''' and '''[text_input]''' without causing OOS.
 
-=== Formatting ===
+=== Форматирование ===
 In 1.8, [http://developer.gnome.org/pango/unstable/PangoMarkupFormat.html Pango markup formatting codes] have been adopted for '''[message]'''. These can also be used in unit names (user_description), objectives, and such. Note that you'll probably want to use a single quote ' instead of a double quote " as double quotes cannot be escaped, otherwise the string will appear fragmented and you may also encounter errors. Running wmllint on your campaign will up-convert it, warning you about unusual cases you must fix by hand.
 
 For example, if you wanted to write "You are victorious!" in large, italic, gold letters, you might write it this way:
@@ -127,7 +128,7 @@ Tags of '''[objectives]''':
 ** '''description''': the text of the note.
 ** {{DevFeature1.11}} '''[show_if]''': The note will not be shown if the specified condition isn't met. Conditional notes are refreshed at '''[show_objectives]''' time only.
 
-=== Macros ===
+=== Макросы ===
 There are a few predefined macros for Objectives that you can use to shorten the code: [http://www.wesnoth.org/macro-reference.xhtml#SET_OBJECTIVES SET_OBJECTIVES], [http://www.wesnoth.org/macro-reference.xhtml#VICTORY_CONDITION VICTORY_CONDITION], and [http://www.wesnoth.org/macro-reference.xhtml#DEFEAT_CONDITION DEFEAT_CONDITION]. Follow the links for each one to see complete syntax and example usage.
 
 == [set_menu_item] ==
@@ -151,7 +152,7 @@ Removes a menu item from the scenario.
 Normally menu items are, including all their defining wml, automatically carried over between scenarios. This tag prevents this. (The behavior is comparable to set_variable/clear_variable).
 * '''id''': (string): id of the menu item to clear. Can be a comma-separated list.
 
-== Other interface tags ==
+== Прочие теги интерфейса ==
 
 The following tags are also action tags:
 === [item] ===
@@ -295,32 +296,31 @@ Uses an animation of a unit to animate it on screen (if the unit has the corresp
 * '''[facing]''': a [[StandardLocationFilter]] specifying what direction the unit should be facing when animated
 
 === [label] ===
-Places a label on the map.
-* '''x''', '''y''': the location of the label
-* '''text''': what the label should say
-* '''team_name''': if specified, the label will only be visible to the given team.
-* '''color''': color of the label. The format is r,g,b; r, g and b are numbers between 0 and 255.
-* '''visible_in_fog''': whether the label should be visible through fog or not. Default yes.
-* '''visible_in_shroud''': whether the label should be visible through shroud or not. Default no.
-* '''immutable''': whether this label is protected from being removed or changed by players. Default yes.
+Помещает на карту текстовую метку (надпись).
+* '''x''', '''y''': координаты надписи.
+* '''text''': текст надписи.
+* '''team_name''': если указано, метка будет видна только определенной комманде.
+* '''color''': цвет надписи в формате r,g,b. Значения r, g и b должны быть в диапазоне 0-255.
+* '''visible_in_fog''': определяет, должна ли метка быть видна сквозь туман (по умолчанию: yes).
+* '''visible_in_shroud''': определяет, должна ли метка быть видна сквозь пелену (по умолчанию: no).
+* '''immutable''': определяет, должна ли метка быть защищена от удаления и правки игроками (по умолчанию: yes).
+
 === [floating_text]===
-Floats text (similar to the damage and healing numbers) on the given locations.
-* [[StandardLocationFilter]]: the text will be floated on all matching locations simultaneously.
-* '''text''': the text to display.
+Показывает отлетающую надпись, как при лечении или нанесении урона.
+* [[StandardLocationFilter]]: эффект происходит синхронно на всех соответствующих фильтру территориях.
+* '''text''': отображаемый текст.
 
-The default text color is <span style="color: #6b8cff;">'''#6b8cff'''</span>. To change the color, use [[#Formatting|Pango markup]]. For example:
-
-<pre>
-# Float some golden yellow text at 20,20.
-[floating_text]
-   x,y=20,20
-   text="<span color='#cccc33'>Your text here</span>"
-[/floating_text]
-</pre>
+Цвет текста по умолчанию — <span style="color: #6b8cff;">'''#6b8cff'''</span>. Для выбора другого цвета используйте [[#Formatting|разметку Pango]].  Например:
+ # Отлетание золотой надписи в поле 20,20.
+ [floating_text]
+    x,y=20,20
+    text="<span color='#cccc33'>И тут ваш текст</span>"
+ [/floating_text]
 
 === [deprecated_message] ===
 Shows a deprecated message in the message area, this feature is only intended to be used to warn about deprecated macros in mainline. The message is not translatable.
 * '''message''': the message to show.
+
 === [wml_message] ===
 Outputs a message to Wesnoth's console output. Intended for campaign designers to output silent text to the console, without annoying the player; then, that text might contain information useful for later bug-reporting. The log domain for it is '''wml''', and the '''debug/dbg''' log level is available for use with the '''logger''' attribute. Depending on the current log level ('''error''' by default), which may be changed with the in-game :log command, or the --log-<level>=wml command line switch, the messages are echoed to the in-game chat.
 * '''message''': the message to show.
@@ -330,20 +330,21 @@ Note: As of 1.9.4/1.9.5 (r48805) the following "loggers" should work: If in [wml
 For log level warning or error (as during normal play), only wml_messages with logger error or warning display (for both). With logger info or debug, additionally wml_messages with logger info or debug display (for both).
 
 === [open_help] ===
-Opens the in-game help.
-* '''topic''': the id of the topic to open
+Открывает игровой справочник.
+* '''topic''': идентификатор открываемой статьи.
+
 === [show_objectives] ===
 refreshes the objectives defined by [objectives] and its [show_if] tags, and displays them. (It is also called whenever the user explicitly asks for the objectives; this matters only if the tag was overridden by a [[LuaWML#register_wml_action|Lua]] script.)
 * '''side''': the side to show the objectives. If not set, all sides are used.
 * '''[[StandardSideFilter]]''' {{DevFeature1.11}} tags and keys: Tag affects the matching sides instead of just all or the one given by the integer value of the side= key.
 
 === [chat] ===
-Displays a message in the chat area.
-* '''speaker''': (default="WML") A string for the name of the sender of the message.
-* '''message''': The message that should be displayed.
+Выводит сообщение в область чата.
+* '''speaker''': (по умолчанию: "WML") строка имени отправителя сообщения.
+* '''message''': сообщение, которое нужно отправить.
 * '''[[StandardSideFilter]]''' tags and keys as argument; if the same client controls multiple sides that match, then the message will only be displayed once.
 
-== Useful Macros ==
+== Полезные макросы ==
 There are some predefined macros that you find useful for interface actions. You can find a complete list along with a detailed explanation of how they work [http://www.wesnoth.org/macro-reference.xhtml here].
 * '''{HIGHLIGHT_UNIT}''' Highlight a unit on the map. Use this to show important units
 * '''{HIGHLIGHT_IMAGE}''' Places and highlights an image on the map. Use this to show important items or locations
@@ -351,7 +352,7 @@ There are some predefined macros that you find useful for interface actions. You
 * '''{QUAKE <soundfile>}''' Creates a tremor like screenshake and plays <soundfile>. ('''{TREMOR}''' is a deprecated version, equivalent to '''{QUAKE (rumble.ogg)}''')
 * '''{FLASH_WHITE}''' Flash the screen white momentarily. You can also replace WHITE with RED, BLUE or GREEN for a different colour.
 
-== See Also ==
+== Смотрите также ==
 * [[DirectActionsWML]]
 * [[InternalActionsWML]]
 * [[EventWML]]

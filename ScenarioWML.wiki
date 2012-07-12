@@ -1,4 +1,3 @@
-{{WML Tags}}
 == the toplevel tags [multiplayer], [test], [tutorial], [scenario] ==
 
 The top level tags '''[multiplayer]''', '''[test]''', '''[tutorial]''' and '''[scenario]''' are all formatted the same way.
@@ -91,6 +90,5 @@ The following key is additionally recognized in '''[multiplayer]''' scenarios:
 
 * [[EventWML]]
 * [[ReferenceWML]]
-
 
 [[Category: WML Reference]]

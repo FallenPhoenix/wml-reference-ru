@@ -1,5 +1,5 @@
 {{WML Tags}}
-== The [unit_type] tag ==
+== тег [unit_type] ==
 
 Each '''[unit_type]''' tag defines one unit type. (for the use of [unit] to create a unit, see [[SingleUnitWML]])
 

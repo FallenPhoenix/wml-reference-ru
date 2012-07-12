@@ -1,23 +1,22 @@
-{{WML Tags}}
-== The Wesnoth Markup Language ==
+'''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/ReferenceWML тут] >'''
 
-The Wesnoth Markup Language (WML) is used to code almost everything in Wesnoth, including scenarios, units, savefiles, and the user interface layout. WML files are simple, human-readable text files, usually with the .cfg extension, with similarities to INI files and XML. A major feature in WML are macros, which are alike those found in the C language and similarily are handled by a preprocessor. Implementation-wise, WML files are handled mainly by the ''config'' class (and ''simple_wml'' in [[wesnothd]]).
+== Язык разметки "Веснота" ==
 
-This page is a collection of pointers to different common WML structures.  See [[AlphabeticalWML]] for a quick listing of all WML tags.  The more comprehensive [[BuildingScenariosIndex]] lists tags and keys.
+Формат WML (Wesnoth Markup Language) используется в большинстве элементов игры, включая сценарии, бойцов, сейвы и разметку интерфейса. WML-файлы представляют из себя обычные текстовые файлы с синтаксисом, родственным XML и INI, и чаще всего имеют расширение .cfg. Главной особенностью языка являются макросы (на замену функциям), позволяющие избежать лишних копи-пастов, и вообще сильно облегчающие жизнь :) На уровне исходников WML-движок реализован преимущественно в классе ''config'' (ну и еще в ''simple_wml'' для [[wesnothd]]).
 
-See [[BuildingScenarios]], [[BuildingCampaigns]] and [[BuildingUnits]]
-for a tutorial style overview.
+На этой странице расположены ссылки на некоторые основные WML-структуры. Краткий алфавитный список тегов находится в [[AlphabeticalWML]]. Более подробный, с атрибутами — в [[BuildingScenariosIndex]].
+
+Если вам нужно руководство, а не справочник, то смотрите статьи [[BuildingScenarios]], [[BuildingCampaigns]] и [[BuildingUnits]].
 
 
+''Примечание: данные статьи могут содержать некоторые неточности, пробелы в тегах и атрибутах, устаревший синтаксис. Если среди них вы не найдете ответа, как что-либо реализовать, то можно поискать его в рабочих конфигах дистрибутива и аддонов игры (а также по форумам и исходникам самого "Веснота"). Исправление и дополнение справочника приветствуется ;)''
 
-''Note: this reference may contain slight inaccuracies, might not list all existing keys and tags or might contain some deprecated syntax. If you find that this reference doesn't give you the answer to how to implement some feature in WML, the most reliable way is to look at the WML code of existing units and campaigns that have done so.''
+== Основы языка ==
 
-== How WML works ==
+* [[SyntaxWML]] — синтаксис языка и работа с переменными
+* [[PreprocessorRef]] — синтаксис препроцессора
 
-* [[SyntaxWML]] the syntactical definition of WML, and how to use variables
-* [[PreprocessorRef]] the WML preprocessor syntax
-
-== WML toplevel tags ==
+== Теги верхнего уровня ==
 
 * [[GameConfigWML]] the top level '''[game_config]''' tag
 * [[UnitsWML]] the top level '''[units]''' tag
@@ -44,28 +43,28 @@ for a tutorial style overview.
 * [[BinaryPathWML]] the top level '''[binary_path]''' tag
 * [[FontsWML]] the top level '''[fonts]''' tag
 
-== Other WML tags ==
+== Прочие теги ==
 
-* [[EventWML]] how to describe an event
+* [[EventWML]] — создание игровых событий
 ** [[FilterWML]] the construct to filter on units, locations, and weapons
-** [[ActionWML]] to describe the actions which occur when the event is fired
-*** [[ConditionalActionsWML]] actions that encapsulate conditional filters and the actions to execute if the conditions are met
-*** [[DirectActionsWML]] actions that directly affect gameplay: for example creating a unit
+** [[ActionWML]] — действия, происходящие при вызове события
+*** [[ConditionalActionsWML]] — условные операции и фильтры условий
+*** [[DirectActionsWML]] — операции, прямо связанные с геймплеем (например, создание бойцов)
 **** [[SingleUnitWML]] how to describe a unit
-*** [[InternalActionsWML]] actions that WML uses internally: for example storing a variable
-*** [[InterfaceActionsWML]] actions that do not affect gameplay: for example displaying a message
-*** [[LuaWML]] how to code actions with the Lua language
-* [[AiWML]] how to describe parameters for AI
+*** [[InternalActionsWML]] — внутренние операции (например, работа с переменными)
+*** [[InterfaceActionsWML]] — операции, не влияющие на геймплей напрямую (например, диалоги)
+*** [[LuaWML]] — использование скриптов на Lua
+* [[AiWML]] — параметры искусственного интеллекта
 * [[EffectWML]] the construct to modify a unit
 * [[AbilitiesWML]] a list of the different abilities a unit or weapon can have
 * [[DescriptionWML]] the structure of WML coded menus like the difficulty chooser of campaigns
 * [[EditorWML]] tags controlling the post-1.4 editor's behavior
 
-== Predefined macros == 
+== Предопределенные макросы == 
 
-Wesnoth ships with a library of predefined macros you should find useful in writing your own WML.  You can find a description of all such macros [http://www.wesnoth.org/macro-reference.html here].
+«Веснот» поставляется с библиотекой предопределенных макросов, которые будут небесполезны и при создании собственного WML-кода. Их полный список с описаниями находится [http://www.wesnoth.org/macro-reference.html здесь] (англ.).
 
-== Other ==
+== Другое ==
 
 * [[ReferenceWMLSyntax]] how this wiki and the pages it links to should be formatted
 * [[ConventionsWML]] how to make your WML more readable
@@ -77,10 +76,10 @@ Wesnoth ships with a library of predefined macros you should find useful in writ
 * [[ImagePathFunctionWML]] is used when applying the team-color function to images.
 * [[BinaryWML]] how WML is sent over the network
 
-== See Also ==
+== Смотрите также ==
 
-* [[BuildingMaps]] the text-based format for Wesnoth maps
-* [[TerrainCodesWML]] a list of all terrains
+* [[BuildingMaps]] — текстовый формат карт "Веснота"
+* [[TerrainCodesWML]] — список всех кодов ландафта
 * [[MultiHexTutorial]] a description of the multi-hex tiling system
 * [[IGNFileFormat]] a description of the ignore file format
 

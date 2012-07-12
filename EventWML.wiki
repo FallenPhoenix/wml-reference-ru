@@ -1,30 +1,26 @@
 {{WML Tags}}
-== The [event] Tag ==
+== Тег [event] ==
+Тег '''[event]''' может быть вложен в '''[scenario]''', '''[unit_type]''' и '''[era]''', и используется для описания последовательности [[ActionWML|операций]], выполняемых в сценарии при определенных условиях. Когда он прописан в теге '''[scenario]''' (включая '''[multiplayer]''', '''[tutorial]''' и '''[test]'''), событие возникает только в данном конкретном сценарии, когда в '''[unit_type]''' — в любом сценарии, где появляется этот боец (после его появления), а когда в теге '''[era]''', то в любом сценарии при использовании этой эры.
 
-This tag is a subtag of the [scenario], [unit_type] and [era] tags which is used to describe a set of [[ActionWML|actions]] which trigger at a certain point in a scenario. When used in a [scenario] tag (also includes [multiplayer], [tutorial] and [test]), the event only occurs in that scenario. When used in a [unit_type] tag, the event will occur in all scenarios in which a unit of that type appears in (only after such a unit appears during the scenario, however). When used in an [era], the event will occur in any scenario which is played using that era.
+Тег содержит ключи и подтеги, определяющие, при каких условиях он будет вызван. Важнейший из них — ключ '''name'''. Без него ошибки не будет, но и событие никогда не произойдет. Поэтому он может рассматриваться как обязательный. Все остальные ключи опциональны и не влияют на сам факт возникновения события тем или иным путем.
 
-This tag has keys and child tags that control when and if the event actions will be triggered. Most important of these is the '''name''' key. Without it, no error will be raised but the event will never fire. Therefore, from a practical standpoint, it can be considered mandatory. All of the others can be used or not and the event actions will fire either way.
+'''Заметка по терминологии:''' ''Слово "event" в данном случае можно считать сокращением от "event handler", т.к. технически тег является не самим событием игры, а обработчиком, вызываемом при событиях типа 'name'. However, this distinction is usually unimportant in most discussions and the event handlers are therefore simply referred to as "events" in this documentation.''
 
-'''Lexicon side note:''' ''The word "event" in the [event] tag itself may be considered an abbreviation of the word "event handler" because it is technically not a game "event" but an event '''handler''' for the game events fired with the given 'name'. However, this distinction is usually unimportant in most discussions and the event handlers are therefore simply referred to as "events" in this documentation.''
+=== Ключ 'name' ===
 
-=== The 'name' Key (Mandatory) ===
-
-Usage:
+Использование:
  name=<value>
 
 This key defines which game event or trigger your [event] tag will be handling. This 'name' key should not be confused with a descriptive comment; it is rather a precise value which must match the predefined game event's name to be valid.
 
 '''Lexicon side note:''' ''It is not uncommon to refer to these values as the 'trigger' for an event and, furthermore, to call an event by its 'trigger' name. For example, in an event containing '''name=moveto''', a person might refer to the event as a ''''moveto''' event' and/or refer to the ''''moveto''' trigger' in the event or even talk about the 'event trigger' when referring to the '''moveto''' value of the 'name' key in that event. Some or all of this usage can, in fact, be found throughout this page.''
 
-The '''name''' key can accept a list of comma separated values describing when the event will be triggered.*  These values may be either predefined event types or  custom event names not matching any predefined type.
+'''name''' может принимать и список условий возникновения, состоящий как из предопределенных, так и пользовательских имен (имейте в виду, что без [[#first_time_only|first_time_only=no]] событие срабатывает один раз вообще, а не по разу для каждого имени).
 
-For example:
-
+Пример:
  name=attacker misses,defender misses
 
-''* Note that unless you use [[#first_time_only|first_time_only=no]], the event will fire only once, '''not''' once for each listed type.''
-
-==== Predefined 'name' Key Values ====
+==== Предопределенные значения ====
 
 All predefined event types are listed here along with a description of when this value will cause the event to be triggered. Any value ''not'' listed here is a custom event name which can be triggered only by a '''[fire_event]''' tag somewhere else. Spaces in event names can be interchanged with underscores (for example, '''name=new turn''' and '''name=new_turn''' are equivalent).
 
@@ -41,13 +37,13 @@ All predefined event types are listed here along with a description of when this
 : '''Note:''' ''This value makes the [[#first_time_only|first_time_only]] key irrelevant since, by definition, it can only fire once.''
 
 ; new turn
-: Triggers at the start of every turn (not side turn). See also [[#first_time_only|first_time_only=no]]. Before any events of this type trigger, the value of the WML variable '''turn_number''' is set to the number of the turn that is beginning.
+: Срабатывает вначале каждого хода (не хода стороны). See also [[#first_time_only|first_time_only=no]]. Before any events of this type trigger, the value of the WML variable '''turn_number''' is set to the number of the turn that is beginning.
 
 ; turn end
-: Triggers at the end of every turn (not side turn). See also [[#first_time_only|first_time_only=no]]. The WML variable '''side_number''' will contain the side that ended their turn.
+: Срабатывает в конце каждого хода (не хода стороны). See also [[#first_time_only|first_time_only=no]]. The WML variable '''side_number''' will contain the side that ended their turn.
 
 ; turn ''X'' end
-: Triggers at the end of turn ''X''.
+: Срабатывает в конце хода ''X''.
 
 ; side turn
 : Triggers when a side is about to start its turn. Before events of this type trigger, the value of the WML variable '''side_number''' is set to the number of the side of the player about to take their turn. This is before any healing takes place for that side, before calculating income, and before restoring unit movement and status.
@@ -63,7 +59,7 @@ All predefined event types are listed here along with a description of when this
 ; turn ''X''
 : Triggers at the start of turn ''X''. It's the first side initialization event. 
 :Side initialization events go in the order of: 
-: 1) '''turn ''X''''' 
+:1) '''turn ''X''''' 
 :2) '''new turn''' 
 :3) '''side turn''' 
 :4) '''side ''X'' turn''' 
@@ -75,26 +71,23 @@ All predefined event types are listed here along with a description of when this
 :10) '''side ''X'' turn ''Y'' refresh'''
 
 ; side ''X'' turn ''Y''
-: This event triggers at the start of turn ''Y'' of side X 
+: Срабатывает вначале хода ''Y'' стороны ''X''.
 
 ; side ''X'' turn
-: This event triggers at the start of any turn of side X
-: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
+: Срабатывает вначале каждого хода стороны ''X''.
+: '''Примечание:''' ''Разумеется, для многократного выполнения требуется [[#first_time_only|first_time_only=no]]''
 
 ; side turn ''X''
-: This event triggers at the start of any side on turn X
-: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
+: Срабатывает вначале хода ''X'' для каждой стороны.
 
 ; side X turn Y refresh
 : This event triggers at the turn refresh for side X on turn Y
 
 ; side ''X'' turn refresh
 : This event triggers at the turn refresh for side X
-: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
 
 ; turn ''X'' refresh
 : This event triggers for any side at the refresh of turn X.
-: '''Note:''' ''Of course, [[#first_time_only|first_time_only=no]] is needed for this event to be triggered more than once.''
 
 ; side turn end
 : Triggers after a side ends its turn. Like side turn, there are also some variations for specific combinations of side number and turn number. Here is the order in which the turn end events trigger:
@@ -133,7 +126,7 @@ These event triggers are all actions by units ('''moveto''', '''attack''') or th
 
 
 ; attack
-: Triggers when the primary unit attacks the secondary unit.
+: Возникает, когда один боец (primary) атакует другого (secondary).
 
 ; attack end
 : Similar to '''attack''', but is triggered ''after'' the fight instead of before. Note that if either unit is killed during the fight, this event triggers before any '''die''' events.
@@ -186,11 +179,11 @@ These event triggers are all actions by units ('''moveto''', '''attack''') or th
 ; menu item ''X''
 : Triggers when a WML menu item with id=''X'' is selected. ''Note: if the menu item has a [command], this event may be executed before or after the command; there is no guarantee.''
 
-==== Custom events ====
+==== Пользовательские события ====
 
 An event with a custom name may be invoked using the [[InternalActionsWML#.5Bfire_event.5D|[fire_event]]] tag.  Normally you'll use such custom events as named subroutines to be called by events with predefined types.  One common case of this, for example, is that more than one '''sighted''' events might fire the same custom event that changes the scenario objectives.
 
-=== Optional Keys and Tags ===
+=== Опциональные ключи и теги ===
 
 These keys and tags are more complex ways to filter when an event should trigger:
 
@@ -259,7 +252,7 @@ Several actions use standard filters to find out which units
 to execute the command on.  These are denoted by the phrases
 "standard unit filter" and "standard location filter".
 
-=== Nested Events ===
+=== Вложенные события ===
 
 There is one special type of action: event creation.  By placing an '''[event]''' tag inside another '''[event]''' tag, the nested event is spawned (created) when the parent (outer) event is encountered (when executing the contents of the parent event).
 
@@ -493,8 +486,8 @@ Every delayed_variable_substitution=no causes a variable substitution run on the
      [/event]
  [/event]
 
-== See Also ==
 
+== Смотрите также ==
 * [[DirectActionsWML]]
 * [[InternalActionsWML]]
 * [[InterfaceActionsWML]]

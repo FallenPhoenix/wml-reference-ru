@@ -6,10 +6,10 @@ Direct actions are actions that have a direct effect on gameplay. They can be us
 The following tags are actions:
 
 === [endlevel] ===
-Ends the scenario.
+Завершает сценарий.
 * '''result''': before the scenario is over, all events with ''name=result'' are triggered. If ''result=victory'', the player progresses to the next level; if ''result=defeat'', the game returns to the main menu. 
 
-When the result is "victory" the following keys can be used:
+При '''result=victory''' также доступны следующие ключи:
 * '''bonus''': whether the player should get bonus gold (maximum possible gold that could have been earned by waiting the level out). The default is bonus=yes.
 * '''carryover_report''': whether the player should receive a summary of the scenario outcome, the default is carryover_report=yes.
 * '''save''': whether a start-of-scenario save should be created for the next scenario, the default is save=yes. Do not confuse this with saving of replays for the current scenario.
@@ -25,14 +25,13 @@ When the result is "victory" the following keys can be used:
 * '''end_text_duration''': Delay, in milliseconds, before displaying the game credits at the end of a campaign. In other words, for how much time '''end_text''' is displayed on screen. Defaults to 3500. Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
 
 === [unit] ===
-Places a unit on the map.  For syntax see [[SingleUnitWML]].
-* {{Short Note:Predefined Macro|GENERIC_UNIT}}
-* '''to_variable''':  spawn directly into a variable instead of on the map.
+Добавляет бойца на карту. Синтаксис смотрите в [[SingleUnitWML]]. {{Short Note:Predefined Macro|GENERIC_UNIT}}
+* '''to_variable''': Запись в переменную вместо ввода в игру.
 
 === [recall] ===
-Recalls a unit.  The unit is recalled free of charge, and is placed near the leader.
+Призывает бойца к лидеру. Бесплатно.
 * [[StandardUnitFilter]]: the first matching unit will be recalled.  If no units match this tag is ignored. Do not use a [filter] tag. If a comma separated list is given, every unit currently considered for recall is checked against all the types (not each single one of the types against all units).
-* '''x,y''': the unit is placed here instead of next to the leader.
+* '''x,y''': Локация бойца (вместо области рядом с лидером).
 * '''show''': yes/no, default yes: whether the unit is animated (faded in) or instantly displayed
 * '''fire_event''': boolean yes|no (default no); whether any according prerecall or recall events shall be fired.
 * '''check_passability''': (boolean yes|no, default yes): If yes, checks for terrain passability when placing the unit (a nearby passable hex is chosen).
@@ -48,7 +47,7 @@ Teleports a unit on map. {{Short Note:Predefined Macro|TELEPORT_UNIT}}
 (Note: There is also a ability named teleport, see [[AbilitiesWML]].)
 
 === [terrain_mask] ===
-Changes the terrain on the map.  See [[TerrainMaskWML]].
+Changes the terrain on the map. Смотрите [[TerrainMaskWML]].
 
 === [terrain] ===
 Changes the terrain on the map.
@@ -140,20 +139,20 @@ Modifies the turn limit in the middle of a scenario.
 * '''current''': changes the current turn number after applying turn limit modifications, if any. It is not possible to change the turn number to exceed the turn limit (1 <= current turns <= max turns).
 
 === [allow_end_turn] ===
-Allows human players to end their turn through the user interface if they were previously affected by the '''[disallow_end_turn]''' action. This action doesn't take any arguments.
+Разрешает игрокам завершать ходы через интерфейс (если ранее использовалось '''[disallow_end_turn]'''). Данная операция не принимает никаких параметров.
 
 === [disallow_end_turn] ===
-Disallows human players to end their turn through the user interface. This action doesn't take any arguments.
+Запрещает игрокам завершать ходы через интерфейс. Данная операция не принимает никаких параметров.
 
 === [capture_village] ===
-Changes the ownership of a village.
+Меняет владельца деревни.
 * [[StandardLocationFilter]]: all village locations matching the filter are affected.
 * '''side''': the side that takes control of the village. This side needs to have a leader (canrecruit=yes). If the side key is not given, the village will become neutral (unless [filter_side] is present, in which case that side fiter decides, see below).
 * '''[filter_side]''' with [[StandardSideFilter]] tags and keys as arguments; if both this tag and inline side= are present it's an error. Otherwise, the first matching side gets ownership (or the village becomes neutral if none match).
 * '''fire_event''' (boolean yes|no, default: no): Whether any capture events shall be fired.
 
 === [kill] ===
-Removes all units (including units in a recall list) that match the filter from the game.
+Удаляет из игры всех бойцов, соответствующих фильтру (включая список призыва).
 * [[StandardUnitFilter]]: Selection criterion; do not use a [filter] tag.
 * '''animate''': if 'yes', displays the unit dying (fading away).
 * '''fire_event''': if 'yes', triggers any appropriate 'die' events (See [[EventWML]]). Note that events are only fired for killed units that have been on the map (as opposed to recall list).
@@ -169,7 +168,6 @@ works like the MOVE_UNIT macro.
 
 === [modify_ai] ===
 Changes AI objects (aspects, goals, candidate actions or stages) for a specified side. See [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|AiWML]] for full description.
-
 * '''action''' (string): Takes values 'add', 'change', 'delete' or 'try_delete' to do just that for the AI object.
 * '''path''' (string): Describes which AI object is to be modified.  
 * '''[facet]''', '''[goal]''', '''[candidate_action]''' or '''[stage]''': Details about the AI object to be modified.
@@ -204,7 +202,6 @@ transforms every unit matching the filter to the given unit type. Keeps intact h
 * '''transform_to''': the unit type in which all the units matching the filter will be transformed. If missing, the units will follow their normal advancement.
 
 === [petrify] ===
-
 * [[StandardUnitFilter]] as an argument. Do not use a [filter] tag. All units matching this filter are petrified. Recall list units are included.
 
 === [unpetrify] ===
@@ -225,7 +222,6 @@ Gives some unit an object and removes all items on the tile the unit is on.
 * '''silent''': whether or not messages should be suppressed. Default is "no".
 * '''image''': the displayed image of the object.
 * '''name''': (translatable) displayed as a caption of the image.
-
 * '''description''': (translatable) displayed as a message of the image.
 * '''cannot_use_message''': (translatable) displayed instead of '''description''' if no unit passes the filter test.
 
@@ -294,10 +290,9 @@ How a day should progress in a given area. Everywhere not specified in a [time_a
 * '''remove''': (boolean) yes/no value. Indicates whether the specified time_area should be removed. Requires an identifier. If no identifier is used, however, all time_areas are removed.
 
 === [end_turn] ===
-End the current side's turn. The current event is finished before the turn is ended. Also, if the current event (where the tag appears) has been fired by another event, that event (and the complete stack of other possible parent events) is ended before [end_turn] comes into affect. Also, events following the event stack that fired [end_turn] are not omitted (e.g. [end_turn] is used by a side turn event and a turn refresh event does something afterwards).
+Завершает ход текущей стороны. The current event is finished before the turn is ended. Also, if the current event (where the tag appears) has been fired by another event, that event (and the complete stack of other possible parent events) is ended before [end_turn] comes into affect. Also, events following the event stack that fired [end_turn] are not omitted (e.g. [end_turn] is used by a side turn event and a turn refresh event does something afterwards).
 
 === [replace_map] ===
-
 Replaces the entire map.
 * '''map''': Content of a wesnoth map file. example:
  map="{campaigns/Heir_To_The_Throne/maps/01_The_Elves_Besieged.map}"
@@ -322,15 +317,14 @@ Create a tunnel between some locations, later usable by units to move from sourc
 
 (Note: The tunnel tag can also be used inside the [[AbilitiesWML|[teleport]]] ability, without remove= and id=).
 
-== Useful Macros ==
+== Полезные макросы ==
 There are some predefined macros that you find useful for direct actions. You can find a complete list along with a detailed explanation of how they work [http://www.wesnoth.org/macro-reference.xhtml here].
 * '''{MOVE_UNIT}''': Moves a unit to another location in the map and the player sees the movement (unlike [teleport])
 * '''{FULL_HEAL}''': Brings a unit to full HP
 * '''{LOYAL_UNIT}''': Create a loyal unit
 * '''{MODIFY_TERRAIN_MASK}''': Modify an area of terrain
 
-== See Also ==
-
+== Смотрите также ==
 * [[InternalActionsWML]]
 * [[InterfaceActionsWML]]
 * [[EventWML]]
