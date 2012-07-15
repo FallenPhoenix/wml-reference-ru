@@ -1,4 +1,4 @@
-== the toplevel tags [multiplayer], [test], [tutorial], [scenario] ==
+== Теги верхнего уровня [multiplayer], [test], [tutorial], [scenario] ==
 
 The top level tags '''[multiplayer]''', '''[test]''', '''[tutorial]''' and '''[scenario]''' are all formatted the same way.
 The difference between these tags is the way that the scenarios they describe are accessed.
@@ -12,82 +12,51 @@ Some scenarios can be played without playing other scenarios first
 These scenarios are called ''initial scenario''s.
 
 A list of initial scenarios, and how to access them:
-
 * All '''[multiplayer]''' scenarios (without ''allow_new_game=no'') are initial scenarios listed in the multiplayer scenario selector screen (accessed by the "multiplayer" button).
-
 * The '''[test]''' scenario with the attribute '''id=test''' is an initial scenario. This test scenario can be accessed by running the game in test mode. (note: this is NOT the same as debug mode. It can be accessed using -t or --test)
-
 * The '''[tutorial]''' scenario with the attribute '''id=tutorial''' is an initial scenario. The tutorial is accessed by clicking on the "tutorial" button.
-
 * Any '''[scenario]''' scenario with an id listed in the value of ''first_scenario'' in a campaign tag (see [[CampaignWML]]) is an initial scenario accessed by selecting that campaign after clicking on the "campaign" button.
 
-== The [scenario] tag ==
-
-The following keys and tags are recognized in '''[scenario]''' tags:
-
-* '''id''': A unique identifier for this scenario. All scenarios must have an id.
-
-* '''next_scenario''': The id of the scenario to load when the current one is won. This can be changed dynamically, to build non-linear campaigns.
-
-* '''description''': (translatable) only for multiplayer maps. Will show up as a tooltip when mousing over the minimap in the multiplayer setup screen.
-
-* '''name''': (translatable) is shown in several places in the level, including the intro screen. It is also the default name for saves on the level.
-
+== Структура тега ==
+Теги сценариев содержат следующие элементы:
+* '''id''': Уникальный идентификатор. Обязательный параметр для любого сценария.
+* '''next_scenario''': Сценарий (по ID), загружаемый после победы в текущем. Атрибут можно динамически изменять для создания нелинейных кампаний.
+* '''name''': Название сценария, отображаемое в списке мультиплеера, на экранах заставки и еще в некоторых местах. Поддерживает локализацию.
+* '''description''': Описание сценария. В мультиплеере появляется в виде подсказки при наведении курсора на миникарту (диалог создания игры); в кампаниях не используется. Поддерживает локализацию.
 * '''map_data''': inputs valid Wesnoth map data. See [[BuildingMaps]] for a description of the Wesnoth map syntax.
-
-* '''turns''': sets an event on turn ''turns'' causing the player to lose. Use ''-1'' to have no turn limit (default). See also [[EventWML]]
-
-* '''turn_at''': the turn to start on (default=1)
-
+* '''turns''': Лимит ходов. На ходу, указанном в этом параметре, вызывается событие ''time over'' (см. [[EventWML]]). В кампаниях обычно приводит к поражению игрока, а в мультиплеере — к завершению игры с подсчетом статистики. Для отключения используйте значение ''-1'' (оно и стоит по умолчанию).
+* '''turn_at''': Номер хода, с которого начинается сценарий (по умолчанию: 1).
 : Note that none of the regular start-of-turn behavior, including poison damage, healing, income and refreshing unit movement and status, will occur before the start of turn 2.  All start-of-turn [[EventWML|WML events]] will still be fired, however.
-
 * '''random_start_time''': controls random starting time of day. Possible values are yes and no or list of possible start times; starting from 1 to number of times. for example ''random_start_time=2,3,5,6'' (default=no)
-
 * '''music''': the music file relative to ''./music/'' to play during the scenario
-
-* '''[music]''': specifies the music tracks to play during this scenario, see [[MusicListWML]].
-
-* '''defeat_music''': specifies a comma-separated list of music tracks which may be chosen to play on defeat. If not provided, the default in [[GameConfigWML]] is used instead. May be overridden by [[DirectActionsWML|endlevel]] clauses.
-
-* '''victory_music''': specifies a comma-separated list of music tracks which may be chosen to play on victory. If not provided, the default in [[GameConfigWML]] is used instead. May be overridden by [[DirectActionsWML|endlevel]] clauses.
-
-* '''theme''': the name of the UI theme that should be used when playing this scenario.
-
+* '''[music]''': Список музыкальных композиций, проигрываемых в сценарии. Смотрите [[MusicListWML]].
+* '''defeat_music''': Список музыкальных композиций, используемых при поражении (рандомно выбирается одна). Если не указан, используется прописанный в [[GameConfigWML]]. May be overridden by [[DirectActionsWML|endlevel]] clauses.
+* '''victory_music''': Список музыкальных композиций, используемых при победе. Если не указан, используется прописанный в [[GameConfigWML]]. May be overridden by [[DirectActionsWML|endlevel]] clauses.
+* '''theme''': Используемая тема интерфейса.
 * '''victory_when_enemies_defeated''': when this is set to '''yes''' (default), the player wins once all non-allied units with '''canrecruit=yes''' (aka leaders) are killed. (Currently this only controls the win condition for when all enemies are defeated; it does not prevent the player from losing if he has no leader.) When this value is true the following keys can be used:
 ** '''carryover_percentage''': by default 80% of the gold is carried over to the next scenario, with this key the amount can be changed.
 ** '''carryover_add''': if true the gold will be added to the starting gold the next scenario, if false the next scenario will start with the amount of the current scenario (after taxes) or the minimum in the next scenario. Default is false.
-
-* '''disallow_recall''': when this is set to 'no'(default), the player is allowed to recall units from previous scenarios.
-
+* '''disallow_recall''': Запрещает призывать бойцов, оставшихся с предыдущих эпизодов кампании (по умолчанию: no).
 * '''experience_modifier''': the percentage that required XP to level up (for all units in the scenario) is multiplied by. Default 100. Note that when used in a campaign, weird things (like units being above the required XP to level up) can happen if this value is different for different scenarios.
-
-* '''[story]''': describes the intro screen. See [[IntroWML]]
-
-* '''[label]''': sets a label
-** '''x''', '''y''': location to set label
-** '''text''': the label
-
-* '''[time]''': how a day should progress. See [[TimeWML]]
-
+* '''[story]''': Описывает экран заставки. Смотрите [[IntroWML]].
+* '''[label]''': Устанавливает текстовую метку.
+** '''x''', '''y''': Координаты метки.
+** '''text''': Текст метки.
+* '''[time]''': how a day should progress. Смотрите [[TimeWML]].
 * '''[time_area]''': how a day should progress in a given area. Everywhere not specified in a [time_area] tag is affected by the [time] tags in the [scenario] tag
 ** takes x and y coordinates.
 ** '''[time]''': how a day should progress in those locations. See [[TimeWML]]
 ** time areas can be used in events, assigned identifiers, and removed at discretion. They also accept complete Standard Location Filters. See [[DirectActionsWML]].
-
-* '''[side]''': describes one player. See [[SideWML]]
-
-* '''[event]''': describes an event that may be triggered at a certain point of the scenario. See [[EventWML]]
-
+* '''[side]''': Описывает одну игровую сторону. Смотрите [[SideWML]].
+* '''[event]''': Описывает происходящее при определенных условиях игровое событие. Смотрите [[EventWML]].
 * '''map_generation''': another way to generate a map. The map will be generated randomly
 ** '''default''': the default random map generator
-
 * '''[generator]''' if this is present, the map and scenario will be generated randomly. See [[MapGeneratorWML]]
 
-The following key is additionally recognized in '''[multiplayer]''' scenarios:
-* '''allow_new_game''': (default=yes) allow/prevent the scenario to be listed in the game creation interface. This is intended for extra scenarios in multiplayer campaigns
+Тег '''[multiplayer]''' также поддерживает:
+* '''allow_new_game''': Определяет видимость сценария в диалоге создания игры (по умолчанию: yes). Служит для использования в мультиплеерных кампаниях.
 
-== See Also ==
-
+== Смотрите также ==
 * [[EventWML]]
 * [[ReferenceWML]]
 
