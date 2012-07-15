@@ -1,11 +1,9 @@
 {{WML Tags}}
 == тег [unit_type] ==
 
-Each '''[unit_type]''' tag defines one unit type. (for the use of [unit] to create a unit, see [[SingleUnitWML]])
+Каждый тег '''[unit_type]''' определяет один тип бойца. (for the use of [unit] to create a unit, see [[SingleUnitWML]])
 
-Unit animation syntax is described in [[AnimationWML]].
-
-The following key/tags are recognized:
+Поддерживаются следующие дочерние теги и атрибуты:
 {| class="gallery" style="text-align:left;"
 |-
 ! [advancefrom]
@@ -46,7 +44,7 @@ The following key/tags are recognized:
 |  determines if the unit type will appear in the in-game help. Possible values ''true'' and ''false'', defaults to ''false''.
 |-
 ! hitpoints
-| the maximum HP that the unit has, and the HP it has when it is created.
+| Максимальное здоровье бойца. Оно же изначальное здоровье.
 |-
 ! id
 |the value of the ''type'' key for units of this type. An ''id'' should consist only of alphanumerics and spaces (or underscores). ''type'' keys are found in [[SingleUnitWML]] and [[FilterWML]]. For example, id=Drake Flare
@@ -62,7 +60,7 @@ WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the 
 | the amount of upkeep the unit costs.  After this unit fights, its opponent gains ''level'' experience. See also kill_experience ([[GameConfigWML]]), and leadership ([[AbilitiesWML]]).
 |-
 ! movement
-| the number of move points that this unit receives each turn.
+| Очки передвижения, получаемые бойцом каждый ход.
 |-
 ! vision
 | the number of vision points to calculate the unit's sight range. Defaults to ''movement'' if not present.
@@ -94,8 +92,9 @@ WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the 
 | the way that the AI should recruit this unit, as determined by the scenario designer. (See ''recruitment_pattern'', [[AiWML]]).  The following are conventions on usage:<br> ** ''scout'': Fast, mobile unit meant for exploration and village grabbing.<br> ** ''fighter'': Melee fighter, melee attack substantially more powerful than ranged.<br> ** ''archer'': Ranged fighter, ranged attack substantially more powerful than melee.<br> ** ''mixed fighter'': Melee and ranged fighter, melee and ranged attacks roughly equal.<br> ** ''healer'': Specialty 'heals' or 'cures'.<br>Note that this field affects only recruitment, not the AI's behavior in combat; that is always computed from attack power and hitpoints. 
 |-
 ! zoc
-| if "yes" the unit will have a zone of control regardless of level.  If present but set to anything other than "yes," the unit will have no zone of control.  If the tag is omitted, zone of control is dictated by unit level (level 0 = no zoc, level 1+ = has zoc).
+| Определяет наличие зоны контроля. При значении "yes" боец будет иметь зону независимо от уровня; при любом ином значении - не будет. Если тег не указан, начилие зоны контроля определяется уровнем бойца (ур. 0 = нет зоны, ур. 1+ = есть зона).
 |}
+
 ==== After max level advancement (AMLA) ====
 * '''[advancement]''': describes what happens to a unit when it reaches the XP required for advancement.  It is considered as an advancement in the same way as advancement described by '''advances_to'''; however, if the player chooses this advancement, the unit will have one or more effects applied to it instead of advancing.
 ** '''id''': unique identifier for this advancement; ''Required'' if there are multiple advancement options, or if ''strict_amla=no''.
@@ -109,8 +108,8 @@ WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the 
 *** ''require_amla=tough,incr_damage,tough'' is an equivalent way of expressing this.
 ** '''[effect]''': A modification applied to the unit whenever this advancement is chosen.  See [[EffectWML]]
 
-==== Attacks ====
-* '''[attack]''': one of the unit's attacks.
+==== Атаки ====
+* '''[attack]''': Описывает одну из атак бойца.
 ** '''description''': a translatable text for name of the attack, to be displayed to the user.
 ** '''name''': the name of the attack. Used as a default description, if ''description'' is not present, and to determine the default icon, if ''icon'' is not present (if ''name=x'' then ''icon=attacks/x.png'' is assumed unless present).  Non-translatable.  Used for the ''has_weapon'' key and animation filters; see [[StandardUnitFilter]] and [[AnimationWML]]
 ** '''type''': the damage type of the attack.  Used in determining resistance to this attack (see '''[resistances]''', [[UnitsWML]]).
@@ -124,26 +123,21 @@ For those two following settings, the engine usually chooses the attack with the
 ** '''attack_weight''': helps the AI to choose which attack to use when attacking; highly weighted attacks are more likely to be used. Setting it to 0 disables the attack on attack
 ** '''defense_weight''': used to determine which attack is used for retaliation. This affects gameplay, as the player is not allowed to determine his unit's retaliation weapon. Setting it to 0 disable the attacks on defense 
 
-==== Animations ====
+==== Анимация ====
 See [[AnimationWML]] for details on how to specify animations for the unit.
 
-==== Other tags ====
+==== Прочие теги ====
 * '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Subsequent attributes modify the copy.
-
-* '''[abilities]''': Defines the abilities of a unit. See [[AbilitiesWML]]
-
+* '''[abilities]''': Defines the abilities of a unit. Смотрите [[AbilitiesWML]]
 * '''[event]''': Any [event] written inside the [unit_type] tag will get included into any scenario where a unit of this type appears in. Note that such events get included when a unit of this type first appears in the scenario, not automatically when the scenario begins (meaning that ''name=prestart'' events, for example, would usually never trigger). See [[EventWML]] and [[WML_Abilities]]
-
 * '''[variation]''': Defines a variation of a unit. Variations are invoked with an [effect] tag. They are currently used for graphical variations (giving character sprites new weapons) but theoretically you could do anything with it.
 ** '''variation_name''': The name of the variation.
 ** '''inherit''': if ''yes'', inherits all the properties of the base unit. Defaults to no.
 : All other keys in '''[variation]''' are the same as for '''[unit_type]''' itself.
-
 * '''[male]''', '''[female]''': They can contain all '''[unit_type]''' tags, to specify a variation of different gender for a unit.
 ** '''inherit''': if ''yes'', inherits all the properties of the base unit. Defaults to yes.
 
-== See Also ==
-
+== Смотрите также ==
 * [[AnimationWML]]
 * [[ReferenceWML]]
 * [[TerrainWML]]
