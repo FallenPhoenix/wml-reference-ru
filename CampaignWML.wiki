@@ -42,8 +42,8 @@ This page describes how the campaign is displayed in the "Campaign" menu, and ho
 *** '''comment''': Здесь можно указать, в чем состоял его вклад.
 *** '''email''': Здесь можно указать его почту.
 *** '''wikiuser''': А здесь ник на официальном вики игры.
-* '''end_credits''': {{DevFeature1.11}} Определяет, нужно ли показывать титры после прохождения кампании (по умолчанию: ''yes'').
-* '''end_text''': Text that is shown centered in a black screen at the end of a campaign (по умолчанию: _"The End"). Поддерживает перевод.
+* '''end_credits''': {{DevFeature1.11}} Определяет, нужно ли показывать титры по завершению кампании (по умолчанию: ''yes'').
+* '''end_text''': Текст, отображаемый в центре черного экрана в конце кампании (по умолчанию: _"The End"). Поддерживает перевод.
 * '''end_text_duration''': Delay, in milliseconds, before displaying the game credits at the end of a campaign. In other words, for how much time '''end_text''' is displayed on screen. Defaults to 3500.
 
 == Смотрите также ==
