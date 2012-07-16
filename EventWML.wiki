@@ -26,7 +26,7 @@ All predefined event types are listed here along with a description of when this
 
 ; preload
 : Triggers before a scenario 'prestarts' and when loading a savegame -- before anything is shown on the screen at all. Can be used to set up the [[LuaWML|Lua]] environment: loading libraries, defining helper functions, etc.
-: '''Note:''' Unlike prestart and start, the preload event '''must be able to fire more than once!''' This is because it is triggered each time a savegame is loaded in addition to the initial time when it loads before the scenario 'prestart'. This means that it is effectively ''mandatory'' to have the [[#first_time_only|first_time_only=no]] key value in a preload event. 
+: '''Note:''' Unlike prestart and start, the preload event '''must be able to fire more than once!''' This is because it is triggered each time a savegame is loaded in addition to the initial time when it loads before the scenario 'prestart'. This means that it is effectively ''mandatory'' to have the [[#first_time_only|first_time_only=no]] key value in a preload event.
 
 ; prestart
 : Triggers before a scenario 'starts' -- before anything is shown on the screen at all. Can be used to set up things like village ownership. For things displayed on-screen such as character dialog, use '''start''' instead.
@@ -43,7 +43,7 @@ All predefined event types are listed here along with a description of when this
 : Срабатывает в конце каждого хода (не хода стороны). See also [[#first_time_only|first_time_only=no]]. The WML variable '''side_number''' will contain the side that ended their turn.
 
 ; turn ''X'' end
-: Срабатывает в конце хода ''X''.
+: Возникает в конце хода ''X''.
 
 ; side turn
 : Triggers when a side is about to start its turn. Before events of this type trigger, the value of the WML variable '''side_number''' is set to the number of the side of the player about to take their turn. This is before any healing takes place for that side, before calculating income, and before restoring unit movement and status.
@@ -71,10 +71,10 @@ All predefined event types are listed here along with a description of when this
 :10) '''side ''X'' turn ''Y'' refresh'''
 
 ; side ''X'' turn ''Y''
-: Срабатывает вначале хода ''Y'' стороны ''X''.
+: Возникает вначале хода ''Y'' стороны ''X''.
 
 ; side ''X'' turn
-: Срабатывает вначале каждого хода стороны ''X''.
+: Возникает вначале каждого хода стороны ''X''.
 : '''Примечание:''' ''Разумеется, для многократного выполнения требуется [[#first_time_only|first_time_only=no]]''
 
 ; side turn ''X''
@@ -99,10 +99,10 @@ All predefined event types are listed here along with a description of when this
 :6) '''turn ''X'' end''' 
 
 ; time over
-: Triggers on turn ''turns''. (''turns'' is specified in [scenario])
+: Возникает при завершении времени, определенного лимитом ходов (т.е. на ходу ''turns'', заданном в теге [[ScenarioWML|[scenario]]]).
 
 ; enemies defeated
-: Triggers when all units with '''canrecruit=yes''' (that is, all leaders) not allied with side 1 are killed.
+: Возникает при убийстве всех бойцов с '''canrecruit=yes''' (т.е. лидеров), не союзных со стороной 1.
 
 ; victory
 : In this scenario, any tag of the form '''[endlevel] result=victory [/endlevel]''' will be automatically preceded by all actions in this tag. It helps debugging if the victory event allows you to safely advance to any of the possible next maps after using the ":n" command. Scenarios where key units are picked up before the victory, or where some action chosen earlier determines which map to advance to, make it hard to quickly test scenarios in a campaign. (See also: [endlevel], [[DirectActionsWML]])
@@ -115,7 +115,7 @@ Filters (except [filter_condition] which is for all sorts of events) can be appl
 These event triggers are all actions by units ('''moveto''', '''attack''') or things that happen to units ('''recruit''', '''advance'''). When one of these events is triggered, the position of the active unit (referred to as the '''primary unit''') is stored in the variables '''x1''' and '''y1''' and the position of any unit that primary unit does something to is stored in the variables '''x2''' and '''y2''' (this unit is referred to as the '''secondary unit''' below). '' These units are also automatically stored in the variables 'unit' and 'second_unit' as if they had been stored using the '''[store_unit]''' tag. see [[SingleUnitWML]]. weapon and second_weapon variables are available inside attack, attacker_hits, defender_hits, die and last_breath events. See [[VariablesWML#Automatically_Stored_Variables|automatically stored variables]] for more information.
 
 ; moveto
-: Triggers after the primary unit moves. Typically this is used when the primary unit gets to a particular location and a filter for the location of the primary unit is included; remember that this is the location that the primary unit lands on, not the location it started on or any location it travels on. If the unit moves to a village, the capture event will be fired before this event. <br />''An '''[allow_undo]''' tag anywhere within a moveto event will cancel any lack of undo functionality the event would have caused. Note that undo functionality will only move the unit back to its former location; it will not undo other changes to the game caused by the event. Thus it is up to the scenario designer to use this tag correctly.'' $x2 and $y2 refer to the hex the unit came from.
+: Возникает после передвижения бойца. Typically this is used when the primary unit gets to a particular location and a filter for the location of the primary unit is included; remember that this is the location that the primary unit lands on, not the location it started on or any location it travels on. If the unit moves to a village, the capture event will be fired before this event. <br />''An '''[allow_undo]''' tag anywhere within a moveto event will cancel any lack of undo functionality the event would have caused. Note that undo functionality will only move the unit back to its former location; it will not undo other changes to the game caused by the event. Thus it is up to the scenario designer to use this tag correctly.'' $x2 and $y2 refer to the hex the unit came from.
 
 ; sighted
 : '''important: "sighted" events are very buggy in general, especially if "delay shroud updates" is set to "yes". It is recommended to avoid using them at all costs, especially if you want to change the gamestate in that event (such as setting variables). Trying to document all the exceptions under which a sighted event doesn't fire or does not work as expected is futile - please keep that in mind.'''
@@ -143,41 +143,42 @@ These event triggers are all actions by units ('''moveto''', '''attack''') or th
 ; defender misses
 : Same as ''defender hits'', but is triggered when the defender misses.
 
+
 ; petrified
-: Triggers when the primary unit is hit by an attack with the 'petrifies' ability (See ''stones'', [[AbilitiesWML]]) by the secondary unit (the unit with the 'petrifies' ability).
+: Возникает, когда по первичному бойцу попадает окаменяющая атака вторичного бойца (см. ''stones'' в [[AbilitiesWML]]).
 
 ; last breath
-: Triggers when the primary unit is killed by the secondary unit, but before the death animation is triggered. Use this instead of name=die when you want the primary unit to make a final [message]. 
+: Возникает при убийстве одного бойца (primary) другим (secondary), перед анимацией смерти. Используйте вместо name=die, когда хотите, чтоб умирающий перед смертью что-то сказал.
 
 ; die
-: Triggers when the primary unit is killed by the secondary unit. ''Note: The primary unit is not removed from the game until the end of this event. The primary unit can still be manipulated, will block other units from taking its hex, and will still be found by standard unit filters (except [have_unit]). To prevent this behavior, you can use [kill] to remove the unit immediately. However, this will stop any (still unfired) other events that also match the unit from firing afterwards, so use with caution.'' If you want to the primary unit to make a final [message], use name=last_breath, see above.
+: Возникает при смерти одного бойца (primary) от рук второго (secondary).<br>''Примечание: Умерший боец не удаляется из игры до окончания данного события. Так что во-первых он еще обнаруживается стандартными фильтрами (кроме [have_unit]); во-вторых можно манипулировать с его данными; а также он все еще занимает ячейку карты, и другие бойцы не могут на нее зайти. Для предотвращения данного поведения можно воспользоваться командой [[DirectActionsWML#.5Bkill.5D|[kill]]], но учтите, что она отменит запуск остальных событий, связанных с его смертью.''
 
 ; capture
-: Triggers when the primary unit captures a village. The village may have been previously neutral, or previously owned by another side; merely moving into your own villages does not constitute a capture. This event will be fired before the moveto event. Villages becoming neutral (via [capture_village]) do not fire capture events. The variable $owner_side contains the previous owner side of the village. 0 means neutral.
+: Возникает, когда боец захватывает деревню (перед событием moveto). Деревня может быть как нейтральной, так и принадлежащей другой стороне — предыдущий хозяин прописывается в переменной $owner_side (для нейтральных — 0). Но простое посещение своей деревни захватом не считается. Не вызывают событий захвата и деревни, становящиеся ничейными (через [capture_village]). 
 
 ; recruit
-: Triggers when the primary unit is recruited (by the secondary unit). (That is, when a unit is recruited it will trigger this event and this event's filter will filter that unit.).
+: Возникает после вербовки первичного бойца вторичным (в фильтре события можно задать определенный вид бойцов).
 
 ; prerecruit
-: Triggers when the primary unit is recruited (by the secondary unit) but before it is displayed.
+: Возникает после вербовки первичного бойца вторичным, но перед его отображением в игре.
 
 ; recall
-: Triggers after the primary unit is recalled (by the secondary unit).
+: Возникает после призыва первичного бойца вторичным.
 
 ; prerecall
-: Triggers when the primary unit is recalled (by the secondary unit) but before it is displayed.
+: Возникает после призыва первичного бойца вторичным, но перед его отображением в игре.
 
 ; advance
-: Triggers just before the primary unit is going to advance to another unit, or advance by AMLA.
+: Возникает перед повышением уровня бойца (т.е. перед сменой типа или УПМУ).
 
 ; post advance
-: Triggers just after the primary unit has advanced to another unit, or advance by AMLA.
+: Возникает после продвижения бойца на новый уровень (т.е. после смены типа или УПМУ).
 
 ; select
-: Triggers when the primary unit is selected. Also triggers when ending a move, as the game keeps the moving unit selected by selecting it again at the end of movement. ''Note: in networked multiplayer, these events are only executed by the client on which the event is triggered, leading to out of sync errors if you modify the game state in the event.''
+: Возникает при выделении бойца; а также в конце его передвижения, т.к. в этом случае игра поддерживает выделение через перевыбор.<br>''Примечание: В сетевых играх данное событие вызывается только в клиенте выделяющего бойцов игрока; так что если вы поместите в обработчик какой-то код, меняющий состояние игры, он приведет к ошибкам синхроницации.''
 
 ; menu item ''X''
-: Triggers when a WML menu item with id=''X'' is selected. ''Note: if the menu item has a [command], this event may be executed before or after the command; there is no guarantee.''
+: Возникает при выборе пункта меню с id=''X''.<br>''Примечание: Если в пункте меню определен тег [[InterfaceActionsWML#.5Bset_menu_item.5D|[command]]], то прописанные в нем операции могут выполниться как до события, так и после него — тут уж никаких гарантий.
 
 ==== Пользовательские события ====
 
