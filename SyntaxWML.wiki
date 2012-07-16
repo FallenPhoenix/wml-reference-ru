@@ -40,7 +40,7 @@ Inserting a plus sign (<code>+</code>) before a tag name allows one to append to
 
 * Any child tags of the ''+tag'' will be appended to the children of the most recent [tag]. To be clear: none of those original child tags will be altered by this operation, since this is an "append" and not a "merge."
 
-* It is now possible to reopen any number of tags that are one inside another.
+* It is even possible to make tag amendments to a child tag after the parent tag has already closed. Using [+tag] syntax multiple times in a row (first for the parent, then for the child) will allow you to amend the more inward scopes.
 
 === Multiple Assignment Syntax ===
 

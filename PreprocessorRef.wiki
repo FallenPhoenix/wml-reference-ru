@@ -176,7 +176,7 @@ You can specify a list of predefined defines with:
 
 '''Syntax: --preprocess-defines=DEFINE1,DEFINE2,etc'''
 
-comma separated list of defines to be used by '--preprocess' command. If 'SKIP_CORE' is in the define list the data/core won't be preprocessed."
+comma separated list of defines to be used by '--preprocess' command. If 'SKIP_CORE' is in the define list the data/core won't be preprocessed.
 
 The command will preprocess first the common config files in the main game ''data/'' directory, and afterwards the specified ones. You can specify a single file to be preprocessed (if you want to preprocess multiple separate files, you'll need to run a different command line for each one), or an entire directory, which will be preprocessed according to the rules used by the inclusion directive above.
 
@@ -190,9 +190,9 @@ To import an existing file that contains macros, and they will be available in t
 
 There is also the possibility to export the preprocessed defines/macro list with:
 
-'''Syntax: --preprocess-output-macros <target file>'''
+'''Syntax: --preprocess-output-macros [<target file>]'''
 
-This file could be fed to the 'input-macros' argument next time you run it. For example, a scenario  would be: parsing just the core first time, and for the intended target files, you would add SKIP_CORE but import the generated macros file - that will be faster than preprocessing the core again.
+This file could be fed to the 'input-macros' argument next time you run it. For example, a scenario  would be: parsing just the core first time, and for the intended target files, you would add SKIP_CORE but import the generated macros file - that will be faster than preprocessing the core again. If the target file is not specified, the output file will be _MACROS_.cfg in the target directory of the preprocess's command.
 
 If ''file/directory'' and ''target directory'' are not absolute paths, they will be considered relative to the game's executable path.
 
