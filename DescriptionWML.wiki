@@ -1,18 +1,15 @@
 {{WML Tags}}
+
 == Description texts ==
 
 A description is a part of the value of a menu attribute.
 It represents a single option in the difficulty selection menu for a campaign, which consists of an image (called the ''icon'') followed by text. When appropriate, the icon should use [[ImagePathFunctionWML]] to replace any magenta with a team color.
 
 The description tag uses a special format:
-
 * ''';''' if another description precedes it
-
-* '''*''' if it should be the default selection
-
-* '''&''image''=''text''''' image with one text description
-
-* '''&''image''=''text''=''text2''''' image with two text descriptions
+* '''*''' означает, что пункт должен использоваться по умолчанию
+* '''&''image''=''text''''' изображение с одной текстовой надписью
+* '''&''image''=''text''=''text2''''' изображение с двумя текстовыми надписями
 
 Single text items are always enclosed in '''"''', and can be joined together (concatenated) with '''+'''. This allows the text to contain translatable items and span multiple lines. (Marking text with '''_''' indicates that it is translatable.)
 
@@ -22,15 +19,14 @@ A sample difficulty description tag might look like this:
  	";*" + "&" + "units/elves-wood/elvish-hero.png~TC(1,magenta)" + "=" + _"Hero" +
  	";" + "&" + "units/elves-wood/elvish-champion.png~TC(1,magenta)" + "=" + _"Champion" + "=" + _"(hardest)"
 
-The utility macros (see [[UtilWML]]) '''{MENU_IMG_TXT ''icon'' ''text''}'''
-and '''{MENU_IMG_TXT2 ''icon'' ''text'' ''text-2''}'''
-can be used to create descriptions more easily. The above example would become:
+Для упрощения создания описаний можно использовать макросы (см. [[UtilWML]]) '''{MENU_IMG_TXT ''icon'' ''text''}''' и '''{MENU_IMG_TXT2 ''icon'' ''text'' ''text-2''}'''. Вышеприведенный пример превратиться в:
 
  difficulty_descriptions={MENU_IMG_TXT2 "units/elves-wood/elvish-fighter.png~TC(1,magenta)" _"Fighter" _"(easiest)"} +
  	";*" + {MENU_IMG_TXT "units/elves-wood/elvish-hero.png~TC(1,magenta)" _"Hero"} + ";" +
  	{MENU_IMG_TXT2 "units/elves-wood/elvish-champion.png~TC(1,magenta)" _"Champion" _"(hardest)"}
 
-====Alternative Description Implementation====
+
+====Альтернативная реализация описаний====
 
 For still greater clarity, I have the following suggestion:
 Before the start of the [campaign] tag, create a set of #define commands as follows:
@@ -70,10 +66,8 @@ If you set up your difficulty strings in this way you can then use a standard di
 
 The only time you would need to alter this string is if you have more or fewer than three difficulty levels for your campaign.
 
-[[User:Simons Mith|Simons Mith]] 20:16, 18 November 2011 (UTC)
 
-== See Also ==
-
+== Смотрите также ==
 * [[CampaignWML]]
 * [[EraWML]]
 * [[ReferenceWML]]
