@@ -57,29 +57,29 @@ Changes the terrain on the map.
 * '''replace_if_failed''': (default=no) When replacing just one layer failed, try to replace the whole terrain. If '''terrain''' is an overlay only terrain, use the default_base as base layer. If the terrain has no default base, do nothing.
 
 === [gold] ===
-Gives sides gold.
-* '''amount''': the amount of gold to give.
-* '''side''': (default=1) the number of the side to give the gold to. Can be a comma-separated list of sides. note: Default side=1 for empty side= is deprecated.
-* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
-* '''[filter_side]''' with a [[StandardSideFilter]] as argument {{DevFeature1.11}}: [gold][filter_side] is deprecated, use the new inline SSF.
+Изменяет золотой запас указанной стороны.
+* '''amount''': Количество золота, которое нужно прибавить или отнять.
+* '''side''': Номер стороны, либо их список.<br>Примечание: Дефолтное значение side=1 устарело — сторону нужно указывать.
+* '''[filter_side]''' со параметрами [[StandardSideFilter]] (в 1.11 не поддерживается).
+* {{DevFeature1.11}} ключи и теги [[StandardSideFilter]]; по умолчанию применяется ко всем сторонам (стандартное поведение SSF).
 
 === [unstore_unit] ===
-Creates a unit from a game variable, and activates it on the playing field.  This must be a specific variable describing a unit, and may not be an array -- to unstore an entire array, iterate over it.  The variable is not cleared.  See also [[InternalActionsWML#.5Bstore_unit.5D|[store_unit]]], [[ConditionalActionsWML#.5Bwhile.5D|[while]]] and [[InternalActionsWML#.5Bclear_variable.5D|[clear_variable]]].
-* '''variable''': the name of the variable.
-* '''find_vacant''': whether the unit should be placed on the nearest vacant tile to its specified location.  If this is set to 'no'(default), then any unit on the same tile as the unit being unstored will be destroyed. 
+Создает бойца из переменной и вводит его в игру. Переменная должна иметь определенную структуру описания бойца и не может быть массивом — для обработки массивов бойцов нужно использовать циклы. Переменная не очищается. Также смотрите: [[InternalActionsWML#.5Bstore_unit.5D|[store_unit]]], [[ConditionalActionsWML#.5Bwhile.5D|[while]]] и [[InternalActionsWML#.5Bclear_variable.5D|[clear_variable]]].
+* '''variable''': Имя используемой переменной.
+* '''find_vacant''': Определяет, должен ли боец появляться в ближайшей свободной ячейке, если определенные координаты кем-то заняты. При значение 'no' (по умолчанию) любой боец, занимающей его место будет уничтожен.
 * '''check_passability''': (boolean yes|no, default yes): If yes, checks for terrain passability when placing the unit. This key has no effect if find_vacant=no (no check performed then). Before 1.9 this key is always "no".
-* '''text''': (translatable) floating text to display above the unit, such as a damage amount
-* '''red''', '''green''', '''blue''': (default=0,0,0) the color to display the text in. Values vary from 0-255. You may find it convenient to use the {COLOR_HARM} or {COLOR_HEAL} macro instead. (Use {COLOR_HARM} or {COLOR_HEAL} instead of the whole red,green,blue= line.)
-* '''advance''': (default=true) if true the unit is advanced if it has enough XP. When modifying XP make sure to do it from inside a [[EventWML#Multiplayer_safety|synchronized event]] or it may lead to OOS errors especially when several advancement paths exist. Note that advance and post advance events are called, so infinite loops can happen.
+* '''text''': Отлетающая надпись, отображаемае над бойцом в момент его появления. Поддерживает локализацию.
+* '''red''', '''green''', '''blue''': Цвет отлечающего текста (по умолчанию: 0,0,0). Значения могут варьироваться от 0 до 255. Возможно, вам будет удобней воспользоваться макросами {COLOR_HARM} и {COLOR_HEAL} (заменяют всю строку "red,green,blue=").
+* '''advance''': Определяет, продвигать ли бойца, если у него хватает на это опыта (по умолчанию: true). When modifying XP make sure to do it from inside a [[EventWML#Multiplayer_safety|synchronized event]] or it may lead to OOS errors especially when several advancement paths exist. Note that advance and post advance events are called, so infinite loops can happen.
 * '''fire_event''': (boolean yes|no, default no) Whether any advance/post advance events shall be fired if an advancement takes place, no effect otherwise.
-* '''x''' ,'''y''': override unit location, "x,y=recall,recall" will put the unit on the unit's side's recall list.
-Units can be unstored with negative (or zero) hit points. Such units will be automatically hit (and killed) in combat, but if given the chance to heal, they will have a minimum of one hit point after healing (regardless of how negative their hit points were). This is unusual-looking behavior, so often should be avoided.<!-- A known use-case is using [unstore_unit] to modify a unit during its last_breath event. -->
+* '''x''' ,'''y''': Переопределяет расположение бойца; "x,y=recall,recall" поместит его в список призыва родной стороны.
+Бойцы могут быть введены с нулевым или отрицательным показателем здоровья. Such units will be automatically hit (and killed) in combat, but if given the chance to heal, they will have a minimum of one hit point after healing (regardless of how negative their hit points were). This is unusual-looking behavior, so often should be avoided.<!-- A known use-case is using [unstore_unit] to modify a unit during its last_breath event. -->
 
 === [allow_recruit] ===
 Allows a side to recruit units it couldn't previously recruit.
-* '''type''': the types of units that the side can now recruit.
-* '''side''': (default=1) the number of the side that is being allowed to recruit the units. This can be a comma-separated list note: Default side=1 for empty side= is deprecated.
-* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+* '''type''': Типы бойцов, которые отныне могут вербоваться стороной.
+* '''side''': Номер стороны, либо их список.<br>Примечание: Дефолтное значение side=1 устарело — сторону нужно указывать.
+* {{DevFeature1.11}} Ключи и теги [[StandardSideFilter]]; по умолчанию применяется ко всем сторонам (стандартное поведение SSF).
 
 === [allow_extra_recruit] ===
 Allows a leader to recruit units it couldn't previously recruit.
@@ -89,9 +89,10 @@ These types add to the types the leader can recruit because of [side]recruit=.
 
 === [disallow_recruit] ===
 Prevents a side from recruiting units it could previously recruit.
-* '''type''': the types of units that the side can no longer recruit.
-* '''side''': (default=1) the number of the side that may no longer recruit the units. This can be a comma-separated list note: Default side=1 for empty side= is deprecated.
-* [[StandardSideFilter]] {{DevFeature1.11}} tags and keys; default for empty side= is all sides, as usual in a SSF.
+* '''type''': Типы бойцов, которые отныне не могут вербоваться стороной.
+* '''side''': Номер стороны, либо их список.<br>Примечание: Дефолтное значение side=1 устарело — сторону нужно указывать.
+* {{DevFeature1.11}} ключи и теги [[StandardSideFilter]]; по умолчанию применяется ко всем сторонам (стандартное поведение SSF).
+
 
 === [disallow_extra_recruit] ===
 Prevents a leader from recruiting units it could previously recruit.
@@ -110,9 +111,9 @@ Sets the units a leader can recruit.
 * '''[[StandardUnitFilter]]''': All units matching this filter are modified. Does not match on recall list units.
 
 === [modify_side] ===
-Modifies some details of a given side in the middle of a scenario.  '''The following listed properties are the only properties that [modify_side] can affect!'''
-* '''side''': (default=1) the number of the side that is to be changed. note: Default side=1 for empty side= is deprecated.
-* '''[filter_side]''' with a [[StandardSideFilter]] as argument
+Изменяет параметры определенной стороны посреди сценария. Поддерживаются только следующие параметры:
+* '''side''': Номер изменяемой стороны.
+* '''[filter_side]''' с параметрами [[StandardSideFilter]].
 * '''income''': the income given at the begining of each turn.
 * '''recruit''': a list of unit types, replacing the side's current recruitment list.
 * '''team_name''': the team in which the side plays the scenario.
