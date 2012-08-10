@@ -132,15 +132,15 @@ Tags of '''[objectives]''':
 There are a few predefined macros for Objectives that you can use to shorten the code: [http://www.wesnoth.org/macro-reference.xhtml#SET_OBJECTIVES SET_OBJECTIVES], [http://www.wesnoth.org/macro-reference.xhtml#VICTORY_CONDITION VICTORY_CONDITION], and [http://www.wesnoth.org/macro-reference.xhtml#DEFEAT_CONDITION DEFEAT_CONDITION]. Follow the links for each one to see complete syntax and example usage.
 
 == [set_menu_item] ==
-This tag is used to add a custom option in the right-click context menu which can then be used to trigger arbitrary WML commands.
+Используется для добавления пользовательских опций в контестное меню игры, которые впоследствии могут быть обработаны с помощью вашего WML-кода.
 
-'''Note:''' Due to limitations in portable devices where there are no scroll bars for context menus, there is a hard-coded limit of 7 custom WML menu items. If you really need to have more than 7 menu items, try combining some of them in a submenu.
+'''Примечание:''' В связи с ограничениями портативных устройств, не имеющих скроллбаров контекстного меню, количество дополнительных пунктов жестко ограничено семью. В случае необходимости большего числа опций постарайтесь использовать комбинации с подменю.
 
-* '''id''': the unique id for this menu item. If a menu item with this id already exists, it allows you to set specific changes to that item.
+* '''id''': Уникальный идентификатор элемента. If a menu item with this id already exists, it allows you to set specific changes to that item.
 * '''description''': the in-game text that will appear for this item in the menu.
 * '''image''': the image to display next to this item.
 * '''needs_select''': if ''yes'' (default ''no''), then the latest select event (see [[EventWML]]) that triggered before this menu item was chosen will be transmitted over the network before this menu item action will be. This only has any effect in networked multiplayer, and is intended to allow more elaborate menu item behaviour there without causing out of sync errors. If you don't know what this means, just leave it false.
-* '''[show_if]''': If present, the menu item will only be available if the conditional statement (see [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]]) within evaluates to true. When this is evaluated, the WML variables ''$x1'' and ''$y1'' will point to the location on which the context menu was invoked, so it's possible to for example only enable the option on empty hexes or on a particular unit.
+* '''[show_if]''': If present, the menu item will only be available if the conditional statement (см. [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]]) within evaluates to true. When this is evaluated, the WML variables ''$x1'' and ''$y1'' will point to the location on which the context menu was invoked, so it's possible to for example only enable the option on empty hexes or on a particular unit.
 * '''[filter_location]''': contains a location filter similar to the one found inside Single Unit Filters (see [[FilterWML]]). The menu item will only be available on matching locations.
 * '''[command]''': contains the WML actions to be executed when the menu item is selected. Again, the WML variables ''$x1'' and ''$y1'' will point to the location on which the context menu was invoked on.
 ** '''delayed_variable_substitution ''' {{DevFeature1.11}} (boolean yes|no, default: yes): If no, forces a variable substitution run onto the wml included in this [command] block. Use this, if you want variables which are to substitute to get the values they have at execution time of the event where this set_menu_item appears. Other than that, they get the values they have at invocation time of the menu item.
@@ -148,7 +148,7 @@ This tag is used to add a custom option in the right-click context menu which ca
 == [clear_menu_item] ==
 {{DevFeature1.11}}
 
-Removes a menu item from the scenario.
+Удаляет элемент меню из сценария.
 Normally menu items are, including all their defining wml, automatically carried over between scenarios. This tag prevents this. (The behavior is comparable to set_variable/clear_variable).
 * '''id''': (string): id of the menu item to clear. Can be a comma-separated list.
 
@@ -170,11 +170,12 @@ Removes any graphical items on a given hex.
 * '''image''' if specified, only removes the given image item (This image name must include any [[ImagePathFunctionWML|image path functions]] appended to the original image name.)
 
 === [print] ===
-Displays a message across the screen. The message will disappear after a certain time.
-* '''text''': (translatable) the text to display.
-* '''size''': (default=12) the pointsize of the font to use
-* '''duration''': (default=50) the length of time to display the text for. This is measured in the number of 'frames'. A frame in Wesnoth is usually displayed for around 30ms.
+Выводит сообщение в центре экрана. Спустя некоторое время сообщение исчезает.
+* '''text''': Отображаемый текст (поддерживает локализацию).
+* '''size''': Кегль шрифта (по умолчанию: 12).
+* '''duration''': Продолжительность отображения надписи, измеряемая в кадрах (по умолчанию: 50). Каждый кадр в "Весноте" держится около 30 мс.
 * '''red''', '''green''', '''blue''': (default=0,0,0) the color to display the text in. Values vary from 0-255.
+
 === [move_unit_fake] ===
 Moves an image of a unit along a certain path on the map. The path does not need to be a continuous list of adjacent hexes, so for example only the start and end points can be given, in which case the straightest line between those points will be calculated and used.
 * '''type''': the type of the unit whose image to use
@@ -184,6 +185,7 @@ Moves an image of a unit along a certain path on the map. The path does not need
 * '''gender''': the gender of the fake unit. Example: gender=female
 * '''variation''': the variation of the fake unit. Example: variation=undead
 * '''image_mods''': [[ImagePathFunctionWML|image path functions]] sequence to be applied on the fake unit.
+
 === [move_units_fake] ===
 moves multiple images of units along paths on the map. These units are moved in lockstep.
 * '''[fake_unit]''': A fake unit to move
@@ -192,6 +194,7 @@ moves multiple images of units along paths on the map. These units are moved in 
 ** '''y''': a comma-separated list of y locations to move along (x and y values are matched pairs)
 ** '''side''': the side of the fake unit, used for team-coloring the fake unit
 ** '''skip_steps''': the number of steps to skip before this unit starts moving
+
 === [hide_unit] ===
 Temporarily prevents the engine from displaying the given unit. The unit does not become invisible, as it would be with the '''[hides]''' ability; it is still the same plain unit, but without an image. Useful in conjunction with '''[move_unit_fake]''': to move a leader unit into position on-screen. Until 1.8 each '''[hide_unit]''' tag only hides one unit.
 * [[StandardUnitFilter]]: All matching units will be hidden
@@ -223,6 +226,7 @@ Scroll to a given unit
 * [[StandardUnitFilter]]
 * '''check_fogged''': whether to scroll even to locations covered in fog or shroud. Possible values ''true'' (don't scroll to fog) and ''false'' (scroll even to fog), with ''false'' as the default.
 * {{DevFeature1.11}} '''immediate''': whether to instantly warp to the target hex regardless of the scroll speed setting in Preferences (defaults to ''false'').
+
 === [select_unit] ===
 Selects a given unit.
 * [[StandardUnitFilter]]: The first unit found will be selected.
@@ -254,16 +258,20 @@ Removes a previously defined sound source.
 Switches to playing different music
 * '''name''': the filename of the music to play (in ''music/'' as .ogg)
 * see [[MusicListWML]] for the correct syntax
+
 ===[volume]===
-Changes the game volume to a percent of the preferences volume for the game being played. Values can go from 0 to 100:  
-* '''music''':  Changes the music volume.
-* '''sound''':  Changes the sound volume.
+Устанавливает игровую громкость в процентах от указанной в настройках. Допустимы значения от 0 до 100.  
+* '''music''':  Изменяет громкость музыки.
+* '''sound''':  Изменяет громкость звуков.
+
 === [color_adjust]===
 Tints the color of the screen.
 * '''red''', '''green''', '''blue''': values from -255 to 255, the amount to tint by for each color
+
 === [delay] ===
-Pauses the game.
-* '''time''': the time to pause in milliseconds
+Приостанавливает игру.
+* '''time''': Время паузы в миллисекундах.
+
 === [redraw] ===
 Redraws the screen (this normally isn't done during events, although some of the other interface actions cause the screen or parts of it to be redrawn).
 * '''clear_shroud''' (boolean yes|no, default no): If yes, recalculates fog and shroud.  Useful if you for example spawn friendly units in the middle of an event and want the shroud to update accordingly (otherwise units that spawn inside fog would remain invisible for the duration of the event, since the fog would not automatically get cleared around them).
