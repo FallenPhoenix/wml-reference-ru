@@ -1,13 +1,12 @@
 The Wesnoth source code distribution includes a couple of tools intended to help authors maintain campaigns, faction & unit packs, and other WML resources. These are:
- 
+
 ; wmlscope: a cross-reference lister, полезный для обнаружения неверных ссылок на макросы и файлы ресурсов.
 
 ; wmllint: средство для проверки WML-синтаксиса и портирования устаревших файлов на новую версию.
 
 ; wmlindent: a utility for reindenting WML to a uniform style.
 
-Для использования этих инструментов необходим установленный интерпретатор Python.  Linux, *BSD, and Mac OS/X should already have Python installed; for Windows it's a free download
-from http://www.python.org.  You will also need to know how to run command-line tools on your system.
+Для использования этих инструментов необходим установленный интерпретатор Python. В большинстве дистрибутвов Linux, *BSD, и Mac OS/X он установлен изначально; а пользователи Windows его могут бесплатно скачать с сайта http://www.python.org.  You will also need to know how to run command-line tools on your system.
 
 All three tools will require you to supply a <i>directory list</i>.  This is a set of directories containing the WML files you want to work on.
 
@@ -200,7 +199,7 @@ The argument type check only works in macro calls that fit on a single line.
 For more advanced users, or those who want to understand what the canned Makefile invocations are doing, here is a summary of <tt>wmlscope</tt>'s options. Some of the more advanced options will require you to understand 
 [http://docs.python.org/lib/re-syntax.html Python regular expressions].
 
-; -h, --help:                 Emit a help message and quit
+; -h, --help:                 Вывести справочную информацию и выйти
 ; -c, --crossreference:       Report resolved macro references (implies -w 1)
 ; -C, --collisions:           Report duplicate resource files   
 ; -d, --deflist:              Make definition list.  (This one is for campaign server maintainers.)
@@ -210,28 +209,28 @@ For more advanced users, or those who want to understand what the canned Makefil
 ; -r <i>ddd</i>, --refcount=<i>ddd</i>:     Report only on macros with references in exactly <i>ddd</i> files.
 ; -u, --unresolved:           Report unresolved macro references
 ; -w, --warnlevel:            Set to 1 to warn of duplicate macro definitions
-; --force-used reg:          Ignore reference count 0 on names matching regexp
+; --force-used reg:           Ignore reference count 0 on names matching regexp
 ; --extracthelp:              Extract help from macro definition comments.
 
 == wmllint ==
 
-<tt>wmllint</tt> is a tool for migrating your WML to the current version.  It handles two problems: 
+<tt>wmllint</tt> это инструмент для миграции WML на последнюю версию игры. Он разбирается с двумя проблемами: 
 
-* Resource files and macro names may change between versions of the game. <tt>wmllint</tt> knows about these changes and will tweak your WML to fit where it can.
+* Файлы ресурсов и имена макросов со временем могут меняться. <tt>wmllint</tt> знает об этих изменениях и во многих случаях может сам обновить ваш код.
 
 * Between 1.2.x and 1.3.1 the terrain-coding system used in map files underwent a major change. It changed again in a minor way between 1.3.1 and 1.3.2.  <tt>wmllint</tt> will translate your maps for you, unless you use custom terrains in which case you will have to do it by hand.
 
 <tt>wmllint</tt> also performs various sanity-checking operations, reporting:
 
-* unbalanced tags
-* strings that need a translation mark and do not have them
-* strings that have a translation mark and should not
-* translatable strings containing macro references 
+* несбалансированные теги
+* строки, которые должны быть помечены как переводимые
+* строки, которые не должны быть помечены как переводимые
+* переводимые строки, содержащие макро-ссылки
 * filter references by description= (id= in 1.5) not matched by an actual unit
 * abilities or traits without matching special notes, or vice-versa
 * consistency between recruit= and recruitment_pattern= instances
 * double space after punctuation in translatable strings.
-* unknown races or movement types in units
+* неизвестные расы и типы передвижения бойцов
 
 <tt>wmllint</tt> takes a directory-path argument specifying the WML directories to work on.  It will modify any cfg and map files under those directories that need to be changed.  Here is a summary of its options:
 
