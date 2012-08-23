@@ -13,33 +13,31 @@ This user interface action only works in debug mode. It displays the gamestate i
 * '''name''': optional attribute to specify the name of this gamestate inspector dialog. It is just a label to help differentiate between different invocations of gamestate inspector dialog.
 
 == [message] ==
-The most commonly used interface action is [message], which displays a message to the user in a dialog box. It can also be used to take input from the user.
+Наиболее часто используемый интерфейсный тег, отображающий диалоговое окно с сообщением.
 
-The following key/tags are accepted for [message]:
+Поддерживает следующие ключи и теги:
 * [[StandardUnitFilter]]: The unit whose profile and name are displayed. Do not use a [filter] tag. If no unit matching this filter is found, the message is not displayed (The unit has probably been killed).<br>'''[message]''' elements should be constructed so that it is either guaranteed that a certain unit is alive, or so that dialog flows smoothly even if the message isn't displayed.
-
 * '''speaker''': an alternative to standard unit filter. You may specify as the value of the speaker attribute a unit id or any of the following special values:
 ** '''narrator''': the dialog box is displayed without a caption for the unit speaking or a unit image
-** '''unit''': the primary unit for the event is speaking
-** '''second_unit''': the secondary unit for the event is speaking
-
-* '''message''': (translatable) the text to display to the right of the image. ''message'' is sometimes multiple lines; if it is, be sure to use quotes(''' ' ''' or ''' " ''')
-* '''[show_if]''': if present then this message will only be displayed if the conditional statement in this tag is passed (see [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]])
-* '''side_for''': (default: all sides) comma-separated list of sides for who message is shown.
-* '''image''': (default: profile image of speaker) the image to display next to the message. Append ~RIGHT() if you want the image to appear on the right side.
-* '''caption''': (default: name of speaker) the caption to display beside the image. Name to be displayed. Note: use a translation mark to avoid wmllint errors.
-* '''scroll''': Boolean specifying whether the game view should scroll to the speaking unit. Defaults to ''yes''.
-* '''duration''': (default: 10) the minimum number of frames for this message to be displayed. (A frame lasts about 30 milliseconds.) During this time any dialog decisions will be disregarded.
-* '''sound''': a sound effect (wav file) to play as the message is displayed. This can be a comma-separated list, from which one will be randomly chosen.
+** '''unit''': Диалог ведется от лица первичного юнита события.
+** '''second_unit''': Диалог ведется от лица вторичного юнита события.
+* '''message''': Основной текст сообщения. Может состоять из нескольких строк, заключенных в кавычки (''' ' ''' или ''' " '''), а также поддерживает локализацию.
+* '''[show_if]''': Если указано, то сообщение отображается только при соблюдении определенных условий (см. [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]]).
+* '''side_for''': Список сторон, которым будет показано данное сообщение (по умолчанию: все).
+* '''image''': Рисунок, отображаемый слева от сообщения (по умолчанию: портрет говорящего). Для перемещения направо можно добавить постфикс '''~RIGHT()'''.
+* '''caption''': Заголовок сообщения, отображаемый в верхней части крупным шрифтом (по умолчанию: имя говорящего). Поддерживает локализацию. Note: use a translation mark to avoid wmllint errors.
+* '''scroll''': Определяет, должен ли экран прокручиваться к говорящему бойцу (по умолчанию: ''yes'').
+* '''duration''': Минимальное время отображения в кадрах (по умолчанию: 10). Каждый кадр висит около 30 мс. During this time any dialog decisions will be disregarded.
+* '''sound''': Звуковой эффект (wav-файл), воспроизводимый при отображении сообщения. При указании списка звук выбирается из него рандомно.
 * '''[option]''': No '''[option]''' elements have to be used. If '''[option]''' elements are present, then each option will be displayed in a menu for the user to select one option.
-** '''message''': (translatable) the text displayed for the option (see [[DescriptionWML]])
-** '''[show_if]''': if present then this option will only be displayed if the conditional statement in this tag is passed (see [[InternalActionsWML]])
-** '''[command]''': an element containing actions which are executed if the option is selected.
-* '''[text_input]''': there can be only one [text_input] tag. this adds a text input field to the message.
-** '''variable''': the variable that the user's input will be written to
-** '''label''': a text label to the left of the input field
-** '''max_length''': the maximum number of characters that may be typed into the field
-** '''text''': text that is written into the field in the beginning
+** '''message''': Текст данного пункта меню (см. [[DescriptionWML]]). Поддерживает локализацию.
+** '''[show_if]''': Если указано, то опция отображается только при соблюдении определенных условий (см. [[InternalActionsWML]]).
+** '''[command]''': Элемент, содержащий операции, выполняемые при выборе данной опции.
+* '''[text_input]''': Добавляет в диалог поле ввода. Может быть только один.
+** '''variable''': Переменная, в которую сохраняется введенное значение.
+** '''label''': Текстовая надпись слева от поля. Поддерживает локализацию.
+** '''max_length''': Максимальный размер вводимого текста.
+** '''text''': Текст, изначально введенный в поле.
 * Check [[EventWML#Multiplayer_safety]] to find out in which events you can safely use '''[option]''' and '''[text_input]''' without causing OOS.
 
 === Форматирование ===
