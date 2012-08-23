@@ -1,13 +1,14 @@
 {{WML Tags}}
-== Overview ==
+== Обзор ==
 
-Wesnoth loads just one configuration file directly: '''data/_main.cfg'''. However the '''WML preprocessor''' allows to include more files. Whenever a WML file is read by Wesnoth, it is passed through the preprocessor.
+Напрямую «Веснот» загружает только один конфиг-файл: '''data/_main.cfg'''. Тем не менее, '''препроцессор WML''' allows to include more files. Whenever a WML file is read by Wesnoth, it is passed through the preprocessor.
 
 The preprocessor can interpret a simple language of string expansions known as ''macros''. A macro should always be defined '''before''' the place where it needs to be used.
 
 The preprocessor is applied recursively, so included files will be parsed for macros, and after macro expansion will be parsed for macros again, and so on. As a result, you should not write a recursive macro that references itself, because it will cause errors (but, alas, not necessarily error messages).
 
-== Preprocessor directives ==
+
+== Директивы препроцессора ==
 
 The following directives are used to create and use ''macros'', i.e. shortcuts which reduce repetition of information. See [http://www.wesnoth.org/macro-reference.xhtml the macro reference] for the list of predefined core macros.
 
@@ -17,7 +18,7 @@ The preprocessor has changed several times, so don't expect old Wesnoth versions
 
 === #define ===
 
-'''Syntax: #define ''symbol'' [''parameters''] ''<newline>'' ''substitution'' #enddef'''
+'''Синтаксис: #define ''symbol'' [''parameters''] ''<новая_строка>'' ''substitution'' #enddef'''
 
 All subsequent occurences of '''{''symbol'' [''arguments'']}''' (see below) will be replaced by the contents of the ''substitution'' block, with all occurrences of any parameter {''parameter''} within ''substitution'' replaced by the corresponding value in ''arguments''.  For example, the ENEMY_UNIT macro for the [[#Macro inclusions|macro inclusion]] example below could be defined as follows:
 
@@ -42,17 +43,17 @@ All subsequent occurences of '''{''symbol'' [''arguments'']}''' (see below) will
 
 === #undef ===
 
-'''Syntax:''' '''#undef ''symbol'' '''
+'''Синтаксис:''' '''#undef ''symbol'' '''
 
 Removes the previous definition of the macro named ''symbol''.
 
-=== Inclusion directive {} ===
+=== Директива вложения {} ===
 
 This directive can be used to include macros, single files or sets of files from a target directory.
 
-==== File/directory inclusions ====
+==== Вложение файлов и папок ====
 
-'''Syntax: {''path''}'''
+'''Синтаксис: {''путь''}'''
 
 Includes the file with the specified ''path'', which will in turn run the preprocessor on it and perform any required substitutions or inclusions within it. The ''path'' may not contain ''..'' or the inclusion will be skipped.
 
@@ -82,9 +83,9 @@ Using '''{dir}''' will cause dir/a/_main.cfg, dir/b/_main.cfg and dir/other.cfg 
 * If there's a file named '''_final.cfg''' but no '''_main.cfg''', the file is guaranteed to be included and processed ''after'' all the other files in the directory.
 * If there's a file named '''_initial.cfg''' but no '''_main.cfg''', the file is guaranteed to be included and processed ''before'' all the other files in the directory.
 
-==== Macro inclusions ====
+==== Вложение макросов ====
 
-'''Syntax: {''symbol'' [''arguments'']}'''
+'''Синтаксис: {''symbol'' [''аргументы'']}'''
 
 If the macro named ''symbol'' is defined, the preprocessor will replace this instruction by the expression ''symbol'' was previously defined as, using ''arguments'' as parameters. The number of arguments must be exactly the same as in the original definition or an error will occur.
 
@@ -98,60 +99,61 @@ Using the name of an existing macro as the name of a macro argument is possible,
      {VARIABLE} # is calling for the argument, not for the macro above
  #enddef
 
-=== #ifdef and #ifndef ===
+=== #ifdef и #ifndef ===
 
-Unlike the other preprocessor directives, '''#ifdef''' and '''#ifndef''' are not mere conveniences. They are often necessary to distinguish between different gameplay modes or difficulties (see [[#Built-in macros|Built-in macros]] below).
+В отличие от прочих директив препроцессора, '''#ifdef''' и '''#ifndef''' служат не просто для удобства. Они нередко необходимы для различения различных игровых режимов и уровней сложности (см. параграф [[#Встроенные макросы|Встроенные макросы]]).
 
-'''Syntax:''' '''#ifdef ''symbol'' ''substitution-if-defined'' [#else ''substitution-if-not-defined'' ] #endif'''
+'''Синтаксис:''' '''#ifdef ''symbol'' ''substitution-if-defined'' [#else ''substitution-if-not-defined'' ] #endif'''
 
-If ''symbol'' has been defined with '''#define''' or as a built-in macro, the whole block will be replaced by ''substitution-if-stored''.  If not, it will be replaced by ''substitution-if-not-stored'' if it is available.
+Если ''symbol'' был определен директивой '''#define''', будет выполняться блок ''substitution-if-stored''. В противном случае — блок ''substitution-if-not-stored'' (если задан).
 
-'''#ifndef''' is the exact opposite of '''#ifdef''', reversing the logic:
+'''#ifndef''' работает прямо противоположно '''#ifdef''':
 
-'''Syntax:''' '''#ifndef ''symbol'' ''substitution-if-not-stored''  [#else ''substitution-if-stored''] #endif'''
+'''Синтаксис:''' '''#ifndef ''symbol'' ''substitution-if-not-stored''  [#else ''substitution-if-stored''] #endif'''
 
-=== #ifhave and #ifnhave ===
+=== #ifhave и #ifnhave ===
 
-'''Syntax:''' '''#ifhave ''path'' ''substitution-if-path-exists'' [#else ''substitution-if-path-does-not-exist''] #endif'''
+'''Синтаксис:''' '''#ifhave ''путь'' ''подстановка_при_наличии_файла'' [#else ''подстановка_при_отстутствии_файла''] #endif'''
 
-Checks for the existence of a file. Uses the same relative paths as include directives (see below).
+Проверяет существование файла. Использует те же относительные пути, что и директива вложения (см. ниже).
 
-Example:
+Пример:
 
  #ifhave ~add-ons/My_Addon/_main.cfg
      {MY_ADDON_MACROS}
  #endif
 
-'''#ifnhave'''  does the opposite of '''#ifhave''':
+'''#ifnhave''' противоположна '''#ifhave''':
 
-'''Syntax:''' '''#ifnhave ''path'' ''substitution-if-path-does-not-exist'' [#else ''substitution-if-path-exists''] #endif'''
+'''Синтаксис:''' '''#ifnhave ''путь'' ''подстановка_при_отстутствии_файла'' [#else ''подстановка_при_наличии_файла''] #endif'''
 
-=== #ifver and #ifnver ===
+=== #ifver и #ifnver ===
 
-'''Syntax:''' '''#ifver ''symbol'' ''operator'' ''version-number'' ''<newline>'' ''substitution-if-condition-met'' [#else ''substitution-if-condition-not-met''] #endif'''
+'''Синтаксис:''' '''#ifver ''определение'' ''оператор'' ''номер_версии'' ''<новая_строка>'' ''подстановка_при_выполнении_условия'' [#else ''подстановка_при_невыполнении_условия''] #endif'''
 
-Compares a version number defined in a macro against an argument for conditional block inclusions, like ''#ifdef'' and ''#ifhave''. ''operator'' is one of ''=='' (equal), ''!='' (not equal), ''<'' (less), ''<='' (less or equal), ''>'' (greater), ''>='' (greater or equal). The specified ''symbol'' should have been previously defined as plain text without more macro inclusions within it, and it must not require any arguments.
+Сравнивает версию, определенную внутри макроса, с указанным аргументом. ''Оператор'' может быть одним из следующих: ''=='' (равно), ''!='' (не равно), ''<'' (меньше), ''<='' (меньше или равно), ''>'' (больше), ''>='' (больше или равно). Макрос же должен быть заранее определен, содержать только простое текстовое значение, и не должен использовать аргументы.
 
-Example:
+Пример:
  #ifver WESNOTH_VERSION >= 1.9.7+svn
      [message]
          speaker=narrator
-         message= _ "I’m on Wesnoth 1.9.7+svn, 1.9.8 or later!"
+         message="Я запущен в Весноте 1.9.7+svn, 1.9.8 или более поздней версии."
      [/message]
  #else
  #ifver WESNOTH_VERSION == 1.9.7
      [message]
          speaker=narrator
-         message= _ "I’m on Wesnoth 1.9.7, and I’ll include some workaround code for bug #9001!"
+         message="Я запущен в Весноте 1.9.7, поэтому подключаю дополнительный код для обхода бага №9001!"
      [/message]
  #endif
  #endif
 
-'''#ifnver'''  does the opposite of '''#ifver''':
+'''#ifnver''' противоположна '''#ifver''':
 
-'''Syntax:''' '''#ifnver ''symbol'' ''operator'' ''version-number'' ''<newline>'' ''substitution-if-condition-not-met'' [#else ''substitution-if-condition-met''] #endif'''
+'''Синтаксис:''' '''#ifnver ''определение'' ''оператор'' ''номер_версии'' ''<новая_строка>'' ''подстановка_при_невыполнении_условия'' [#else ''подстановка_при_выполнении_условия''] #endif'''
 
-== Built-in macros ==
+
+== Встроенные макросы ==
 
 The following macros are automatically defined with empty contents (unless specified otherwise) by the game engine depending on the configuration or gameplay mode.
 
@@ -164,17 +166,18 @@ The following macros are automatically defined with empty contents (unless speci
 * '''APPLE''': defined while processing the main game data when running on Mac OS X.
 * '''WESNOTH_VERSION''': defined containing just the game version number when running the WML preprocessor.
 
+
 == Command-line preprocessor ==
 
-'''Syntax: --preprocess ''<source file/directory>'' ''<target directory>'' '''
+'''Синтаксис: --preprocess ''<source file/directory>'' ''<target directory>'' '''
 
 Or the short form:
 
-'''Syntax: -p ''<source file/directory>'' ''<target directory>'' '''
+'''Синтаксис: -p ''<source file/directory>'' ''<target directory>'' '''
 
 You can specify a list of predefined defines with:
 
-'''Syntax: --preprocess-defines=DEFINE1,DEFINE2,etc'''
+'''Синтаксис: --preprocess-defines=DEFINE1,DEFINE2,...'''
 
 comma separated list of defines to be used by '--preprocess' command. If 'SKIP_CORE' is in the define list the data/core won't be preprocessed."
 
@@ -184,13 +187,13 @@ The resulted preprocessed files will be written in the target directory. There w
 
 If by chance, the simple macro define doesn't suffice, you can use:
 
-'''Syntax: --preprocess-input-macros <file>'''
+'''Синтаксис: --preprocess-input-macros <file>'''
 
 To import an existing file that contains macros, and they will be available in the defines database before processing the specified files.
 
 There is also the possibility to export the preprocessed defines/macro list with:
 
-'''Syntax: --preprocess-output-macros <target file>'''
+'''Синтаксис: --preprocess-output-macros <target file>'''
 
 This file could be fed to the 'input-macros' argument next time you run it. For example, a scenario  would be: parsing just the core first time, and for the intended target files, you would add SKIP_CORE but import the generated macros file - that will be faster than preprocessing the core again.
 
@@ -207,8 +210,8 @@ Some examples:
 
 If you want a more detailed (and potentially overwhelming) log, you can simply add the switches '''--log-debug=all''' or '''--log-info=all''' to the command line, so you can see how things are preprocessed in detail.
 
-== See Also ==
 
+== Смотрите также ==
 * [[SyntaxWML]]
 * [[ReferenceWML]]
 
