@@ -73,6 +73,7 @@ Creates a unit from a game variable, and activates it on the playing field.  Thi
 * '''red''', '''green''', '''blue''': (default=0,0,0) the color to display the text in. Values vary from 0-255. You may find it convenient to use the {COLOR_HARM} or {COLOR_HEAL} macro instead. (Use {COLOR_HARM} or {COLOR_HEAL} instead of the whole red,green,blue= line.)
 * '''advance''': (default=true) if true the unit is advanced if it has enough XP. When modifying XP make sure to do it from inside a [[EventWML#Multiplayer_safety|synchronized event]] or it may lead to OOS errors especially when several advancement paths exist. Note that advance and post advance events are called, so infinite loops can happen.
 * '''fire_event''': (boolean yes|no, default no) Whether any advance/post advance events shall be fired if an advancement takes place, no effect otherwise.
+* '''animate''': {{DevFeature1.11}} (boolean yes|no, default yes) Whether "levelout" and "levelin" (or fade to white and back) animations shall be played if an advancement takes place, no effect otherwise.
 * '''x''' ,'''y''': override unit location, "x,y=recall,recall" will put the unit on the unit's side's recall list.
 Units can be unstored with negative (or zero) hit points. Such units will be automatically hit (and killed) in combat, but if given the chance to heal, they will have a minimum of one hit point after healing (regardless of how negative their hit points were). This is unusual-looking behavior, so often should be avoided.<!-- A known use-case is using [unstore_unit] to modify a unit during its last_breath event. -->
 
@@ -182,16 +183,11 @@ works similar to the MODIFY_UNIT macro.
 * Accepts generally the syntax inside of wml unit variables created by [store_unit] which can be viewed in a savefile or by using the :inspect command. Can add traits with immediate effect. Cannot remove things. Subtags with the same name must be written in the correct order to match them with the tag they are supposed to modify.
 example usage (see also the test scenario):
  [modify_unit]
-     [filter]
-         type=Troll Rocklobber
-     [/filter]
-     hitpoints=10
-     [modifications]
-         [trait]
-             # first trait is unmodified
-         [/trait]
-         {TRAIT_HEALTHY}# second trait is replaced with the healthy trait
-     [/modifications]
+   [filter]
+     x,y=38,6
+   [/filter]
+   hitpoints=10
+   {TRAIT_HEALTHY}
  [/modify_unit]
 
 The unit which is currently modified is accessible via $this_unit, e.g. hitpoints = "$($this_unit.hitpoints / 2)" to set the hitpoints of all units to half of their particular maxima. This this_unit variable is independent from the this_unit variable available in the SUF used to determine which units to modify (first all matching units are gathered, and then all those are modified).
@@ -276,14 +272,14 @@ Harms every unit matching the filter, for the specific damage amount.
 *  '''amount''': the amount of damage that will be done (required).
 *  '''alignment''': (default neutral) applies an alignment to the damage, this means that if alignment=chaotic, the damage will be increased at night and reduced at day.
 *  '''damage_type''': if present, amount will be altered by unit resistance to the damage type specified.
-*  '''kill''': (default yes) if yes, when an harmed unit goes to or below 0 HP, it is killed; if no its HP are set to 1.
+*  '''kill''': (default yes) if yes, when a harmed unit goes to or below 0 HP, it is killed; if no its HP are set to 1.
 *  '''fire_event''': (default no) if yes, when a unit is killed by harming, the corresponding events are fired.
 *  '''animate''': (default no) if yes, scrolls to each unit before harming it and plays its defense (or attack, if it's the harmer) and death animations. Special values supported, other than the usual yes and no, are "attacker", that means only the harmer will be animated, and "defender", that means only the harmed units will be animated.
 *  '''[primary_attack], [secondary_attack]''': these set the weapon against which the harmed units will defend, and that the harming unit will use to attack, respectively (notice this is the opposite of '''[filter]''' and '''[filter_second]''' above). This allows for playing specific defense and attack animations. Both tags are expected to contain a [[FilterWML#Filtering_Weapons|Standard Weapon Filter]].
 *  '''delay''': if animate=yes, sets the delay (in milliseconds, default 500) between each unit harming.
 *  '''variable''': if present, the damage caused to the unit, altered by resistances, will be stored in a WML array with the given name, under the "harm_amount" key.
 *  '''poisoned, slowed, petrified, unhealable''': (default no) if yes, every harmed unit that doesn't already have such status will have it set.
-*  '''experience''': if yes, and there is an harmer, experience will be attributed like in regular combat.
+*  '''experience''': if yes, and there is a harmer, experience will be attributed like in regular combat.
 *  '''resistance_multiplier''': {{DevFeature1.11}} the harmed unit's resistance is multiplied by the supplied value; this means that a value lower than 1 increases it, and a value greater than 1 decreases it. Default value is 1, that means no modification.
 
 === [time_area] ===

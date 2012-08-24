@@ -21,6 +21,7 @@ The following keys are recognized:
 ** '''recall''': Place unit on recall list. Always successful. 
 ** '''map_overwrite''': If x,y are explicitly given and point to a valid on-map location - try to place unit at this location, if there was a unit there - overwriting it, without firing events. note: This value does currently (1.9.12) not work since it apparently wasn't implemented; see also http://gna.org/bugs/?15113
 ** '''map_passable''': If x,y are explicitly given and point to a valid on-map location - try to place unit at this location; if the hex is of an impassable terrain for the unit being placed, or is already occupied by another unit, the new unit will be placed in the nearest vacant hex.
+** '''leader_passable''': Similar to "leader", with the additional restriction that the selected location is not impassable for the unit being placed.
 
 * '''to_variable''': creates the unit into the given variable instead of placing it on the map.
 
