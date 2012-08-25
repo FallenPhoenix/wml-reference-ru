@@ -3,7 +3,7 @@
 
 There are two types of abilities: ones that apply to units (called ''abilities'') and ones that only apply when using a particular attack (called ''specials'' or ''weapon specials'').  A unit may have multiple abilities and an attack can have multiple specials, but by convention only one weapon special should be assigned to any given attack.
 
-== The ''[abilities]'' tag ==
+== Тег ''[abilities]'' ==
 
 The following tags are used to describe an ability in WML:
 
@@ -11,10 +11,10 @@ The following tags are used to describe an ability in WML:
 * '''[regenerate]''': modifies the hitpoints of a unit at the beginning of the unit's turn
 * '''[resistance]''': modifies the resistance of a unit to damage
 * '''[leadership]''': modifies the damage of a unit
-* '''[skirmisher]''': negates enemy zones of control
+* '''[skirmisher]''': Позволяет игнорировать вражеские зоны контроля.
 * '''[illuminates]''': modifies the time of day adjacent to the affected units
 * '''[teleport]''': allows the unit to teleport
-* '''[hides]''': renders the unit invisible to enemies
+* '''[hides]''': Делает бойца невидимым для врагов.
 Any other name is valid (for example '''[dummy]'''), but will result in an ability that does nothing but report it's there. These tags still use the same common keys and tags as every other ability. '''Note:''' a dummy ability must have an id for the name and description to display.
 
 === Common keys and tags for every ability ===
@@ -32,7 +32,7 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 * '''[filter]''': [[StandardUnitFilter]] If the unit owning the ability does not match this filter, the ability will be inactive.
 * '''[affect_adjacent]''': each adjacent unit that does not match this filter will not receive its effects.
 ** '''adjacent''': a comma seperated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
-** '''[filter]''': a [[StandardUnitFilter]].
+** '''[filter]''': [[StandardUnitFilter]].
 * '''[filter_self]''': if the owner of the ability does not match this filter, it will not receive the effects of the ability. [filter_self] takes a [[StandardUnitFilter]] as argument.
 * '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc. If several keys are used all have to match.
 
@@ -75,7 +75,7 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 
 * '''[tunnel]''' - a tunnel tag (see [[DirectActionsWML]]) (without the remove key) defining the tunneling source and target hexes, and maybe other conditions. (It automatically applies only to the unit with the ability.)  You may use $teleport_unit inside the tunnel tag for filtering purposes.
 
-=== Macros for common abilities ===
+=== Макросы основных способностей ===
 
 * ABILITY_AMBUSH
 * ABILITY_CURES
@@ -89,7 +89,7 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 * ABILITY_SUBMERGE
 * ABILITY_TELEPORT
 
-== The ''[specials]'' tag ==
+== Тег ''[specials]'' ==
 
 The '''[specials]''' tag goes inside the '''[attack]''' tag. It can contain the following tags:
 
@@ -106,7 +106,7 @@ The '''[specials]''' tag goes inside the '''[attack]''' tag. It can contain the 
 * '''[plague]'''
 Any other name is valid, but will result in an special that does nothing but report it's there.
 
-=== Common keys and tags for every weapon special ===
+=== Ключи и теги особенностей атаки ===
 
 * '''name''': the name of the special.
 * '''name_inactive''': the name of the special when inactive.
@@ -135,7 +135,7 @@ Any other name is valid, but will result in an special that does nothing but rep
 ** '''[filter_weapon]''': a standard weapon filter.
 * '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc.
 
-=== Macros for common weapon specials ===
+=== Макросы основных особенностей атаки ===
 
 * WEAPON_SPECIAL_BACKSTAB
 * WEAPON_SPECIAL_BERSERK
@@ -151,7 +151,7 @@ Any other name is valid, but will result in an special that does nothing but rep
 * WEAPON_SPECIAL_STONE
 * WEAPON_SPECIAL_SWARM
 
-== See Also ==
+== Смотрите также ==
 
 * [[UnitTypeWML]]
 * [[SingleUnitWML]]
