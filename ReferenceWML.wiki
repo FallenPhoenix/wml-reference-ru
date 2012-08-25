@@ -21,26 +21,26 @@
 * [[GameConfigWML]] the top level '''[game_config]''' tag
 * [[UnitsWML]] the top level '''[units]''' tag
 ** [[UnitTypeWML]] how to describe a unit type
-** [[AnimationWML]] how to animate units
-* [[CampaignWML]] the top level '''[campaign]''' tag
-* [[ScenarioWML]] the top level tags '''[scenario]''', '''[multiplayer]''', '''[test]''', and '''[tutorial]'''
-** [[EventWML]] how to describe an event
-** [[SideWML]] how to describe a side
-** [[MapGeneratorWML]] the random map generator
+** [[AnimationWML]] — анимация бойцов
+* [[CampaignWML]] — кампании, тег '''[campaign]'''
+* [[ScenarioWML]] — сценарии, теги '''[scenario]''', '''[multiplayer]''', '''[test]''', и '''[tutorial]'''
+** [[EventWML]] — обработка событий
+** [[SideWML]] — параметры игровых сторон
+** [[MapGeneratorWML]] — генератор случайных карт
 ** [[TimeWML]] how to describe a day
-** [[IntroWML]] how to describe the intro screen
-* [[SavefileWML]] a description of the format of savegames
+** [[IntroWML]] — экран заставки
+* [[SavefileWML]] — формат файлов сохранений
 ** [[ReplayWML]] a description of the format of player actions such as moving a unit
 ** [[StatisticalScenarioWML]] used to generate statistics of a savegame
 * [[PblWML]] a description of the format of server-uploadable campaigns
 * [[EraWML]] the top level '''[era]''' tag
 * [[TerrainWML]] the top level '''[terrain_type]''' tag
 * [[TerrainGraphicsWML]], the top level '''[terrain_graphics]''' tag
-* [[ThemeWML]] the top level '''[theme]''' tag
+* [[ThemeWML]] — темы разметки интерфейса, тег '''[theme]'''
 * [[LanguageWML]] the top level '''[language]''' tag
 * [[LocaleWML]] the top level '''[locale]''' tag
-* [[HelpWML]] the top level '''[help]''' tag
-* [[BinaryPathWML]] the top level '''[binary_path]''' tag
+* [[HelpWML]] — игровой справочник, тег '''[help]'''
+* [[BinaryPathWML]] — папки ресурсов, тег '''[binary_path]'''
 * [[FontsWML]] the top level '''[fonts]''' tag
 
 == Прочие теги ==
