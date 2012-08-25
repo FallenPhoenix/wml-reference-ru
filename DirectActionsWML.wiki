@@ -1,9 +1,9 @@
 {{WML Tags}}
-== Direct actions ==
+== Прямые операции ==
 
-Direct actions are actions that have a direct effect on gameplay. They can be used inside of [[EventWML|events]].
+Прямыми называются операции, напрямую влияющие на геймплей, которые могут быть вызваны внутри [[EventWML|событий]].
 
-The following tags are actions:
+К ним относятся следующие теги:
 
 === [endlevel] ===
 Завершает сценарий.
@@ -29,22 +29,22 @@ The following tags are actions:
 * '''to_variable''': Запись в переменную вместо ввода в игру.
 
 === [recall] ===
-Призывает бойца к лидеру. Бесплатно.
-* [[StandardUnitFilter]]: the first matching unit will be recalled.  If no units match this tag is ignored. Do not use a [filter] tag. If a comma separated list is given, every unit currently considered for recall is checked against all the types (not each single one of the types against all units).
+Призывает бойца к лидеру (бесплатно).
+* [[StandardUnitFilter]]: Будет призван первый соответствующий фильтру боец. Если бойцы не найдены, тег игнорируется. If a comma separated list is given, every unit currently considered for recall is checked against all the types (not each single one of the types against all units). Тег [filter] использовать не нужно.
 * '''x,y''': Локация бойца (вместо области рядом с лидером).
-* '''show''': yes/no, default yes: whether the unit is animated (faded in) or instantly displayed
-* '''fire_event''': boolean yes|no (default no); whether any according prerecall or recall events shall be fired.
-* '''check_passability''': (boolean yes|no, default yes): If yes, checks for terrain passability when placing the unit (a nearby passable hex is chosen).
+* '''show''': Определяет, должно ли появление бойца быть анимировано (по умолчанию: yes). При отключенной опции он повляется мгновенно.
+* '''fire_event''': Определяет, должны ли вызываться события prerecall и recall (по умолчанию: no).
+* '''check_passability''': Определяет, должна ли выполнятся проверка на проходимость территории с размещением на ближайших проходимых полях (по умолчанию: yes).
 
 === [teleport] ===
-Teleports a unit on map. {{Short Note:Predefined Macro|TELEPORT_UNIT}}
-* '''[filter]''': [[StandardUnitFilter]] the first unit matching this filter will be teleported.
-* '''x,y''': the position to teleport to.
+Телепортирует бойца на карте. {{Short Note:Predefined Macro|TELEPORT_UNIT}}
+* '''[filter]''': [[StandardUnitFilter]], будет телепортирован первый из найденных бойцов.
+* '''x,y''': Целевые координаты.
 * '''clear_shroud''': should shroud be cleared on arrival
 * '''animate''': should a teleport animation be played (if the unit doesn't have a teleport animation, it will fade out/fade in)
 * '''check_passability''': (boolean yes|no, default yes): normally, units will not be teleported into terrain that is impassable for them. Setting this attribute to "no" permits it.
 
-(Note: There is also a ability named teleport, see [[AbilitiesWML]].)
+(Примечание: Также существует способность к телепортации, см. [[AbilitiesWML]].)
 
 === [terrain_mask] ===
 Changes the terrain on the map. Смотрите [[TerrainMaskWML]].
@@ -135,10 +135,10 @@ Sets the units a leader can recruit.
 * '''shroud_data''': changes to the side's shroud, using the same format as when defining the [side].
 
 === [modify_turns] ===
-Modifies the turn limit in the middle of a scenario.
-* '''value''': the new turn limit.
-* '''add''': if used instead of ''value'', specifies the number of turns to add to the current limit (can be negative).
-* '''current''': changes the current turn number after applying turn limit modifications, if any. It is not possible to change the turn number to exceed the turn limit (1 <= current turns <= max turns).
+Изменяет предел ходов посреди сценария.
+* '''value''': Новый лимит ходов.
+* '''add''': При использовании вместо ''value'' добавляет число к текущему лимиту (может быть отрицательным).
+* '''current''': changes the current turn number after applying turn limit modifications, if any. It is not possible to change the turn number to exceed the turn limit (1 <= текущий ход <= предел).
 
 === [allow_end_turn] ===
 Разрешает игрокам завершать ходы через интерфейс (если ранее использовалось '''[disallow_end_turn]'''). Данная операция не принимает никаких параметров.
