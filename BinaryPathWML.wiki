@@ -1,15 +1,13 @@
 {{WML Tags}}
-== the toplevel [binary_path] tag ==
+== Тег верхнего уровня [binary_path] ==
 
-This tag is used to recognize more than one directory as containing images, music, and sound. It only has one key:
-* '''path''': a directory. When an image is not found it the normal ''images'' directory, it will be looked for in '''''path'''/images''. Similarly, music will be looked for in '''''path'''/music'', and sound in '''''path'''/sound''.
-Notice that '''''path''''' is still relative to the main Wesnoth directory.
+Тег используется для подключения дополнительных папок с ресурсами. Содержит только один ключ:
+* '''path''': путь к папке. В случаях, когда изображение не находится в стандартной папке ''images'', поиск продолжается в '''''path'''/images''. Таким же образом музыка проверяется в '''''path'''/music'', а звуковые эффекты в '''''path'''/sound''.
+Однако '''''path''''' указывается относительно основных директорий игры.
 
-[binary_path] should only be used where necessary. For example a multiplayer era should have its [binary_path] inside an #ifdef MULTIPLAYER instead of outside it in order to avoid possible clashes with single-player content.
+[binary_path] не стоит использовать без нужды. Например, при добавлении пути для эры его следует прописать внутри #ifdef MULTIPLAYER, дабы избежать возможных конфликтов с ресурсами кампаний.
 
-== See Also ==
-
+== Смотрите также ==
 * [[ReferenceWML]]
-
 
 [[Category: WML Reference]]
