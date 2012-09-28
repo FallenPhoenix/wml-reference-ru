@@ -93,18 +93,19 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 
 The '''[specials]''' tag goes inside the '''[attack]''' tag. It can contain the following tags:
 
-* '''[damage]''': modifies the damage of a weapon
 * '''[attacks]''': modifies the number of attacks of a weapon
+* '''[berserk]''': pushes the attack for more than one combat round
 * '''[chance_to_hit]''': modifies the chance to hit of a weapon
-* '''[slow]'''
-* '''[poison]'''
-* '''[stones]''' ('''[petrifies]''' in recent versions.)
-* '''[berserk]'''
-* '''[firststrike]'''
+* '''[damage]''': modifies the damage of a weapon
 * '''[drains]''': heals the attacker half of the damage dealt
+* '''[firststrike]''': forces the weapon to always strike first
 * '''[heal_on_hit]''': heals the attacker when an attack connects {{DevFeature1.11}}
-* '''[plague]'''
-Any other name is valid, but will result in an special that does nothing but report it's there.
+* '''[petrifies]''': turns the target to stone
+* '''[plague]''': when used to kill an enemy, a friendly unit takes its place
+* '''[poison]''': poisons the target
+* '''[slow]''': slows the target
+* '''[swarm]''': number of strikes decreases as the unit loses hitpoints
+Any other name is valid, but will result in an special that does nothing but report it is there.
 
 === Common keys and tags for every weapon special ===
 
@@ -112,28 +113,49 @@ Any other name is valid, but will result in an special that does nothing but rep
 * '''name_inactive''': the name of the special when inactive.
 * '''description''': the description of the special.
 * '''description_inactive''': the description of the special when inactive.
-* '''value''': the value to be used. Applies to '''[damage]''', '''[attacks]''', '''[chance_to_hit]''' and '''[berserk]''' (the maximum number of combat rounds).
-** {{DevFeature1.11}} Also applies to '''[drains]''' (percentage of damage drained) and '''[heal_on_hit]''' - negative values will harm the attacker, but not kill
-* '''add''' the number to add to the base value.
-* '''sub''' the number to subtract from the base value.
-* '''multiply''': same as '''value''', except that this multiplies the base value.
-* '''divide''': same as '''value''', except that this divides the base value.
-* '''cumulative''': if set to 'yes', this special will be cumulative with the base value.
-* '''type''': only usable in '''[plague]''', where it defines the unit type to be spawned on kill.
 * '''id''': this ability will not be cumulative with other specials using this id.
 * '''active_on''': one of '''defense''' or '''offense'''; if left out, the special is active on both.
-* '''apply_to''': one of '''self''','''opponent''','''attacker''','''defender''','''both'''. Determines who the effects of this special are applied to.
+* '''apply_to''': one of '''self''','''opponent''','''attacker''','''defender''','''both''' (default: ''self''). Determines who the effects of this special are applied to.
 * '''[filter_adjacent]''': [[StandardUnitFilter]], which takes an extra key '''adjacent''', which is used to specify which adjacent hexes to filter on. '''adjacent''' is a comma seperated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
 * '''[filter_adjacent_location]''': like [filter_adjacent], except that it filters on the locations rather than the units.
-* '''[filter_self]''': the special will only be active if the owner matches this filter.
-** '''[filter_weapon]''': a standard weapon filter.
-* '''[filter_opponent]''': the special will only be active if the opponent matches this [[StandardUnitFilter]].
-** '''[filter_weapon]''': a standard weapon filter.
-* '''[filter_attacker]''': the special will only be active if the attacker matches this filter.
-** '''[filter_weapon]''': a standard weapon filter.
-* '''[filter_defender]''' the special will only be active if the defender matches this filter.
-** '''[filter_weapon]''': a standard weapon filter.
+* '''[filter_self]''': the special will only be active if the owner matches this [[StandardUnitFilter]] (SUF).
+** '''[filter_weapon]''': a [[FilterWML#Filtering_Weapons|standard weapon filter]], excluding special= ({{DevFeature1.11}} including special=).
+* '''[filter_opponent]''': the special will only be active if the opponent matches this SUF.
+** '''[filter_weapon]''': a standard weapon filter, excluding special= ({{DevFeature1.11}} including special=)..
+* '''[filter_attacker]''': the special will only be active if the attacker matches this SUF.
+** '''[filter_weapon]''': a standard weapon filter, excluding special= ({{DevFeature1.11}} including special=)..
+* '''[filter_defender]''' the special will only be active if the defender matches this SUF.
+** '''[filter_weapon]''': a standard weapon filter, excluding special= ({{DevFeature1.11}} including special=)..
+
+=== Common keys and tags for specials with a value ===
+
+The '''[damage]''', '''[attacks]''', and '''[chance_to_hit]''' specials take values that specify how those specials modify their respective base values. {{DevFeature1.11}} The '''[drains]''' special takes a value specifying the percentage of damage drained (default 50) and '''[heal_on_hit]''' takes the amount to heal (default 0; negative values will harm the attacker, but not kill).
+
+* '''value''': the value to be used.
+* '''add''': the number to add to the base value.
+* '''sub''': the number to subtract from the base value.
+* '''multiply''': this multiplies the base value.
+* '''divide''': this divides the base value.
+* '''cumulative''': if set to 'yes', this special will be cumulative with the base value.
+* '''backstab''': if set to 'yes', this special will only apply to the attacker, and only when there is an enemy on the target's opposite side (i.e. when the standard backstab special applies).
 * '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc.
+
+=== Extra keys used by the ''[berserk]'' special ===
+
+* '''value''': the maximum number of combat rounds (default 1).
+* '''cumulative''': if set to 'yes', this special will be cumulative with other active berserk specials (on the current combatant, not with an opponent's berserk).
+
+=== Extra keys used by the ''[plague]'' special ===
+
+* '''type''': the unit type to be spawned on kill.
+
+=== Extra keys used by the ''[swarm]'' special ===
+
+* '''swarm_attacks_max''': the maximum number of attacks for the swarm. Defaults to the base number of attacks. (In {{DevFeature1.11}}, defaults to the base number of attacks modified by any applicable [attacks] specials.) If this is specified, then the base number of attacks is ignored.
+* '''swarm_attacks_min''': the minimum number of attacks for the swarm. Defaults to zero.
+The ratio of the unit's current to maximum hit points will be used to scale the number of attacks between these two values.
+
+Prior to version 1.11, a [swarm] special will cause [attacks] specials to be ignored. In 1.11 and later, [attacks] specials are applied before [swarm].
 
 === Macros for common weapon specials ===
 

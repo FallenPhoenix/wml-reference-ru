@@ -3,7 +3,7 @@ This page describes the [[WML]] used to communicate with the multiplayer server 
 
 == The handshake ==
 
-The client sends four bytes, then the server replies with four bytes. To get a new connection number, the client will send these four bytes: 0x00 0x00 0x00 0x00. The server then sends back the connection number (wesnothd calls this number the "socket number"). If the handshake is successful, the server will be the first to send a data package. All packages are in [http://en.wikipedia.org/wiki/Gzip gzip] format and are preceded by four bytes that specify the size of the package to come. Below you'll find information about what data the (unzipped) packages contain.
+The client sends four bytes, then the server replies with four bytes. To get a new connection number, the client will send these four bytes: 0x00 0x00 0x00 0x00. The server then sends back the connection number (wesnothd calls this number the "socket number"). If the handshake is successful, the server will be the first to send a data package. All packages are in [http://en.wikipedia.org/wiki/Gzip gzip] format and are preceded by four bytes that specify the size of the package to come in big-endian. Below you'll find information about what data the (unzipped) packages contain.
 
 == The login procedure ==
 
@@ -13,6 +13,12 @@ The client sends four bytes, then the server replies with four bytes. To get a n
 * client response
 ** '''[version]'''
 *** '''version''': The client's version string.
+
+* server response (if the server does not accept this version)
+** '''[redirect]'''
+*** '''host''': The host you should connect to.
+*** '''port''': The port you should connect to.
+*** '''version''': A comma-separated list of globs that this server should accept (e.g. "1.0*,1.2*,1.4*,1.7*,1.8*")
 
 * server request
 ** '''[mustlogin]'''

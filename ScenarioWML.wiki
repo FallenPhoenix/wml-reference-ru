@@ -84,8 +84,16 @@ The following keys and tags are recognized in '''[scenario]''' tags:
 
 * '''[generator]''' if this is present, the map and scenario will be generated randomly. See [[MapGeneratorWML]]
 
-The following key is additionally recognized in '''[multiplayer]''' scenarios:
+The following keys and subtags are additionally recognized in '''[multiplayer]''' scenarios:
 * '''allow_new_game''': (default=yes) allow/prevent the scenario to be listed in the game creation interface. This is intended for extra scenarios in multiplayer campaigns
+* '''allow_era''': {{DevFeature1.11}} a list of era ids. Only the eras with matching ids will be allowed to be played with this scenario.
+* '''disallow_era''': {{DevFeature1.11}} a list of era ids. Only the eras with matching ids will not be allowed to be played with this scenario. Cannot be used in parallel with allow_era.
+* '''ignore_incompatible_era''': {{DevFeature1.11}} a list of era ids. The eras with matching ids will be considered compatible with this scenario regardless their dependencies.
+* '''allow_modification''': {{DevFeature1.11}} same as allow_era, but for modifications.
+* '''disallow_modification''': {{DevFeature1.11}} same as disallow_era, but for modifications. Cannot be used in parallel with allow_modification.
+* '''ignore_incompatible_modification''': {{DevFeature1.11}} same as ignore_incompatible_era, but for modifications.
+* '''force_modification''': {{DevFeature1.11}} a list of modification ids. The specified modifications must be enabled to play this scenario.
+* '''[options]''': {{DevFeature1.11}} custom options. See [[OptionWML]] for details.
 
 == See Also ==
 

@@ -7,13 +7,16 @@ Terrains are usually described in the terrain.cfg file
 the [terrain_type] tag has the following keys and subtags
 * '''symbol_image''': an image used for this terrain in the minimap
 * '''editor_image''': an image used for this terrain in the map editor; if not defined uses symbol_image
+* '''id''': a non-translatable string identifying this terrain. It is used as the key for attributes in some parts of WML, such as {{tag|UnitsWML|movetype}} (but see also the aliasof= attribute below; not all ids need to be listed under movetypes).
 * '''name''': the name of the terrain, a translatable string used for the display of terrain type in the game and the map editor
 * '''description''': the detailed description of the terrain, a translatable string used for the display of terrain type in the game and the map editor.  If this is not present, the game and editor will fall back to the '''name''' attribute.  The difference is that the name tends to describe the game effect of the terrain type (e.g., "Forest") but the description attribute also carries information about visual subtype (e.g. "Summer Deciduous Forest").
 * '''editor_name''': a detailed name for the terrain used only in the map editor. Terrains are presented in the editor as "''<editor_name>''/''<name>'' (''<aliases>'')" when this attribute is used.
 * '''string''': this is the string that represents the terrain in maps and scenarios
 * '''unit_height_adjust''': how much the unit graphic should be moved up or down when on that terrain
 * '''submerge''': float, between 0 and 1: specifies how much of the unit graphic should be submerged by the terrain
-* '''light''': signed value: this will modify local light level on that hex by that amount for gameplay
+* '''light''': signed value: this will modify the local light level on that hex by that amount for gameplay.
+* '''max_light''': {{DevFeature1.11}} signed value: this is the highest the local light level can be increased to by light=. Defaults to the value of light= and is effectively overridden by the time-of-day lighting, if that is higher.
+* '''min_light''': {{DevFeature1.11}} signed value: this is the lowest the local light level can be decreased to by light=. Defaults to the value of light= and is effectively overridden by the time-of-day lighting, if that is lower.
 * '''heals''': signed value: this value is the amount of HP a unit on this terrain will be healed at the start of every turn. (If set to true a unit on that terrain will be healed 8 HP at the start of every turn, this notation is deprecated and support might be removed at some point.)
 * '''gives_income''': if set to true, this terrain will give income every turn when flagged, as if it were a village
 * '''recruit_onto''': if set to true, it is possible to recruit or recall on that terrain

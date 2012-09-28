@@ -9,6 +9,13 @@ The following key/tags are recognized for '''[era]'''
 * '''id''': ID of the era - must be unique. No gameplay effect
 * '''name''': displayed name of the era.
 * <span id="require_era">'''require_era'''</span>: whether clients are required to have this era installed beforehand to be allowed join a game using this era. Possible values 'yes' (the default) and 'no'.
+* '''allow_scenario''': {{DevFeature1.11}} a list of scenario ids. Only the scenarios with matching ids will be allowed to be played with this era.
+* '''disallow_scenario''': {{DevFeature1.11}} a list of scenario ids. Only the scenarios with matching ids will not be allowed to be played with this era. Cannot be used in parallel with allow_scenario.
+* '''ignore_incompatible_scenario''': {{DevFeature1.11}} a list of scenario ids. The scenarios with matching ids will be considered compatible with this era regardless their dependencies.
+* '''allow_modification''': {{DevFeature1.11}} same as allow_scenario, but for modifications.
+* '''disallow_modification''': {{DevFeature1.11}} same as disallow_scenario, but for modifications. Cannot be used in parallel with allow_modification.
+* '''ignore_incompatible_modification''': {{DevFeature1.11}} same as ignore_incompatible_scenario, but for modifications.
+* '''force_modification''': {{DevFeature1.11}} a list of modification ids. The specified modifications must be enabled to play this era.
 * '''[multiplayer_side]''': a faction in the era. This tag contains many of the same keys as a [side] tag (A description of the [side] tag can be found in [[SideWML]]). When a multiplayer game is played, then the [side] tag for the scenario is merged with the keys(currently, not tags) of the [multiplayer_side] tag of the faction which the side chose.
 ** '''id''': faction ID - must be unique to your era. No gameplay effect
 ** '''name''': a description that Wesnoth displays as the option selecting that faction; see [[DescriptionWML]]. Any image in this description will ''not'' use the team color.
@@ -23,6 +30,7 @@ The following key/tags are recognized for '''[era]'''
 ** '''recruit''': a comma-separated list of unit types this faction can recruit.
 ** '''terrain_liked''': an unseparated list of terrains (see [[TerrainCodesWML]]). On random maps, these terrains will determine which keep the side is assigned, attempting to put it near the listed terrains.
 * '''[event]''': any [event]s written inside the [era] tag will get included into scenarios that are played using this era. See [[EventWML]].
+* '''[options]''': {{DevFeature1.11}} custom options. See [[OptionWML]] for details.
 
 == See Also ==
 

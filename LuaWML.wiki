@@ -2,7 +2,7 @@
 
 == The '''[lua]''' tag ==
 
-This tag is a part of [[ActionWML]], thus can be used inside [event] and at other places where [[ActionWML]] can be used. It makes it possible to write actions with the [http://www.lua.org Lua 5.1] language.
+This tag is a part of [[ActionWML]], thus can be used inside [event] and at other places where [[ActionWML]] can be used. It makes it possible to write actions with the [http://www.lua.org Lua 5.2] language.
 
 The tag supports only the '''code''' key, which is a string containing the Lua scripts. Since Lua makes usage of the quotes and the { and } symbols, it is certainly wise to enclose the script between stronger quotes, as they prevent the preprocessor from performing macro expansion and tokenization.
 
@@ -288,6 +288,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Tiles#wesnoth.get_terrain_info|wesnoth.get_terrain_info]]
 * [[LuaWML:Tiles#wesnoth.get_selected_tile|wesnoth.get_selected_tile]]
 * [[LuaWML:Tiles#wesnoth.get_locations|wesnoth.get_locations]]
+* {{DevFeature1.11}}[[LuaWML:Tiles#wesnoth.get_villages|wesnoth.get_villages]]
 * [[LuaWML:Tiles#wesnoth.match_location|wesnoth.match_location]]
 * [[LuaWML:Tiles#wesnoth.add_tile_overlay|wesnoth.add_tile_overlay]]
 * [[LuaWML:Tiles#wesnoth.remove_tile_overlay|wesnoth.remove_tile_overlay]]

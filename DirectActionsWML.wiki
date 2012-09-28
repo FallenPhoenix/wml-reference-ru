@@ -75,7 +75,7 @@ Creates a unit from a game variable, and activates it on the playing field.  Thi
 * '''fire_event''': (boolean yes|no, default no) Whether any advance/post advance events shall be fired if an advancement takes place, no effect otherwise.
 * '''animate''': {{DevFeature1.11}} (boolean yes|no, default yes) Whether "levelout" and "levelin" (or fade to white and back) animations shall be played if an advancement takes place, no effect otherwise.
 * '''x''' ,'''y''': override unit location, "x,y=recall,recall" will put the unit on the unit's side's recall list.
-Units can be unstored with negative (or zero) hit points. Such units will be automatically hit (and killed) in combat, but if given the chance to heal, they will have a minimum of one hit point after healing (regardless of how negative their hit points were). This is unusual-looking behavior, so often should be avoided.<!-- A known use-case is using [unstore_unit] to modify a unit during its last_breath event. -->
+Units can be unstored with negative (or zero) hit points. This can be useful if modifying a unit in its last_breath event (as the unit's death is already the next step), but tends to look wrong in other cases. In particular, it is possible to have units with negative hit points in play. Such units are aberrations, subject to unusual behavior as the game compensates for them. (For example, such units are currently automatically hit&ndash;and killed&ndash;in combat.) The details of the unusual behavior are subject to change between stable releases without warning.
 
 === [allow_recruit] ===
 Allows a side to recruit units it couldn't previously recruit.
@@ -207,7 +207,7 @@ transforms every unit matching the filter to the given unit type. Keeps intact h
 * [[StandardUnitFilter]] as an argument. Do not use a [filter] tag. All units matching this filter are unpetrified. Recall list units are included.
 
 === [object] ===
-Gives some unit an object and removes all items on the tile the unit is on.
+Gives some unit an object which modifies their stats in some way.
 * '''id''': (Optional) when the object is picked up, a flag is set for ''id''.  The object cannot be picked up if a flag for ''id'' has been set.  This means that any object with an id can only be used once, even if first_time_only=no is set for the event. This restriction is per level. In a campaign objects with the same id can be assigned once per level.
 * '''delayed_variable_substitution''' (boolean yes|no, default no): If set to "yes", the wml block contained in this [object] is not variable-substituted at execution time of the event where this [object] is within. You need this to work around a bug when adding ABILITY_TELEPORT via an [object] or when using [object][effect][filter]with a $this_unit (see http://gna.org/bugs/index.php?18893).
 * '''[effect]''': one or more effect elements may be listed.  See [[EffectWML]] for a description of [effect].
@@ -252,8 +252,8 @@ Omitting both the SSF and the SLF would cancel all earlier uses of [lift_fog].
 Additionally setting reset_view="yes" would cause the side's entire map to be fogged (unless an ally keeps hexes clear by sharing its view).
 
 === [allow_undo] ===
-Allows the player to undo the event that this tag is inside.  Has an effect only inside moveto events.  If the move is undone, only the position of the unit will be restored; any altered variables or changes to the game will remain changed after the move is undone.  It is up to the scenario designer to avoid abusing this command.
-* Technically, if '''[allow_undo]''' is inside an '''[event]''' with ''first_time_only=yes'' (the default setting), and the user undoes the event, then the state of the game has changed in this way: the event will not fire a second time, even though the user undid the move the first time.
+Allows the player to undo the action that triggered the event that this tag is inside. (More precisely, this single event will not prevent undoing the action; other considerations might still prevent the action from being undone.) Has an effect only in events triggered by movement. {{DevFeature1.11}} Also affects events triggered by recruitment or recalling (prior to 1.11 these events erroneously always allowed undo). If the action is undone, only the position of the unit will be restored; any altered variables or changes to the game will remain changed after the action is undone.  It is up to the scenario designer to avoid abusing this command.
+* Technically, if '''[allow_undo]''' is inside an '''[event]''' with ''first_time_only=yes'' (the default setting), and the user undoes the event, then the state of the game has changed in this way: the event will not fire a second time, even though the user undid the action the first time.
 
 === [heal_unit] ===
 Heal a unit. The variable '''$heal_amount''' will be set to the exact number of points healed (i.e can be lesser than the parameter '''amount''' if the unit is fully healed). $heal_amount contains only the number of hitpoints the first unit that was found got healed.

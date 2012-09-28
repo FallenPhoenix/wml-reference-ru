@@ -32,7 +32,7 @@ The following key/tags are accepted for [message]:
 * '''sound''': a sound effect (wav file) to play as the message is displayed. This can be a comma-separated list, from which one will be randomly chosen.
 * '''[option]''': No '''[option]''' elements have to be used. If '''[option]''' elements are present, then each option will be displayed in a menu for the user to select one option.
 ** '''message''': (translatable) the text displayed for the option (see [[DescriptionWML]])
-** '''[show_if]''': if present then this option will only be displayed if the conditional statement in this tag is passed (see [[InternalActionsWML]])
+** '''[show_if]''': if present then this option will only be displayed if the conditional statement in this tag is passed (see [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]])
 ** '''[command]''': an element containing actions which are executed if the option is selected.
 * '''[text_input]''': there can be only one [text_input] tag. this adds a text input field to the message.
 ** '''variable''': the variable that the user's input will be written to
@@ -126,9 +126,6 @@ Tags of '''[objectives]''':
 ** '''blue''': Default '255'. Overrides the default blue coloring of the entire note, including the bullet.
 ** '''description''': the text of the note.
 ** {{DevFeature1.11}} '''[show_if]''': The note will not be shown if the specified condition isn't met. Conditional notes are refreshed at '''[show_objectives]''' time only.
-
-=== Macros ===
-There are a few predefined macros for Objectives that you can use to shorten the code: [http://www.wesnoth.org/macro-reference.xhtml#SET_OBJECTIVES SET_OBJECTIVES], [http://www.wesnoth.org/macro-reference.xhtml#VICTORY_CONDITION VICTORY_CONDITION], and [http://www.wesnoth.org/macro-reference.xhtml#DEFEAT_CONDITION DEFEAT_CONDITION]. Follow the links for each one to see complete syntax and example usage.
 
 == [set_menu_item] ==
 This tag is used to add a custom option in the right-click context menu which can then be used to trigger arbitrary WML commands.
@@ -314,7 +311,7 @@ The default text color is <span style="color: #6b8cff;">'''#6b8cff'''</span>. To
 # Float some golden yellow text at 20,20.
 [floating_text]
    x,y=20,20
-   text="<span color='#cccc33'>Your text here</span>"
+   text="<span color='#cccc33'>" + _ "Your text here" + "</span>"
 [/floating_text]
 </pre>
 

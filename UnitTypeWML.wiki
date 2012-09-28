@@ -1,102 +1,45 @@
 {{WML Tags}}
-== The [unit_type] tag ==
+
+__TOC__
 
 Each '''[unit_type]''' tag defines one unit type. (for the use of [unit] to create a unit, see [[SingleUnitWML]])
 
-Unit animation syntax is described in [[AnimationWML]].
-
-The following key/tags are recognized:
-{| class="gallery" style="text-align:left;"
-|-
-! [advancefrom]
-| the previous level unit on the advancement tree
-- allows a campaign-specific unit to be spliced into an already existing advancement tree.  It should generally be used only inside a campaign ifdef, to prevent changes to other campaigns.  This tag makes changes to the ''advances_to'' and ''experience'' keys of a base unit to make it advance into this unit.  It takes these keys:<br> ** ''unit'' the id of the base unit from which this unit advances.  This adds the unit into the list of units which ''unit'' can advance into.<br>** ''experience'' is optional.  If present the experience needed to advance is set to this value. If there are more than one [advancefrom] tags referencing the same base unit within the same preprocessor scope (e.g. a campaign #ifdef) with experience= keys, the lowest value of these is chosen.  Note: this will also lower the experience required to advance to other units which the base unit can advance into.
-|-
-! advances_to
-| When this unit has'' experience'' greater than or equal to ''experience'', it is replaced by a unit of the type that the value of ''advances_to'' refers to. All modifications that have been done to the unit are applied to the unit it is replaced by. The special value 'null' says that the unit does not advance but gets an AMLA instead.
-|-
-! alignment 
-| one of lawful/neutral/chaotic/liminal (See [[TimeWML]]). Default is "neutral".
-|-
-! attacks
-| the number of times that this unit can attack each turn.
-|-
-! cost
-| when a player recruits a unit of this type, the player loses ''cost'' gold. If this would cause gold to drop below 0,  the unit cannot be recruited.
-|-
-! description
-| (translatable) the text displayed in the unit descriptor box for this unit. Default 'No description available...'. 
-|-
-! do_not_list
-| Not used by the game, but by tools for browsing and listing the unit tree. If this is 'yes', the unit will be ignored by these tools. 
-|-
-! ellipse
-| the ellipse image to display under the unit, which is normally team-colored. Default is the normal ellipse; "misc/ellipse-nozoc" is a dashed ellipse that should be used for units without zone of control.
-|-
-! experience
-| When this unit has experience greater than or equal to ''experience'', it is replaced by a unit with 0 experience of the type that the value of ''advances_to'' refers to. All modifications that have been done to the unit are applied to the unit it is replaced by.
-|-
-! flag_rgb
-| set by [http://www.wesnoth.org/macro-reference.xhtml#MAGENTA_IS_THE_TEAM_COLOR MAGENTA_IS_THE_TEAM_COLOR]
-|-
-! gender
-| has a value of either ''male'' or ''female'', and determines which of the keys ''male_names'' and ''female_names''  should be read. When a unit of this type is recruited, it will be randomly assigned a name by the random name generator, which will use these names as a base.
-|-
-! hide_help
-|  determines if the unit type will appear in the in-game help. Possible values ''true'' and ''false'', defaults to ''false''.
-|-
-! hitpoints
-| the maximum HP that the unit has, and the HP it has when it is created.
-|-
-! id
-|the value of the ''type'' key for units of this type. An ''id'' should consist only of alphanumerics and spaces (or underscores). ''type'' keys are found in [[SingleUnitWML]] and [[FilterWML]]. For example, id=Drake Flare
-WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the unit id and must be avoided because they might lead to corrupted saved games
-|-
-! image
-| sets the base image of the unit, which is used on the map.
-|-
-! image_icon
-| sets the image used to represent the unit in areas such as the attack dialog and the unit image box in the sidebar
-|-
-! level
-| the amount of upkeep the unit costs.  After this unit fights, its opponent gains ''level'' experience. See also kill_experience ([[GameConfigWML]]), and leadership ([[AbilitiesWML]]).
-|-
-! movement
-| the number of move points that this unit receives each turn.
-|-
-! vision
-| the number of vision points to calculate the unit's sight range. Defaults to ''movement'' if not present.
-|-
-! movement_type
-| See '''movetype''', [[UnitsWML]]. Note that the tags '''movement_costs''', '''vision_costs''', '''defense''', and '''resistance''' can be used to modify this movetype.
-|-
-! name
-|(translatable) displayed in the Status Table for units of this type.
-|-
-! num_traits
-| the number of traits that units of this type should receive when they are recruited, overriding the value set in the [race] tag.
-|-
-! profile
-| the portrait image to use for this unit type. You can also set a portrait for an individual unit instead of the whole unit type (see [[SingleUnitWML]]). The engine first looks for the image in the transparent subdirectory and if found that image is used. If not found it will use the image as-is. Depending on the size the engine will or will not scale the image, the cutoff currently is at 300x300. For images which should only be shown on the right side in the dialog append ~RIGHT() to the image.
-|-
-! small_profile
-| the image to use when a smaller portrait is needed than the one used for messages (e.g., in the help system). When this attribute is missing, the value of the '''profile''' attribute is used instead. When present, the heuristic for finding a transparent portrait is disabled for the '''profile''' attribute, so the correct '''profile''' should be set too. Note that image modifiers are allowed; they might be useful for cropping and rescaling a portrait:
+Unit animation syntax is described in [[AnimationWML]]. In addition to the animation tags described there, the following key/tags are recognized:
+* '''[advancefrom]''': Defines the previous unit on the advancement tree. Allows a campaign-specific unit to be spliced into an already existing advancement tree.  It should generally be used only inside a campaign ifdef, to prevent changes to other campaigns.  This tag makes changes to the ''advances_to'' and ''experience'' keys of a base unit to make it advance into this unit.  It takes these keys:
+** ''unit'': the id of the base unit from which this unit advances.  This adds the unit into the list of units which ''unit'' can advance into.
+** ''experience'': (optional) If present the experience needed to advance is set to this value. If there are more than one [advancefrom] tags referencing the same base unit within the same preprocessor scope (e.g. a campaign #ifdef) with experience= keys, the lowest value of these is chosen.  Note: this will also lower the experience required to advance to other units which the base unit can advance into.
+* '''advances_to''': When this unit has ''experience'' greater than or equal to ''experience'', it is replaced by a unit of the type that the value of ''advances_to'' refers to. All modifications that have been done to the unit are applied to the unit it is replaced by. The special value 'null' says that the unit does not advance but gets an AMLA instead. Can be a comma-separated list of units that can be chosen from upon advancing.
+* '''alignment''': one of lawful/neutral/chaotic/liminal (See [[TimeWML]]). Default is "neutral".
+* '''attacks''': the number of times that this unit can attack each turn.
+* '''cost''': when a player recruits a unit of this type, the player loses ''cost'' gold. If this would cause gold to drop below 0,  the unit cannot be recruited.
+* '''description''': (translatable) the text displayed in the unit descriptor box for this unit. Default 'No description available...'. 
+* '''do_not_list''': Not used by the game, but by tools for browsing and listing the unit tree. If this is 'yes', the unit will be ignored by these tools. 
+* '''ellipse''': the ellipse image to display under the unit, which is normally team-colored. Default is the normal ellipse; "misc/ellipse-nozoc" is a dashed ellipse that should be used for units without zone of control.
+* '''experience''': When this unit has experience greater than or equal to ''experience'', it is replaced by a unit with 0 experience of the type that the value of ''advances_to'' refers to. All modifications that have been done to the unit are applied to the unit it is replaced by.
+* '''flag_rgb''': usually set by [http://www.wesnoth.org/macro-reference.xhtml#MAGENTA_IS_THE_TEAM_COLOR MAGENTA_IS_THE_TEAM_COLOR]; specifies the colours in the base flag to use for team-colouring the unit, expressed as a colour name (such as magenta) or a comma-separated list of RGB values (in hex format).
+* '''gender''': has a value of either ''male'' or ''female'', and determines which of the keys ''male_names'' and ''female_names''  should be read. When a unit of this type is recruited, it will be randomly assigned a name by the random name generator, which will use these names as a base.
+* '''hide_help''': determines if the unit type will appear in the in-game help. Possible values ''true'' and ''false'', defaults to ''false''.
+* '''hitpoints''': the maximum HP that the unit has, and the HP it has when it is created.
+* '''id''': the value of the ''type'' key for units of this type. An ''id'' should consist only of alphanumerics and spaces (or underscores). ''type'' keys are found in [[SingleUnitWML]] and [[FilterWML]]. For example, id=Drake Flare
+::WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the unit type id and must be avoided because they might lead to corrupted saved games
+* '''image''': sets the base image of the unit, which is used on the map.
+* '''image_icon''': sets the image used to represent the unit in areas such as the attack dialog and the unit image box in the sidebar
+* '''level''': the amount of upkeep the unit costs.  After this unit fights, its opponent gains ''level'' experience. See also kill_experience ([[GameConfigWML]]), and leadership ([[AbilitiesWML]]).
+* '''movement''': the number of move points that this unit receives each turn.
+* '''movement_type''': See [[UnitsWML#.5Bmovetype.5D|movetype]]. Note that the tags '''[movement_costs]''', '''[vision_costs]''', '''[defense]''', and '''[resistance]''' can be used to modify this movetype.
+* '''name''':(translatable) displayed in the Status Table for units of this type.
+* '''num_traits''': the number of traits that units of this type should receive when they are recruited, overriding the value set in the [race] tag.
+* '''profile''': the portrait image to use for this unit type. You can also set a portrait for an individual unit instead of the whole unit type (see [[SingleUnitWML]]). The engine first looks for the image in the transparent subdirectory and if found that image is used. If not found it will use the image as-is. Depending on the size the engine will or will not scale the image, the cutoff currently is at 300x300. For images which should only be shown on the right side in the dialog append ~RIGHT() to the image.
+* '''small_profile''': the image to use when a smaller portrait is needed than the one used for messages (e.g., in the help system). When this attribute is missing, the value of the '''profile''' attribute is used instead. When present, the heuristic for finding a transparent portrait is disabled for the '''profile''' attribute, so the correct '''profile''' should be set too. Note that image modifiers are allowed; they might be useful for cropping and rescaling a portrait:
  small_profile="portraits/elves/transparent/marksman+female.png~CROP(0,20,380,380)~SCALE(205,205)"
  profile="portraits/elves/transparent/marksman+female.png"
-|-
-! race
-| See '''[race]''', [[UnitsWML]].  Also used in standard unit filter (see [[FilterWML]]).
-|-
-! undead_variation
-| Which image to use when a unit of this type is killed by a unit with the plague ability. Defaults to the undead_variation set in this unit type's race.
-|-
-! usage
-| the way that the AI should recruit this unit, as determined by the scenario designer. (See ''recruitment_pattern'', [[AiWML]]).  The following are conventions on usage:<br> ** ''scout'': Fast, mobile unit meant for exploration and village grabbing.<br> ** ''fighter'': Melee fighter, melee attack substantially more powerful than ranged.<br> ** ''archer'': Ranged fighter, ranged attack substantially more powerful than melee.<br> ** ''mixed fighter'': Melee and ranged fighter, melee and ranged attacks roughly equal.<br> ** ''healer'': Specialty 'heals' or 'cures'.<br>Note that this field affects only recruitment, not the AI's behavior in combat; that is always computed from attack power and hitpoints. 
-|-
-! zoc
-| if "yes" the unit will have a zone of control regardless of level.  If present but set to anything other than "yes," the unit will have no zone of control.  If the tag is omitted, zone of control is dictated by unit level (level 0 = no zoc, level 1+ = has zoc).
-|}
-==== After max level advancement (AMLA) ====
+* '''race''': See {{tag|UnitsWML|race}}.  Also used in standard unit filter (see [[FilterWML]]).
+* '''undead_variation''': When a unit of this type is killed by a weapon with the plague special, this variation is applied to the new plague unit that is created, whatever its type. For example, if the plague special creates Walking Corpses and undead_variation is set to "troll", you'll get a troll Walking Corpse. Defaults to the undead_variation set in this unit type's race.
+* '''usage''': the way that the AI should recruit this unit, as determined by the scenario designer. (See ''recruitment_pattern'', [[AiWML]]).  The following are conventions on usage:<br> ** ''scout'': Fast, mobile unit meant for exploration and village grabbing.<br> ** ''fighter'': Melee fighter, melee attack substantially more powerful than ranged.<br> ** ''archer'': Ranged fighter, ranged attack substantially more powerful than melee.<br> ** ''mixed fighter'': Melee and ranged fighter, melee and ranged attacks roughly equal.<br> ** ''healer'': Specialty 'heals' or 'cures'.<br>Note that this field affects only recruitment, not the AI's behavior in combat; that is always computed from attack power and hitpoints. Non-standard usages may be used as well.
+* '''vision''': the number of vision points to calculate the unit's sight range. Defaults to ''movement'' if not present.
+* '''zoc''': if "yes" the unit will have a zone of control regardless of level.  If present but set to anything other than "yes," the unit will have no zone of control.  If the tag is omitted, zone of control is dictated by unit level (level 0 = no zoc, level 1+ = has zoc).
+
+== After max level advancement (AMLA) ==
 * '''[advancement]''': describes what happens to a unit when it reaches the XP required for advancement.  It is considered as an advancement in the same way as advancement described by '''advances_to'''; however, if the player chooses this advancement, the unit will have one or more effects applied to it instead of advancing.
 ** '''id''': unique identifier for this advancement; ''Required'' if there are multiple advancement options, or if ''strict_amla=no''.
 ** '''always_display''': if set to true displays the AMLA option even if it is the only available one.
@@ -109,26 +52,29 @@ WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the 
 *** ''require_amla=tough,incr_damage,tough'' is an equivalent way of expressing this.
 ** '''[effect]''': A modification applied to the unit whenever this advancement is chosen.  See [[EffectWML]]
 
-==== Attacks ====
+== Attacks ==
 * '''[attack]''': one of the unit's attacks.
 ** '''description''': a translatable text for name of the attack, to be displayed to the user.
 ** '''name''': the name of the attack. Used as a default description, if ''description'' is not present, and to determine the default icon, if ''icon'' is not present (if ''name=x'' then ''icon=attacks/x.png'' is assumed unless present).  Non-translatable.  Used for the ''has_weapon'' key and animation filters; see [[StandardUnitFilter]] and [[AnimationWML]]
-** '''type''': the damage type of the attack.  Used in determining resistance to this attack (see '''[resistances]''', [[UnitsWML]]).
-** '''[specials]''': contains the specials of the attack. See [[AbilitiesWML]].
+** '''type''': the damage type of the attack.  Used in determining resistance to this attack (see {{tag|UnitsWML|movetype|resistance}}).
+** '''[specials]''': contains the specials of the attack. See [[AbilitiesWML#The_.5Bspecials.5D_tag|AbilitiesWML]].
 ** '''icon''': the image to use as an icon for the attack in the attack choice menu, as a path relative to the images directory.
 ** '''range''': the range of the attack.  Used to determine the enemy's retaliation, which will be of the same type.  Also displayed on the status table in parentheses; 'melee'(default) displays "melee", while 'ranged' displays "ranged". Range can be anything. Standard values are now "melee" and "ranged". From now on, ''short'' and ''long'' will be treated as totally different ranges. You can create any number of ranges now (with any name), and units can only retaliate against attacks for which they have a corresponding attack of the same range. This value is translatable.
 ** '''damage''': the damage of this attack
 ** '''number''': the number of strikes per attack this weapon has
 ** '''movement_used''': determines how many movement points using this attack expends. By default all movement is used up, set this to 0 to make attacking with this attack expend no movement.
-For those two following settings, the engine usually chooses the attack with the best average total damages * weight (default weight = 1.0).
 ** '''attack_weight''': helps the AI to choose which attack to use when attacking; highly weighted attacks are more likely to be used. Setting it to 0 disables the attack on attack
 ** '''defense_weight''': used to determine which attack is used for retaliation. This affects gameplay, as the player is not allowed to determine his unit's retaliation weapon. Setting it to 0 disable the attacks on defense 
+For the weight settings, the engine usually chooses the attack with the best average total damages * weight (default weight = 1.0).
 
-==== Animations ====
-See [[AnimationWML]] for details on how to specify animations for the unit.
+== Other tags ==
+* '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Subsequent attributes modify the copy. Tags modify the corresponding tag of the original, so for example the first '''[attack]''' tag in the derived unit would modify the first attack of the base unit rather than defining a new attack.
 
-==== Other tags ====
-* '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Subsequent attributes modify the copy.
+* '''[portrait]''': Describes a unit portrait for dialogue. However, generally you should use the profile key instead; [portrait] is mostly for internal use.
+** '''size''': The size of the portrait, in pixels.
+** '''side''': One of left or right.
+** '''mirror''': Whether to flip the image horizontally.
+** '''image''': The image path.
 
 * '''[abilities]''': Defines the abilities of a unit. See [[AbilitiesWML]]
 

@@ -4,7 +4,7 @@
 Themes are used both for the wesnoth game and the wesnoth editor.
 Themes allow flexible configuration of how everything is laid out on-screen.
 
-The only keys in '''[theme]''' are '''name''', which is the name of the theme, and the optional '''hidden''' key (defaults to '''no'''), which hides a theme from the user in Preferences, allowing to hide e.g. cutscene user interface themes that shouldn't be hidden in regular gameplay.
+The only keys in '''[theme]''' are '''name''', which is the name of the theme, and the optional '''hidden''' key (defaults to '''no'''), which hides a theme from the user in Preferences, allowing to hide e.g. cutscene user interface themes that shouldn't be used in regular gameplay.
 
 The only tag in '''[theme]''' is '''[[ThemeSystem|[resolution]]]''', but each theme can have multiple [resolution] tags.
 The [resolution] tags are scanned until the first one which is of the same or lower resolution than is currently being used is found, and this is used as our theme.
@@ -23,7 +23,7 @@ All subtags of [resolution] use the following keys:
 ; for c and d, add this value to self's a and b (specify by width and height)
 ** =+number or =-number : add this value to same field in reference rect (eg. consider reference as a container box)
 * '''xanchor''', '''yanchor''': control the behavior of how this rectangle changes as the resolution changes.
-** '''left'''': its distance from the left side of the screen always remain the same, while changes in the resolution will change its size by the same amount (top for the y axis).
+** '''left''': its distance from the left side of the screen always remain the same, while changes in the resolution will change its size by the same amount (top for the y axis).
 ** '''right''': its size always remain the same, as well as its distance to the right side of the screen (bottom for the y axis).
 ** '''fixed''': its co-ordinates in that axis remain constant
 ** '''proportional''': its co-ordinates multiplied by the ratio of the resolution being used to the canonical resolution.
@@ -93,7 +93,7 @@ Displays a text label on screen.
 ** '''save''': save the game
 ** '''recruit''': recruit a unit
 ** '''repeatrecruit''': repeat last recruitement
-** '''recall''': recall a unit from previous scenarion
+** '''recall''': recall a unit from previous scenario
 ** '''endturn''': end current turn
 ** '''togglegrid''': toggle grid display
 ** '''statustable''': show status table

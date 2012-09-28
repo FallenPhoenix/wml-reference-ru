@@ -1,49 +1,58 @@
 {{WML Tags}}
-== the [units] tag ==
 
-This tag is a top level WML tag which is in game.cfg.
+The [units] is a top level WML tag which is in units.cfg.
 It defines the set of all units in Wesnoth.
+Its primary purpose is a container for all the [unit_type] tags describing each unit type. (See [[UnitTypeWML]] for syntax.)
+In addition, it can contain the following tags.
 
-The following subtags are recognized:
-* '''[unit_type]''': describes one unit type. See [[UnitTypeWML]] for syntax.
-* '''[trait]''': describes a global trait.
-All races with the attribute '''ignore_global_traits=no''' will have this trait.
-See '''[trait]''': below for syntax.
-* '''[movetype]''': used to make shortcuts to describe units with similar terrain handicaps. Units from the same advancement tree should generally have the same movetype.
-** '''name''': an ID for this movetype. Units with the attribute '''movetype=''name''''' will be assigned this movetype.
-** ''flies'' either 'true' or 'false'(default). A unit with ''flies=true'' does not have its image's height adjusted for different terrains.
-** '''[movement_costs]''': describes how fast the unit moves on different terrains. The attribute '''terrain=''speed''''' means that the unit will need to use ''speed'' move points to move onto the terrain with '''name=''terrain''''' (see [[TerrainWML]]).
-** '''[vision_costs]''': describes how far the unit clears fog and shroud on different terrains. The attribute '''terrain=''cost''''' means that the unit will need to use ''cost'' vision points to view onto the terrain with '''name=''terrain''''' (see [[TerrainWML]]). {{DevFeature1.11}}
-** '''[defense]''': describes how likely the unit is to be hit on different terrains. The attribute '''terrain=''defense''''' means that the unit will be hit ''defense'' percent of the time in the terrain with '''name=''terrain'''''. If the defense value is negative, then the unit will be hit as though the value were positive with one difference: the number is also the best defense that the unit may have if there is more than one terrain type for the terrain the unit is on.
-** '''[resistance]''': describes how much damage the unit takes from different types of attacks. The attribute '''type=''resistance''''' makes the unit receive '''resistance''' percent of damage, or resist '''100-resistance''' percent of damage from attacks with '''type=''type'''''. So for example, a resistance of fire=110 means, this unit will receive 110% of damage, or have a resistance of -10% as displayed in-game. A value of fire=0 would mean, the unit receives no damage and therefore has a resistance of 100%.
-* '''[race]''': is used to make shortcuts to describe units with similar names. Units from the same advancement tree should generally have the same race. Also, units with the same race should generally be recruitable by the same sides/factions.
-** '''id''': ID for this race. Units with the attribute '''race=''id''''' will be assigned this race. In older versions of WML, the value of the name key was used as id if the id field was missing, but this is no longer the case.
-** '''plural_name''': user-visible name for its people (e.g. "Merfolk" or "Elves"). Currently only used in the in-game help.
-** '''male_name''': user-visible name for the race of the male units (e.g. "Merman"). Currently only used in the in-game unit status.
-** '''female_name''': user-visible name for the race of the female units (e.g. "Mermaid"). Currently only used in the in-game unit status.
-** '''name''': the default value for the three keys above. The 'name' key is the default for 'male_name' and 'female_name'. 'id' and 'plural_name' '''must''' be supplied.
-** '''description''': description of this race, used in the race page of the in-game help. Note: currently not used by all mainline races because their descriptions are not ready. But this is already supported by the engine.
-** '''male_names''', '''female_names''': lists of names (i.e. non-translatable strings). They are inputted into the Markov name generator to generate random names. ''male_names'' describes units with '''gender=male'''; ''female_names'' describes units with '''gender=female'''.
-** '''markov_chain_size''': (default 2) number of letters per "syllable". "Syllables" are groupings of names that the Markov name generator uses to determine names. It does this by running a probability algorithm to guess from the name list which syllables fit well together, which can start or end a name, etc.
-** '''num_traits''': is the number of non-repeating traits each unit of this race can be assigned.
-** '''ignore_global_traits''': 'yes' or 'no'(default). Determines whether global traits (see [traits] above) are applied.
-** '''undead_variation''': sets the default undead variation for members of this race.
-** '''[topic]''': describes extra help topics for this race.
-** '''[trait]''': describes a trait for this race. :
-*** '''id''': unique identifier
-*** '''availability''': describes whether a trait is "musthave" for a race or is available to "any" unit in a race, including leaders, or "none" if it is not normally available, but should be kept when advancing to this unit type. (Traits not available to the advanced unit type at all, are permanently lost upon advancement.) The default is for a trait to only be available to nonleaders. Currently "any" should not be used for traits available in multiplayer. It can be used for campaign specific traits. (Note that currently "musthave" is somewhat misused to have what are really abilities (''undead'' and ''mechanical'') default from a unit type's race. Ideally someone will eventually extend ''race'' to allow for default abilities. It might also be possible to unify traits and abilities with keys to indicate how you get them and what happens to them when you advance, while allowing them to come from race, unit type and unit definitions. There are also display issues related to doing this.)
-*** '''male_name''': text displayed in the status of unit with the trait if the unit is male.
-*** '''female_name''': text displayed in the status of unit with the trait if the unit is female.
-*** '''name''': text displayed in the status of unit with the trait if none of the two above is used.
-*** '''description''': text displayed for the description of the trait.
-*** '''[effect]''': described in [[EffectWML]].
+== [trait] ==
 
-* '''[hide_help]''': allow to hide some units from the help. Mainly useful if you can't change these units (e.g. mainline units) and thus can't add a 'hide_help=yes' key to them. The following keys and theirs contents uses an 'OR' logic between them.
-** '''type''': list of unit types.
-** '''race''': list of races. Equivalent to all unit types of these races.
-** '''type_adv_tree''': list of unit types. Equivalent to all these types and their advancement trees.
-** '''all''': 'yes' or 'no'(default). 'yes' is equivalent to all unit types (useful before [not])
-** '''[not]''': all the previous keys (except 'all') can also be used in [not] sub-tags. And you can use [not] recursively. For example, if you want to only show the Yeti and the human race except the mage tree, use:
+The [trait] tag describes a trait. When it appears in the [units] toplevel, it describes a global trait, and all races with the attribute '''ignore_global_traits=no''' will have this trait.; it may also appear in other places.
+* '''id''': unique identifier
+* '''availability''': describes whether a trait is "musthave" for a race or is available to "any" unit in a race, including leaders, or "none" if it is not normally available, but should be kept when advancing to this unit type. (Traits not available to the advanced unit type at all, are permanently lost upon advancement.) The default is for a trait to only be available to nonleaders. Currently "any" should not be used for traits available in multiplayer. It can be used for campaign specific traits. (Note that currently "musthave" is somewhat misused to have what are really abilities (''undead'' and ''mechanical'') default from a unit type's race. Ideally someone will eventually extend ''race'' to allow for default abilities. It might also be possible to unify traits and abilities with keys to indicate how you get them and what happens to them when you advance, while allowing them to come from race, unit type and unit definitions. There are also display issues related to doing this.)
+* '''male_name''': text displayed in the status of unit with the trait if the unit is male.
+* '''female_name''': text displayed in the status of unit with the trait if the unit is female.
+* '''name''': text displayed in the status of unit with the trait if none of the two above is used.
+* '''description''': text displayed for the description of the trait.
+* '''[effect]''': described in [[EffectWML]]. More than one of these can be used.
+
+== [movetype] ==
+
+The [movetype] tag is used to make shortcuts to describe units with similar terrain handicaps. Units from the same advancement tree should generally have the same movetype.
+* '''name''': an ID for this movetype. Units with the attribute '''movement_type=''name''''' will be assigned this movetype.
+* '''flies''': either 'true' or 'false'(default). A unit with ''flies=true'' does not have its image's height adjusted for different terrains.
+* '''[movement_costs]''': describes how fast the unit moves on different terrains. The attribute '''terrain=''speed''''' means that the unit will need to use ''speed'' move points to move onto the terrain with '''id=''terrain''''' (see [[TerrainWML]]).
+* '''[vision_costs]''': describes how far the unit clears fog and shroud on different terrains. The attribute '''terrain=''cost''''' means that the unit will need to use ''cost'' vision points to view onto the terrain with '''id=''terrain''''' (see [[TerrainWML]]). {{DevFeature1.11}}
+* '''[defense]''': describes how likely the unit is to be hit on different terrains. The attribute '''terrain=''defense''''' means that the unit will be hit ''defense'' percent of the time in the terrain with '''id=''terrain'''''. If the defense value is negative, then the unit will be hit as though the value were positive with one difference: the number is also the best defense that the unit may have if there is more than one terrain type for the terrain the unit is on.
+* '''[resistance]''': describes how much damage the unit takes from different types of attacks. The attribute '''type=''resistance''''' makes the unit receive '''resistance''' percent of damage, or resist '''100-resistance''' percent of damage from attacks with '''type=''type'''''. So for example, a resistance of fire=110 means, this unit will receive 110% of damage, or have a resistance of -10% as displayed in-game. A value of fire=0 would mean, the unit receives no damage and therefore has a resistance of 100%.
+
+Default keys for the [movement_costs], [vision_costs], and [defense] tags are deep_water, shallow_water, reef, swamp_water, flat, sand, forest, hills, mountains, village, castle, cave, frozen, unwalkable, fungus, and impassable. Default keys for [resistance] are blade, pierce, impact, fire, cold, and arcane.
+
+== [race] ==
+
+The [race] tag is used to make shortcuts to describe units with similar names. Units from the same advancement tree should generally have the same race. Also, units with the same race should generally be recruitable by the same sides/factions.
+* '''id''': ID for this race. Units with the attribute '''race=''id''''' will be assigned this race. In older versions of WML, the value of the name key was used as id if the id field was missing, but this is no longer the case.
+* '''plural_name''': user-visible name for its people (e.g. "Merfolk" or "Elves"). Currently only used in the in-game help.
+* '''male_name''': user-visible name for the race of the male units (e.g. "Merman"). Currently only used in the in-game unit status.
+* '''female_name''': user-visible name for the race of the female units (e.g. "Mermaid"). Currently only used in the in-game unit status.
+* '''name''': the default value for the three keys above. The 'name' key is the default for 'male_name' and 'female_name'. 'id' and 'plural_name' '''must''' be supplied.
+* '''description''': description of this race, used in the race page of the in-game help. Note: currently not used by all mainline races because their descriptions are not ready. But this is already supported by the engine.
+* '''male_names''', '''female_names''': lists of names (i.e. non-translatable strings). They are inputted into the Markov name generator to generate random names. ''male_names'' describes units with '''gender=male'''; ''female_names'' describes units with '''gender=female'''.
+* '''markov_chain_size''': (default 2) number of letters per "syllable". "Syllables" are groupings of names that the Markov name generator uses to determine names. It does this by running a probability algorithm to guess from the name list which syllables fit well together, which can start or end a name, etc.
+* '''num_traits''': is the number of non-repeating traits each unit of this race can be assigned.
+* '''ignore_global_traits''': 'yes' or 'no' (default). Determines whether global traits (see [traits] above) are applied.
+* '''undead_variation''': sets the default undead variation for members of this race.
+* '''[topic]''': describes extra help topics for this race.
+* '''[trait]''': describes a trait for this race. See above for syntax.
+
+== [hide_help] ==
+
+The [hide_help] tag allows you to hide some units from the help. Mainly useful if you can't change these units (e.g. mainline units) and thus can't add a 'hide_help=yes' key to them. Only really useful for campaigns, not for eras. The following keys and their contents uses an 'OR' logic between them.
+* '''type''': list of unit types.
+* '''race''': list of races. Equivalent to all unit types of these races.
+* '''type_adv_tree''': list of unit types. Equivalent to all these types and their advancement trees.
+* '''all''': 'yes' or 'no' (default). 'yes' is equivalent to all unit types (useful before [not])
+* '''[not]''': all the previous keys (except 'all') can also be used in [not] sub-tags. And you can use [not] recursively. For example, if you want to only show the Yeti and the human race except the mage tree, use:
  [hide_help]
      all=yes
      [not]
@@ -59,6 +68,5 @@ See '''[trait]''': below for syntax.
 
 * [[UnitTypeWML]]
 * [[ReferenceWML]]
-
 
 [[Category: WML Reference]]

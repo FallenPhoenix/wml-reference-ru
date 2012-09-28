@@ -228,16 +228,13 @@ These keys and tags are more complex ways to filter when an event should trigger
 :* [[StandardUnitFilter]]: selection criteria
 
 ==== [filter_attack] ====
-: Can be used to set additional filtering criteria for the primary unit and the secondary unit that are not generally available in a standard unit filter. Can be used in events ''attack'', ''attacker hits'', ''attacker misses'', ''defender hits'', ''defender misses'' and ''attack end''. For more information and other filter keys, see [[FilterWML]].
+: Can be used to set additional filtering criteria based on the weapon used by the primary unit. This is usable in the events ''attack'', ''attacker hits'', ''attacker misses'', ''defender hits'', ''defender misses'' and ''attack end''. For more information and filter keys, see [[FilterWML#Filtering Weapons|Filtering Weapons]]. The most commonly used keys are the following.
 :* '''name''': the name of the weapon used.
 :* '''range''': the range of the weapon used.
 :* '''special''': filter on the attack's special power.
 
 ==== [filter_second_attack] ====
-: Like [filter_attack], but for the secondary unit.
-:* '''name''': the name of the weapon used.
-:* '''range''': the range of the weapon used.
-:* '''special''': filter on the attack's special power.
+: Like [filter_attack], but for the weapon used by the secondary unit.
 
 ==== [filter_condition] ====
 : This tag makes sense inside any sort of event - even those that don't have units, or custom events,... The event will only trigger if this condition evaluates to true.

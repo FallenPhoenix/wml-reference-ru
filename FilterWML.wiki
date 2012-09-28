@@ -40,21 +40,19 @@ See [[StandardSideFilter]] for details.
 
 == Filtering Weapons ==
 
-Sometimes weapons are filtered on in WML.  See also [[EventWML]], [[EffectWML]], [[AnimationWML]].
+Sometimes weapons/attacks are filtered on in WML.  See also [[EventWML]], [[EffectWML]], [[AnimationWML]].
 
-These keys are used as filter input for weapon filters.
+These keys are used as filter input for attack filters.
 
 * '''range''': a range to filter
 ** '''melee''': only melee weapons pass 
 ** '''ranged''': only ranged weapons pass 
-* '''name''': filter on the attack's name.
-See '''data/units/''' or http://www.wesnoth.org/units/
-to find the name of a particular unit's attack.
-* '''type''': filter on the attack's type.
-Values are 'blade', 'pierce', 'impact', 'fire', 'cold', and 'arcane'.
+* '''name''': filter on the attack's name. See <code>data/units/</code> or http://www.wesnoth.org/units/ to find the name of a particular unit's attack.
+* '''type''': filter on the attack's type. Values are 'blade', 'pierce', 'impact', 'fire', 'cold', and 'arcane'.
 * '''damage''': filter on damage value. Can be a specific number or a list of ranges like 'damage=0-5,7-99'
-* '''special''': filter on the attack's special power.
-For values see [[AbilitiesWML]].
+* '''special''': filter on the attack's special power. For values see [[AbilitiesWML]].
+
+{{DevFeature1.11}} Also, '''[and]''', '''[or]''', and '''[not]''' subfilters are supported.
 
 == Filtering Terrains ==
 
