@@ -8,6 +8,13 @@
 * '''id''': Идентификатор эры. Должен быть уникальным. Не влияет на геймплей.
 * '''name''': Отображаемое название эры.
 * <span id="require_era">'''require_era'''</span>: Определяет, требуется ли установка эры для присоединения к играм, в которых она используется (по умолчанию: yes).
+* '''allow_scenario''': {{DevFeature1.11}} a list of scenario ids. Only the scenarios with matching ids will be allowed to be played with this era.
+* '''disallow_scenario''': {{DevFeature1.11}} a list of scenario ids. Only the scenarios with matching ids will not be allowed to be played with this era. Cannot be used in parallel with allow_scenario.
+* '''ignore_incompatible_scenario''': {{DevFeature1.11}} a list of scenario ids. The scenarios with matching ids will be considered compatible with this era regardless their dependencies.
+* '''allow_modification''': {{DevFeature1.11}} same as allow_scenario, but for modifications.
+* '''disallow_modification''': {{DevFeature1.11}} same as disallow_scenario, but for modifications. Cannot be used in parallel with allow_modification.
+* '''ignore_incompatible_modification''': {{DevFeature1.11}} same as ignore_incompatible_scenario, but for modifications.
+* '''force_modification''': {{DevFeature1.11}} a list of modification ids. The specified modifications must be enabled to play this era.
 * '''[multiplayer_side]''': Описывает одну фракцию. This tag contains many of the same keys as a [side] tag (A description of the [side] tag can be found in [[SideWML]]). When a multiplayer game is played, then the [side] tag for the scenario is merged with the keys(currently, not tags) of the [multiplayer_side] tag of the faction which the side chose.
 ** '''id''': Идентификатор фракции. Внутри эры должен быть уникален. Не влияет на геймплей.
 ** '''name''': Отображаемое название фракции; см. [[DescriptionWML]]. Ко вложенным в него изображениям цвет стороны не применяется.
@@ -22,6 +29,7 @@
 ** '''recruit''': Список бойцов (через запятую), которых можно вербовать, играя за данную фракцию.
 ** '''terrain_liked''': an unseparated list of terrains (см. [[TerrainCodesWML]]). On random maps, these terrains will determine which keep the side is assigned, attempting to put it near the listed terrains.
 * '''[event]''': Смотрите [[EventWML]]. События, описанные внутри тега [era] будут работать в любом сценарии при игре на данной эре.
+* '''[options]''': {{DevFeature1.11}} custom options. See [[OptionWML]] for details.
 
 
 == Смотрите также ==

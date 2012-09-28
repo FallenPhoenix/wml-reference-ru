@@ -1,6 +1,5 @@
 '''< Данная статья еще недопереведена! Английский оригинал можно прочесть [http://wiki.wesnoth.org/EffectWML тут] >'''
 
-=== тег [effect] ===
 
 Тег [effect] используется для описания одной модификации бойца. Any number of [effect] tags can be used to describe a complete modification. Modifications are permanent changes to a unit; currently there is no way of removing a modification.
 
@@ -11,9 +10,9 @@
 * '''times''': describes how many times the effect is applied. The default is to apply the effect once. Other possible value : "per level" which means that the effect is applied level times, where level is the unit level.
 * '''apply_to''': describes what the effect actually affects.
 [effect] uses different keys depending on the value of '''apply_to'''.  '''apply_to''' can take the following values:
-* '''new_attack''': will use all other keys and tags as the description of an attack that will be added to the unit. See [attack] in [[UnitTypeWML]].
-* '''remove_attacks''': remove the matching attacks. All tags from the attack filter construct will be used to match the attack; see [[FilterWML]]. Do not use a [filter] tag otherwise it will not work properly.
-* '''attack''': find an attack and modify it.  All tags from the attack filter construct will be used to match the attack; see [[FilterWML]].  After that, the following keys and tags can be used to modify the attack.  Note: do not use a [filter] tag.  Just put the keys you want to filter on inside the [effect] tag.
+* '''new_attack''': will use all other keys and tags as the description of an attack that will be added to the unit. See [attack] in [[UnitTypeWML#Attacks|UnitTypeWML]].
+* '''remove_attacks''': remove the matching attacks. All tags from the attack filter construct will be used to match the attack; see [[FilterWML#Filtering Weapons|FilterWML]]. Do not use a [filter] tag otherwise it will not work properly.
+* '''attack''': find an attack and modify it.  All tags from the attack filter construct will be used to match the attack; see [[FilterWML#Filtering Weapons|FilterWML]].  After that, the following keys and tags can be used to modify the attack.  Note: do not use a [filter] tag.  Just put the keys you want to filter on inside the [effect] tag.
 ** '''set_name''': изменяет идентификатор атаки.
 ** '''set_description''': изменяет отображаемое наименование атаки.
 ** '''set_type''': изменяет тип повреждений атаки. Стандартные значение: '''blade''', '''pierce''', '''impact''', '''fire''', '''cold''' и '''arcane'''.
@@ -22,8 +21,8 @@
 ** '''remove_specials''': remove the listed specials. The value of this key is the coma-separated list of the id of the specials to remove. This key is always evaluated before a [set_specials] tags in the same [effect]
 ** '''increase_damage''': increases the attack's damage.  This can be positive or negative, so you can use it to decrease damage as well.  If it ends in a percent(''''%''''), the change in damage will be a percentage ratio of the attack's original damage.
 ** '''increase_attacks''': increases the number of attack strikes. Like '''increase_damage''', it can be positive or negative, or a percentage.
-** '''attack_weight''': change the attack's attack_weight. See [attack] in [[UnitTypeWML]] for explanations about attack_weight.
-** '''defense_weight''': change the attack's defense_weight. See [attack] in [[UnitTypeWML]] for explanations about defense_weight.
+** '''attack_weight''': change the attack's attack_weight. See [attack] in [[UnitTypeWML#Attacks|UnitTypeWML]] for explanations about attack_weight.
+** '''defense_weight''': change the attack's defense_weight. See [attack] in [[UnitTypeWML#Attacks|UnitTypeWML]] for explanations about defense_weight.
 * '''hitpoints''': модифицирует текущее и/или максимальное здоровье бойца.
 ** '''increase''': увеличивает текущие ЗД на указанное значение.
 ** '''heal_full''': при установке в 'yes' здоровье бойца полностью восстанавливается.
@@ -32,18 +31,21 @@
 * '''movement''': изменяет единицы передвижения бойца.
 ** '''increase''': maximum movement is increased by this amount. It can be positive, negative, or specified as a percentage.
 ** '''set''': maximum movement is set to a specific value.
+* {{DevFeature1.11}} '''experience''': affects the unit's current XP.
+** '''increase''': current XP is increased by this amount. It can be positive, negative, or specified as a percentage.
+** '''set''': current XP is set to a specific value.
 * '''max_experience''': affects the amount of XP the unit needs for the next level.
 ** '''increase''': how to change the xp; again it can be negative, positive or a percentage.
 * '''loyal''': no keys associated. The affected unit will be loyal i.e have an upkeep of 0.
 * '''movement_costs''': speed through specific terrain is modified
 ** '''replace''': If set to "true", any new values replace the old ones. Otherwise, new values are added to old values (negative values allowed).
-** '''[movement_costs]''': a subtag that describes the new movement costs just like in [[UnitTypeWML]] for describing a unit type
+** '''[movement_costs]''': a subtag that describes the new movement costs just like in [[UnitsWML#.5Bmovetype.5D|UnitsWML]]
 * '''defense''': Sets unit chance to be hit in specific terrain (100 - defense value)
 ** '''replace''': If set to "true", any new values replace the old ones. Otherwise, new values are added to old values (negative values allowed).
-** '''[defense]''': a subtag that describes the new defense just like in [[UnitTypeWML]] for describing a unit type
+** '''[defense]''': a subtag that describes the new defense just like in [[UnitsWML#.5Bmovetype.5D|UnitsWML]]
 * '''resistance''': Sets percent damage taken from combat
 ** '''replace''': If set to "true", any new values replace the old ones. Otherwise, new values are added to old values (negative values allowed).
-** '''[resistance]''': a subtag that describes the new resistance just like in [[UnitTypeWML]] for describing a unit type
+** '''[resistance]''': a subtag that describes the new resistance just like in [[UnitsWML#.5Bmovetype.5D|UnitsWML]]
 * '''variation''': switches the unit into one of its variations.
 ** '''name''': the id of the variation to invoke.
 * '''type''': transforms the unit into a new unit_type.
@@ -62,13 +64,16 @@
 * '''remove_ability''': Removes one or more abilities from a unit. Abilities are not reference counted: added, added, removed = gone.
 ** '''[abilities]''': A subtag that contains the ability definitions. Strictly speaking, all that is needed is the id= inside some tag.
 * '''new_animation''': contain animations that will be added to the unit, it can contain multiple animation blocks, and a single "id=" line. That Id should be unique for each effect block and is used by the engine to reuse WML parsing, making the loading faster.
-* '''image_mod''': modify the image path function([[ImagePathFunctionWML]]) of all the unit's frames.
+* '''image_mod''': modify the image path function ([[ImagePathFunctionWML]]) of all the unit's frames.
 ** '''replace''': replaces the image path function(s) to be used, e.g. "RC(magenta>red)"
 ** '''add''': adds an image path function without removing any existing ones.
 * '''ellipse''': Change the image used for the unit's ellipse.
 **'''ellipse''' : the new image to use.
 * {{DevFeature1.11}} '''halo''': Change the image used for the unit's halo.
 **'''halo''': the new image to use.
+* {{DevFeature1.11}} '''overlay''': Change the unit's overlays.
+**'''add''': the specified overlay will be added to the unit's overlays. It can be a comma separated list with multiple overlays. ''Note: overlays added in this way cannot be removed by [remove_unit_overlay] until the effect's duration is over.''
+**'''replace''': all the unit's overlays will be removed and replaced with the specified one. Again, it can be a comma separated list. ''Note: overlays replaced in this way cannot be modified by [unit_overlay] or [remove_unit_overlay] until the effect's duration is over.''
 
 
 == Смотрите также ==

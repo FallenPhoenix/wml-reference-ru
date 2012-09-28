@@ -31,7 +31,7 @@ This user interface action only works in debug mode. It displays the gamestate i
 * '''sound''': Звуковой эффект (wav-файл), воспроизводимый при отображении сообщения. При указании списка звук выбирается из него рандомно.
 * '''[option]''': No '''[option]''' elements have to be used. If '''[option]''' elements are present, then each option will be displayed in a menu for the user to select one option.
 ** '''message''': Текст данного пункта меню (см. [[DescriptionWML]]). Поддерживает локализацию.
-** '''[show_if]''': Если указано, то опция отображается только при соблюдении определенных условий (см. [[InternalActionsWML]]).
+** '''[show_if]''': Если указано, то опция отображается только при соблюдении определенных условий (см. [[ConditionalActionsWML#Condition_Tags|ConditionalActionsWML]]).
 ** '''[command]''': Элемент, содержащий операции, выполняемые при выборе данной опции.
 * '''[text_input]''': Добавляет в диалог поле ввода. Может быть только один.
 ** '''variable''': Переменная, в которую сохраняется введенное значение.
@@ -125,9 +125,6 @@ Tags of '''[objectives]''':
 ** '''blue''': Default '255'. Overrides the default blue coloring of the entire note, including the bullet.
 ** '''description''': the text of the note.
 ** {{DevFeature1.11}} '''[show_if]''': The note will not be shown if the specified condition isn't met. Conditional notes are refreshed at '''[show_objectives]''' time only.
-
-=== Макросы ===
-There are a few predefined macros for Objectives that you can use to shorten the code: [http://www.wesnoth.org/macro-reference.xhtml#SET_OBJECTIVES SET_OBJECTIVES], [http://www.wesnoth.org/macro-reference.xhtml#VICTORY_CONDITION VICTORY_CONDITION], and [http://www.wesnoth.org/macro-reference.xhtml#DEFEAT_CONDITION DEFEAT_CONDITION]. Follow the links for each one to see complete syntax and example usage.
 
 == [set_menu_item] ==
 Используется для добавления пользовательских опций в контестное меню игры, которые впоследствии могут быть обработаны с помощью вашего WML-кода.

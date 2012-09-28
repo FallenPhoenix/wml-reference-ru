@@ -1,0 +1,19 @@
+﻿{{WML Tags}}
+== The [options] tag ==
+
+{{DevFeature1.11}} This tag might be a child of an [era], [multiplayer] or [modification] tag. Its subtags describe a set of configuration options which are displayed to the user as widgets on the game creation screen, and the entered values are translated into WML variables in the game. Please note that the option variables are initialized in a prestart event, therefore they can't be used before the first prestart event. The created variables' name is identical to the option's id they're attached to, so option ids must be unique across all kinds of options.
+
+The following subtags are recognized for '''[options]''':
+
+* '''[entry]''': registers a text entry.
+** '''id''': the id for this option. Must be unique.
+** '''default''': the string initially displayed by the widget.
+* '''[checkbox]''': registers a checkbox.
+** '''id''': the id for this option. Must be unique.
+** '''default''': boolean value, determines if the box should be checked initially. Default no.
+* '''[slider]''': registers an integer slider.
+** '''id''': the id for this option. Must be unique.
+** '''default''': an integer value. The slider will be positioned at this value by default.
+** '''min''': the minimal value the slider can take.
+** '''max''': the maximal value the slider can take.
+** '''step''': the difference between adjacent values the slider can take. Default 1.

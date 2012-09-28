@@ -28,7 +28,7 @@ This request is used to retrieve a list of campaigns available on the server and
 **** '''timestamp''': when this version of the campaign was uploaded.
 **** '''title''': campaign title. This is not a translatable string.
 **** '''translate''': whether the campaign will be automatically send to wescamp and updated from wescamp.
-**** '''uploads''': (current trunk only) number of uploads (initial upload gets 1)
+**** '''uploads''': number of uploads (initial upload gets 1)
 **** '''version''': version of the campaign. The recommended format is x.y.z where x, y and z are decimal strings. x should be 0 for campaigns that are not yet complete.
 **** '''type''': indicates the type of the add-on, used for the downloads manager dialog. Possible values are described in [[PblWML]].
 **** '''[translation]'''

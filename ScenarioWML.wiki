@@ -55,6 +55,14 @@ A list of initial scenarios, and how to access them:
 
 Тег '''[multiplayer]''' также поддерживает:
 * '''allow_new_game''': Определяет видимость сценария в диалоге создания игры (по умолчанию: yes). Служит для использования в мультиплеерных кампаниях.
+* '''allow_era''': {{DevFeature1.11}} a list of era ids. Only the eras with matching ids will be allowed to be played with this scenario.
+* '''disallow_era''': {{DevFeature1.11}} a list of era ids. Only the eras with matching ids will not be allowed to be played with this scenario. Cannot be used in parallel with allow_era.
+* '''ignore_incompatible_era''': {{DevFeature1.11}} a list of era ids. The eras with matching ids will be considered compatible with this scenario regardless their dependencies.
+* '''allow_modification''': {{DevFeature1.11}} same as allow_era, but for modifications.
+* '''disallow_modification''': {{DevFeature1.11}} same as disallow_era, but for modifications. Cannot be used in parallel with allow_modification.
+* '''ignore_incompatible_modification''': {{DevFeature1.11}} same as ignore_incompatible_era, but for modifications.
+* '''force_modification''': {{DevFeature1.11}} a list of modification ids. The specified modifications must be enabled to play this scenario.
+* '''[options]''': {{DevFeature1.11}} custom options. See [[OptionWML]] for details.
 
 == Смотрите также ==
 * [[EventWML]]

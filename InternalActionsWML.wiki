@@ -76,10 +76,56 @@ Stores locations reachable by the given units. Can store either the movement, at
 * '''variable''': Имя переменной, в которую будут сохранены данные о размере. Если атрибут не указан, то будет использоваться переменная 'map_size' (если уже назначена, то ее значение будет перезаписано).
 
 ==== [store_side] ====
-Получает подробную информацию о какой-либо игровой стороне. Целевой контейнер будет содержать следующие члены: 'name', 'team_name', 'gold', 'income', 'fog', 'shroud', 'hidden', 'user_team_name', 'color', 'controller', 'village_gold', 'recruit', и 'side' (the $side_number of the side belonging to this container).
+
+Получает подробную информацию о какой-либо игровой стороне.
+
+'''Keys:'''
 * '''[[StandardSideFilter]]''': сохранены будут все соответствующие фильтру стороны (в случае нескольких вместо контейнера будет создан массив, к которому можно обращаться например так: side[2].team_name).
 * '''variable''': имя переменной, куда будет записана информация (по умолчанию: 'side').
-''note: In networked multiplayer, the controller attribute is ambiguous. Be very careful or you have OOS errors.''
+'''Result'''
+
+Variable will contain following members:
+* '''color''': It indicates team color. Can be one of the following:
+{| border = 1
+| ''color''
+| red
+| blue
+| green
+| purple
+| black
+| brown
+| orange
+| white
+| teal
+|-
+| ''value''
+| 1
+| 2
+| 3
+| 4
+| 5
+| 6
+| 7
+| 8
+| 9
+|}
+* '''colour''': Same as above.
+* '''controller''': Indicates type of player that control this side. ''In networked multiplayer, the controller attribute is ambiguous. Be very careful or you have OOS errors.''
+** '''human''': Human player
+** '''human_ai''': If human player was replaced by AI player by "droid" command.
+** '''null''': If players assigns "Empty" to "Player/Type" in game lobby
+** '''ai''': If players assigns "Computer Player" to "Player/Type" in game lobby
+* '''fog''': Indicates whether this side is affected by fog of war.
+* '''gold''': The amount of gold the side have.
+* '''hidden''': (boolean) If 'yes', side is not shown in status table.
+* '''income''': Base income for this side (without villages).
+* '''name''': Name of player.
+* '''recruit''': A comma-separated list of unit types that can be recruited by this side.
+* '''shroud''': Whether this side is affected by shroud.
+* '''side''': The $side_number of the side belonging to this container
+* '''team_name''': String representing the team's description.
+* '''user_team_name''': Translated string representing the team's description.
+* '''village_gold''': The amount of gold given to this side per village it controls per turn.
 
 ==== [store_starting_location] ====
 Получает стартовую позицию лидера игровой стороны. Возвращает переменную составного типа (контейнер или массив) с членами'x', 'y', 'terrain' и 'owner_side' (villages only)
@@ -246,6 +292,36 @@ This will produce two output messages, first one saying '''bar''' and next one s
          message= _ "Yo Kalenz!"
      [/message]
  [/event]
+
+=== Firing the event via [insert_tag] ===
+Sometimes you need to fire specific event out of a wide variety, but when you make scenario you don't know which one. But before you use this, make sure what all other solutions aren't suit you.
+One of possible solutions is use all power of internal actions: [set_variable]+[insert_tag]+[fire_event].
+
+First of all, make sure a event is defined and included.
+ [event]
+     name = custom_event
+ 
+     [message]
+         speaker=Konrad
+         message= _ "Yo Kalenz!"
+     [/message]
+ [/event]
+
+Then set a variable, which will contain name of your event.
+ [event]
+     name = start
+ 
+     [set_variable]
+         name = event_name_container.name
+         value = "custom_event"
+     [/set_variable]
+ [/event]
+
+Then add insert tag where you need it. It can be [command] of menu item, or even other event.
+ [insert_tag]
+     name = fire_event
+     variable = event_name_container
+ [/insert_tag]
 
 
 == Смотрите также ==
