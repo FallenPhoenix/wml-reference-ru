@@ -162,8 +162,8 @@ Stores the turn limit (the maximum number of turns). If there is no limit, this 
 * '''kill''': если установлено 'yes', то захватываемый боец будет удален из игры.<br>Опция будет полезна в т.ч. для временного запрета призывать бойцов.
 
 ==== [store_unit_type] ====
-* '''type''': (required) the defined ID of the unit type, for example "Goblin Knight". Do not use a translation mark or it will not work correctly for different languages. A comma-separated list of IDs may also be used to store an array of unit types.
-* '''variable''': the name of the variable into which to store the unit type information (default "unit_type")
+* '''type''': (обязательно) определенный идентификатор типа бойца, например "Goblin Knight". Также можно указать список идентификаторов и на выходе получить массив типов. Но ни в коем случае не ставьте метку перевода, иначе во многих языках команда будет работать неправильно.
+* '''variable''': имя переменной, в которую будут записаны данные (по умолчанию "unit_type").
 
 ==== [store_unit_type_ids] ====
 * '''variable''': the name of the variable into which to store a comma-separated list of all unit type IDs
