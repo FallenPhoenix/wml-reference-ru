@@ -2,6 +2,8 @@
 
 __TOC__
 
+== Тег [unit_type] ==
+
 Каждый тег '''[unit_type]''' определяет один тип бойца. (for the use of [unit] to create a unit, see [[SingleUnitWML]])
 
 Unit animation syntax is described in [[AnimationWML]]. In addition to the animation tags described there, the following key/tags are recognized:
@@ -11,7 +13,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 * '''advances_to''': When this unit has ''experience'' greater than or equal to ''experience'', it is replaced by a unit of the type that the value of ''advances_to'' refers to. All modifications that have been done to the unit are applied to the unit it is replaced by. The special value 'null' says that the unit does not advance but gets an AMLA instead. Can be a comma-separated list of units that can be chosen from upon advancing.
 * '''alignment''': one of lawful/neutral/chaotic/liminal (See [[TimeWML]]). Default is "neutral".
 * '''attacks''': the number of times that this unit can attack each turn.
-* '''cost''': when a player recruits a unit of this type, the player loses ''cost'' gold. If this would cause gold to drop below 0,  the unit cannot be recruited.
+* '''cost''': Стоимость вербовки бойца.
 * '''description''': (translatable) the text displayed in the unit descriptor box for this unit. Default 'No description available...'. 
 * '''do_not_list''': Not used by the game, but by tools for browsing and listing the unit tree. If this is 'yes', the unit will be ignored by these tools. 
 * '''ellipse''': the ellipse image to display under the unit, which is normally team-colored. Default is the normal ellipse; "misc/ellipse-nozoc" is a dashed ellipse that should be used for units without zone of control.
@@ -39,7 +41,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 * '''vision''': the number of vision points to calculate the unit's sight range. Defaults to ''movement'' if not present.
 * '''zoc''': Определяет наличие зоны контроля. При значении "yes" боец будет иметь зону независимо от уровня; при любом ином значении - не будет. Если тег не указан, начилие зоны контроля определяется уровнем бойца (ур. 0 = нет зоны, ур. 1+ = есть зона).
 
-== Улучшения постмаксимального уровня (УПМУ, AMLA) ==
+=== Улучшения постмаксимального уровня (УПМУ, AMLA) ===
 * '''[advancement]''': describes what happens to a unit when it reaches the XP required for advancement.  It is considered as an advancement in the same way as advancement described by '''advances_to'''; however, if the player chooses this advancement, the unit will have one or more effects applied to it instead of advancing.
 ** '''id''': unique identifier for this advancement; ''Required'' if there are multiple advancement options, or if ''strict_amla=no''.
 ** '''always_display''': if set to true displays the AMLA option even if it is the only available one.
@@ -52,7 +54,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 *** ''require_amla=tough,incr_damage,tough'' is an equivalent way of expressing this.
 ** '''[effect]''': A modification applied to the unit whenever this advancement is chosen.  See [[EffectWML]]
 
-== Атаки ==
+=== Атаки ===
 * '''[attack]''': Описывает одну из атак бойца.
 ** '''name''': Непереводимое рабочее название атаки. Используется для ''has_weapon'' и фильтров анимации (см. [[StandardUnitFilter]] и [[AnimationWML]]). Также может определять отображаемое имя, если не задан атрибут ''description'', и значок, если не задан атрибут ''icon'' (''name=x'' => ''icon=attacks/x.png'').
 ** '''description''': Отображаемое название атаки. Поддерживает локализацию.
@@ -69,7 +71,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 ** '''defense_weight''': used to determine which attack is used for retaliation. This affects gameplay, as the player is not allowed to determine his unit's retaliation weapon. Setting it to 0 disable the attacks on defense 
 For the weight settings, the engine usually chooses the attack with the best average total damages * weight (default weight = 1.0).
 
-== Прочие теги ==
+=== Прочие теги ===
 * '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Subsequent attributes modify the copy. Tags modify the corresponding tag of the original, so for example the first '''[attack]''' tag in the derived unit would modify the first attack of the base unit rather than defining a new attack.
 * '''[portrait]''': Describes a unit portrait for dialogue. However, generally you should use the profile key instead; [portrait] is mostly for internal use.
 ** '''size''': The size of the portrait, in pixels.
