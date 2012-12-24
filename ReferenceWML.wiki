@@ -63,7 +63,8 @@ for a tutorial style overview.
 
 == Predefined macros == 
 
-Wesnoth ships with a library of predefined macros you should find useful in writing your own WML.  You can find a description of all such macros [http://www.wesnoth.org/macro-reference.html here].
+Wesnoth ships with a library of predefined macros you should find useful in writing your own WML.
+* [http://www.wesnoth.org/macro-reference.html WML Macroses] - description of all such macros.
 
 == Other ==
 

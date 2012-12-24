@@ -22,6 +22,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 * '''hitpoints''': the maximum HP that the unit has, and the HP it has when it is created.
 * '''id''': the value of the ''type'' key for units of this type. An ''id'' should consist only of alphanumerics and spaces (or underscores). ''type'' keys are found in [[SingleUnitWML]] and [[FilterWML]]. For example, id=Drake Flare
 ::WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the unit type id and must be avoided because they might lead to corrupted saved games
+*'''ignore_race_traits''': 'yes' or 'no' (default). Determines whether racial traits (see [[UnitsWML]]) are applied. 
 * '''image''': sets the base image of the unit, which is used on the map.
 * '''image_icon''': sets the image used to represent the unit in areas such as the attack dialog and the unit image box in the sidebar
 * '''level''': the amount of upkeep the unit costs.  After this unit fights, its opponent gains ''level'' experience. See also kill_experience ([[GameConfigWML]]), and leadership ([[AbilitiesWML]]).

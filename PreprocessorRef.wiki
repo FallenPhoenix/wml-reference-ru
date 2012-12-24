@@ -132,6 +132,8 @@ Example:
 
 Compares a version number defined in a macro against an argument for conditional block inclusions, like ''#ifdef'' and ''#ifhave''. ''operator'' is one of ''=='' (equal), ''!='' (not equal), ''<'' (less), ''<='' (less or equal), ''>'' (greater), ''>='' (greater or equal). The specified ''symbol'' should have been previously defined as plain text without more macro inclusions within it, and it must not require any arguments.
 
+Versions with text suffixes are sorted in binary order and come after all versions with the same number. The most common suffix is "+svn", but as it represents multiple possible versions, comparing versions against it is not recommended.
+
 Example:
  #ifver WESNOTH_VERSION >= 1.9.7+svn
      [message]

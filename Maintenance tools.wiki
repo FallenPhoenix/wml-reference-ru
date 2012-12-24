@@ -7,7 +7,7 @@ are:
 
 ; wmlindent: a utility for reindenting WML to a uniform style.
 
-You will need a Python interpreter on your system to use these tools.  Linux, *BSD, and Mac OS/X should already have Python installed; for Windows it's a free download
+You will need a Python 2 interpreter on your system to use these tools.  Linux, *BSD, and Mac OS/X should already have Python 2 installed; for Windows it's a free download
 from http://www.python.org.  You will also need to know how to run command-line tools on your system.
 
 All three tools will require you to supply a <i>directory list</i>.  This is a set of directories containing the WML files you want to work on.
@@ -27,12 +27,12 @@ The first thing you type is the path to your python executable, followed by a sp
 
 
 '''A convenient way of running wmllint''' on Linux (Debian Lenny) and Windows (Xp) in comparison, '''Linux''':
- python /usr/share/games/wesnoth/data/tools/wmllint --dryrun /usr/share/games/wesnoth/data/core ~/.wesnoth1.7/data/add-ons/A_Simple_Campaign 1>wmllint-run.log 2>wmllint-err.log
+ python2 /usr/share/games/wesnoth/data/tools/wmllint --dryrun /usr/share/games/wesnoth/data/core ~/.wesnoth1.7/data/add-ons/A_Simple_Campaign 1>wmllint-run.log 2>wmllint-err.log
 I have these commands inside of a file named
  wmllint_dryrun_ASC.sh
 and execute it by opening a shell (=terminal, console, command window, bash,...), navigating into the directory with that file and typing
  bash wmllint_dryrun_ASC.sh
-The python command is automatically known on Debian. The path to the script tells the python interpreter what to execute. --dryrun: A wmllint option, see below. The path to the core files is needed to let wmllint know about e.g. defined core units, followed by the path to the add-on that shall be checked; the last two commands cause the result of the wmllint usage to be written into those files in the same directory as the script.
+The python2 command should be automatically known on Debian. The path to the script tells the python interpreter what to execute. --dryrun: A wmllint option, see below. The path to the core files is needed to let wmllint know about e.g. defined core units, followed by the path to the add-on that shall be checked; the last two commands cause the result of the wmllint usage to be written into those files in the same directory as the script.
 '''Windows''', this is logically exactly the same as the Linux shell script above, so if you are on a Mac you can probably conclude how you need to adapt the paths:
  E:\Python26\python.exe E:\Programme\Wesnoth_1.8_svn\data\tools\wmllint --dryrun E:\Programme\Wesnoth_1.8_svn\data\core E:\Programme\Wesnoth_1.8_svn\userdata\data\add-ons\A_Simple_Campaign 1>wmllint-run.log 2>wmllint-err.log
 This is the content of a .txt file, whose extension I rename to .bat and double-click onto it. Opening a command window is not needed this way.

@@ -183,13 +183,13 @@ These event triggers are all actions by units ('''moveto''', '''attack''') or th
 : Triggers when the primary unit is recalled (by the secondary unit) but before it is displayed.
 
 ; advance
-: Triggers just before the primary unit is going to advance to another unit, or advance by AMLA.
+: Triggers just before the primary unit is going to advance to another unit, or advance by AMLA. (This is after the player selects which advancement, if there is a choice). If this event removes the unit, changes the unit's type, or reduces the unit's experience below what it needs to advance, then the advancement is aborted. Due to a bug, the preceding does not apply to advancement by AMLA. {{DevFeature1.11}} The bug has been fixed. (The fix is not in earlier versions because it could introduce an incompatibility.)
 
 ; post advance
 : Triggers just after the primary unit has advanced to another unit, or advance by AMLA.
 
 ; select
-: Triggers when the primary unit is selected. Also triggers when ending a move, as the game keeps the moving unit selected by selecting it again at the end of movement. ''Note: in networked multiplayer, these events are only executed by the client on which the event is triggered, leading to out of sync errors if you modify the game state in the event.''
+: Triggers when the primary unit is selected. Prior to version 1.11, this also triggered when a move was interrupted, as the game keeps the moving unit selected by selecting it again at the end of movement. ''Note: in networked multiplayer, these events are only executed by the client on which the event is triggered, leading to out of sync errors if you modify the game state in the event.''
 
 ; menu item ''X''
 : Triggers when a WML menu item with id=''X'' is selected. ''Note: if the menu item has a [command], this event may be executed before or after the command; there is no guarantee.''
@@ -238,7 +238,7 @@ These keys and tags are more complex ways to filter when an event should trigger
 
 ==== [filter_condition] ====
 : This tag makes sense inside any sort of event - even those that don't have units, or custom events,... The event will only trigger if this condition evaluates to true.
-:* True Condition Tags and Meta Condition Tags as described in [[ConditionalActionsWML]].
+:* [[ConditionalActionsWML#Condition_Tags|Condition Tags]]
 : note: This tag is meant to be used when the firing of an event shall be based on variables/conditions which cannot be retrieved from the filtered units.
 
 ==== [filter_side] ====

@@ -41,8 +41,12 @@ There must be values before and after the dash;
 everything in between these numbers (inclusively) is part of the range.
 
 Commas(''',''') are used to separate coordinates into a list.
-The '''x''' and '''y''' lists are then paired up, with each pair representing one hex or range.
-
+The '''x''' and '''y''' lists are then paired up, with each pair representing one hex or range. 
+E.g. in order to specify multiple locations 1,4 and 2,5, use:
+  [tag]
+      x=1,2
+      y=4,5
+  [/tag]
 Note: although the ordering of locations in a list generally does not matter,
 the action '''[move_unit_fake]''' takes in a list of hexes,
 and moves an image onto each of those hexes in order.

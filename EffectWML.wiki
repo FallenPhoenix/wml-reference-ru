@@ -4,8 +4,8 @@ The tag [effect] is used to describe one modification to a unit. Any number of [
 
 The following keys and subtags are always recognized:
 * '''[filter]''': only apply this effect if the affected unit matches. See [[StandardUnitFilter]] for details.
-* '''unit_type''': only apply this effect if the affected unit's type name matches the value. (can be a list)
-* '''unit_gender''': only apply this effect if the affected unit's gender name matches the value. (can be a list)
+* '''unit_type''': only apply this effect if the affected unit's type name matches the value. (can be a list) {{DevFeature1.11}} Support for the key is removed in favor of [effect][filter]type=.
+* '''unit_gender''': only apply this effect if the affected unit's gender name matches the value. (can be a list) {{DevFeature1.11}} Support for the key is removed in favor of [effect][filter]gender=.
 * '''times''': describes how many times the effect is applied. The default is to apply the effect once. Other possible value : "per level" which means that the effect is applied level times, where level is the unit level.
 * '''apply_to''': describes what the effect actually affects.
 [effect] uses different keys depending on the value of '''apply_to'''.  '''apply_to''' can take the following values:

@@ -33,11 +33,11 @@ The following keys are recognized:
 * '''shroud_data''': describes the area which this team has de-shrouded. An example:
  |
  |00011111000
-This would leave the first column on the map unaltered and would change the second column for 11 tiles. A '0' means: shrouded, '1' means unshrouded. You can either call an external file using {@filename}  (see [[PreprocessorRef]]) or place the data in quotes. For making an external file see [[BuildingScenariosShroudData]].
+:This would leave the first column on the map unaltered and would change the second column for 11 tiles. A '0' means: shrouded, '1' means unshrouded. You can either call an external file using {@filename}  (see [[PreprocessorRef]]) or place the data in quotes. For making an external file see [[BuildingScenariosShroudData]].
 
-* '''persistent''': whether the side exists in any other scenarios. If '1'(yes), then ''save_id''(see below) is used to identify the side in other scenarios. Default '1'(yes) for sides with a human controller, '0'(no) for ai controlled sides.
+* '''persistent''': whether the side exists in any other scenarios. If ''yes'', then ''save_id'' (see below) is used to identify the side in other scenarios. Defaults to ''yes'' for sides with a human controller, and ''no'' for ai controlled sides.
 
-* '''save_id''': default ''description'' if available, 'Unknown' otherwise. The ID of the side with respect to the previous and next scenarios. Used to carry over the side's recall list (including the side's leader), recruitment list, and starting gold from scenario to scenario. Also used for the side's displayed name in the victory gold-calculation dialog. (For versions prior to 1.7.3, some extra effort to retrieve carryover information may be needed. See [[SideSwitchingWML]])
+* '''save_id''': defaults to the leader's ''id'' if available, 'Unknown' otherwise. The ID of the side with respect to the previous and next scenarios. Used to carry over the side's recall list (including the side's leader), recruitment list, and starting gold from scenario to scenario. Also used for the side's displayed name in the victory gold-calculation dialog. (For versions prior to 1.7.3, some extra effort to retrieve carryover information may be needed. See [[SideSwitchingWML]])
 
 * '''team_name''': a non translatable string representing the team's description. Sides with the same team_name are allied. Default ''side''. ''team_name'' is now a comma-separated list of teams that the side is on.
 
@@ -62,9 +62,9 @@ This would leave the first column on the map unaltered and would change the seco
 
 * '''share_view''': whether sides allied with this side see the units that this side sees, if they are on FoW (fog).
 
-* '''disallow_observers''': prevents observers from seeing this side turn. (default: no)
-
 * '''scroll_to_leader''': optional. If 'no', scroll to the leader is not performed on the start of each turn. (default: yes)
+
+* '''suppress_end_turn_confirmation''': {{DevFeature1.11}} If "yes", then the player will not be asked to confirm ending their turn even if they have not done anything. This is provided for some (probably few) user-made scenarios in which players often skip their turns. (default: no)
 
 * '''[ai]''' if '''controller=ai''', gives parameters to the AI. See [[AiWML]].
 
@@ -77,6 +77,8 @@ This would leave the first column on the map unaltered and would change the seco
 The following keys are multiplayer only:
 
 * '''allow_player''': if false then this side will not be allowed to be modified and will be hidden during game creation.
+
+* '''disallow_observers''': prevents observers from seeing this side turn. (default: no)
 
 * '''team_lock''': if true then this side's team is not allowed to be modified.
 

@@ -37,7 +37,7 @@ The frame with the empty prefix is special in many way. It is assumed to contain
 === Timing, Clock, Multiple animations ===
 When an animation is played it has an internal clock that is run. The step of this clock is the milisecond, and each frame is played for a given duration. Each animation also has a starting time which tells the animation engine at what value the animation clock should start
 
-This starting time is very important when multiple animations from different units are played synchronously  Typically a fight involves a unit playing its defense animation while the opponent plays it's attack animation (and a third might play its leading animation, too). In that case all animations have a common clock, and are played concurrently.
+This starting time is very important when multiple animations from different units are played synchronously  Typically a fight involves a unit playing its defense animation while the opponent plays its attack animation (and a third might play its leading animation, too). In that case all animations have a common clock, and are played concurrently.
 
 The convention is that the "important time" (usually the time of the hit) is at time 0. everything before should be at negative time, everything after at positive time. This is a WML convention that is not enforced by the engine
 
@@ -401,7 +401,7 @@ This animation is triggered whenever the unit is healed for any reason
 if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30" blend_color=255,255,255''
 and plays the sound ''heal.wav''
 ==== poisoned ====
-This animation is triggered whenever the unit suffers poison dammage
+This animation is triggered whenever the unit suffers poison damage
 
 ''value='' is the number of points lost
 
@@ -409,6 +409,7 @@ This animation is triggered whenever the unit suffers poison dammage
 
 if no animation is available, the default uses the standing animation(s) with ''blend_ratio="0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30,0.5:30,0:30" blend_color=0,255,0''
 and plays the sound 'poison.ogg''
+
 ==== defend ====
 This animation is triggered during a strike, of the unit receiving the blow
 

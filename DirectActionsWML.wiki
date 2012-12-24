@@ -133,6 +133,7 @@ Modifies some details of a given side in the middle of a scenario.  '''The follo
 * '''share_maps''': change the share_maps side attribute. Be sure to use shroud=yes for that side and have it as an ally
 * '''share_view''': change the share_view side attribute. Be sure to use fog=yes for that side and have it as an ally
 * '''shroud_data''': changes to the side's shroud, using the same format as when defining the [side].
+* '''suppress_end_turn_confirmation''': {{DevFeature1.11}} Boolean value controlling whether or not a player is asked for confirmation when skipping a turn.
 
 === [modify_turns] ===
 Modifies the turn limit in the middle of a scenario.
@@ -252,7 +253,13 @@ Omitting both the SSF and the SLF would cancel all earlier uses of [lift_fog].
 Additionally setting reset_view="yes" would cause the side's entire map to be fogged (unless an ally keeps hexes clear by sharing its view).
 
 === [allow_undo] ===
-Allows the player to undo the action that triggered the event that this tag is inside. (More precisely, this single event will not prevent undoing the action; other considerations might still prevent the action from being undone.) Has an effect only in events triggered by movement. {{DevFeature1.11}} Also affects events triggered by recruitment or recalling (prior to 1.11 these events erroneously always allowed undo). If the action is undone, only the position of the unit will be restored; any altered variables or changes to the game will remain changed after the action is undone.  It is up to the scenario designer to avoid abusing this command.
+
+Normally when an event with a handler fires, the player's undo stack is cleared, preventing all actions performed so far from being undone. Including this tag in the event handler prevents the stack from being cleared for this reason, allowing the player to undo actions. (However, the stack might still be cleared for other reasons, such as fog being cleared or combat occurring.) In the common cases, this means '''[allow_undo]''' allows the current action to be undone even though an event was handled. There is a less common case, though &mdash; specifically when handling a menu item, where there is no current action &mdash; and in this case, '''[allow_undo]''' means merely that earlier actions can still be undone.
+* {{DevFeature1.11}} Using this tag in a menu item has an additional side effect in 1.11. Starting with version 1.11.1, executing a WML menu item normally counts as doing something as far as the "you have not started your turn yet" dialog is concerned. However, a menu item whose handler includes '''[allow_undo]''' will not count.
+
+This tag does nothing during recruit and recall actions, as the game incorrectly ignores whether or not an event fired during those times. {{DevFeature1.11}} This has been fixed in the latest development release.
+
+The types of actions that can be undone are movement, recruitment, recalling, and dismissing a unit from the recall list. If an action is undone, only the position (or existence) of the involved unit will be restored; any altered variables or changes to the game will remain changed after the action is undone.  It is up to the scenario designer to avoid abusing this command.
 * Technically, if '''[allow_undo]''' is inside an '''[event]''' with ''first_time_only=yes'' (the default setting), and the user undoes the event, then the state of the game has changed in this way: the event will not fire a second time, even though the user undid the action the first time.
 
 === [heal_unit] ===
@@ -288,6 +295,13 @@ How a day should progress in a given area. Everywhere not specified in a [time_a
 * [[TimeWML]]: the new schedule.
 * '''id''': an unique identifier assigned to a time_area. Optional, unless you want to remove the time_area later. Can be a comma-separated list when removing time_areas, see below.
 * '''remove''': (boolean) yes/no value. Indicates whether the specified time_area should be removed. Requires an identifier. If no identifier is used, however, all time_areas are removed.
+
+''Example:'' (caves in parts of a map)
+ [time_area]
+     x=1-2,4-5
+     y=1-2,1-2
+     {UNDERGROUND}
+ [/time_area]
 
 === [end_turn] ===
 End the current side's turn. The current event is finished before the turn is ended. Also, if the current event (where the tag appears) has been fired by another event, that event (and the complete stack of other possible parent events) is ended before [end_turn] comes into affect. Also, events following the event stack that fired [end_turn] are not omitted (e.g. [end_turn] is used by a side turn event and a turn refresh event does something afterwards).

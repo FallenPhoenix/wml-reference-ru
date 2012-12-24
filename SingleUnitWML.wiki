@@ -118,6 +118,10 @@ The following keys are recognized:
 
 * '''[event]''' The event is copied from this unit's wml description into the scenario. The event is carried along with the unit (it can advance etc) and inserted into every scenario where this unit is first created. A [unit][event] is required a non-empty id= attribute.
 
+* '''[ai]''' This affects how the computer will control this unit (currently only used by [[FormulaAI]]).
+** '''formula''': if set, the unit will execute this code during the "unit_formulas" stage, assuming that the "unit_formulas" stage has been enabled for this side
+** '''priority''', '''loop_formula''', '''[vars]''': see the [[FormulaAI]] documentation for details
+
 == See Also ==
 
 * [[UnitTypeWML]]

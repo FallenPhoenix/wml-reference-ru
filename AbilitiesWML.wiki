@@ -19,19 +19,20 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 
 === Common keys and tags for every ability ===
 
-* '''name''': the name of the ability.
-* '''name_inactive''': the name of the ability when inactive.
-* '''description''': the description of the ability.
-* '''description_inactive''': the description of the ability when inactive.
+* '''name''': the (translatable) name of the ability.
+* '''female_name''': the (translatable) name of the ability when possessed by a female unit. Defaults to ''name'' if not specified.
+* '''name_inactive''': the (translatable) name of the ability when inactive. {{DevFeature1.11}} Defaults to ''name'' if not specified; if the ability is supposed to be not displayed when inactive, you must explicitly set ''name_inactive'' to an empty string (nothing after the equals sign).
+* '''female_name_inactive''': the (translatable) name of the ability when inactive and possessed by a female unit. Defaults to ''name_inactive'' if not specified.
+* '''description''': the (translatable) description of the ability.
+* '''description_inactive''': the (translatable) description of the ability when inactive. {{DevFeature1.11}} Defaults to ''description'' if not specified.
 * '''affect_self''': if equal to 'yes', the ability will affect the unit that has it.
 * '''affect_allies''': if equal to 'yes', the ability will affect allies in the specified adjacent hexes.
 * '''affect_enemies''': if equal to 'yes', the ability will affect enemies in the specified adjacent hexes.
 * '''cumulative''': if set to 'yes', this ability will be cumulative with the base value for this ability.
 * '''id''': this ability will not be cumulative with other abilities using this id. Must be present if cumulative is anything other than 'yes'.
-* '''[adjacent_description]''': contains all four of the above keys, which are used when an adjacent unit receives the ability.
 * '''[filter]''': [[StandardUnitFilter]] If the unit owning the ability does not match this filter, the ability will be inactive.
-* '''[affect_adjacent]''': each adjacent unit that does not match this filter will not receive its effects.
-** '''adjacent''': a comma seperated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
+* '''[affect_adjacent]''': an adjacent unit that does not match this filter will not receive its effects. There can be multiple [affect_adjacent] tags in a single ability; a unit needs to match any one of these to receive the effects. If there are no [affect_adjacent] tags, then no adjacent units will receive the effects.
+** '''adjacent''': a comma separated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
 ** '''[filter]''': a [[StandardUnitFilter]].
 * '''[filter_self]''': if the owner of the ability does not match this filter, it will not receive the effects of the ability. [filter_self] takes a [[StandardUnitFilter]] as argument.
 * '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc. If several keys are used all have to match.
@@ -109,14 +110,14 @@ Any other name is valid, but will result in an special that does nothing but rep
 
 === Common keys and tags for every weapon special ===
 
-* '''name''': the name of the special.
-* '''name_inactive''': the name of the special when inactive.
-* '''description''': the description of the special.
-* '''description_inactive''': the description of the special when inactive.
+* '''name''': the (translatable) name of the special.
+* '''name_inactive''': the (translatable) name of the special when inactive. {{DevFeature1.11}} Defaults to ''name'' if not specified; if the special is supposed to be not displayed when inactive, you must explicitly set ''name_inactive'' to an empty string (nothing after the equals sign).
+* '''description''': the (translatable) description of the special.
+* '''description_inactive''': the (translatable) description of the special when inactive. {{DevFeature1.11}} Defaults to ''description'' if not specified.
 * '''id''': this ability will not be cumulative with other specials using this id.
 * '''active_on''': one of '''defense''' or '''offense'''; if left out, the special is active on both.
 * '''apply_to''': one of '''self''','''opponent''','''attacker''','''defender''','''both''' (default: ''self''). Determines who the effects of this special are applied to.
-* '''[filter_adjacent]''': [[StandardUnitFilter]], which takes an extra key '''adjacent''', which is used to specify which adjacent hexes to filter on. '''adjacent''' is a comma seperated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
+* '''[filter_adjacent]''': [[StandardUnitFilter]], which takes an extra key '''adjacent''', which is used to specify which adjacent hexes to filter on. '''adjacent''' is a comma-separated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''. If there is not a matching unit in each of the specified directions, then the special is inactive. Multiple [filter_adjacent] tags can be provided, and each must pass for the special to be active.
 * '''[filter_adjacent_location]''': like [filter_adjacent], except that it filters on the locations rather than the units.
 * '''[filter_self]''': the special will only be active if the owner matches this [[StandardUnitFilter]] (SUF).
 ** '''[filter_weapon]''': a [[FilterWML#Filtering_Weapons|standard weapon filter]], excluding special= ({{DevFeature1.11}} including special=).
@@ -152,7 +153,7 @@ The '''[damage]''', '''[attacks]''', and '''[chance_to_hit]''' specials take val
 === Extra keys used by the ''[swarm]'' special ===
 
 * '''swarm_attacks_max''': the maximum number of attacks for the swarm. Defaults to the base number of attacks. (In {{DevFeature1.11}}, defaults to the base number of attacks modified by any applicable [attacks] specials.) If this is specified, then the base number of attacks is ignored.
-* '''swarm_attacks_min''': the minimum number of attacks for the swarm. Defaults to zero.
+* '''swarm_attacks_min''': the minimum number of attacks for the swarm. Defaults to zero. {{DevFeature1.11}} This can be set higher than swarm_attacks_max to cause a unit to gain attacks as health decreases.
 The ratio of the unit's current to maximum hit points will be used to scale the number of attacks between these two values.
 
 Prior to version 1.11, a [swarm] special will cause [attacks] specials to be ignored. In 1.11 and later, [attacks] specials are applied before [swarm].
