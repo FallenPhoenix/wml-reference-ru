@@ -27,7 +27,7 @@ In its use only generator data is in the '''[generator]''' tag, all other '''[sc
 The following key/tags are recognized for '''[generator]''' when the default generator is used:
 * '''[scenario]''': See [[ScenarioWML]]
 * '''name'''
-** '''default''''
+** '''default'''
 * '''map_width''','''map_height''': size of the map to generate
 * '''iterations''': the number of times an attempt is being made to generate a hill
 * '''hill_size''': hills will have a random size between 1 and ''hill_size''
@@ -40,22 +40,15 @@ The following key/tags are recognized for '''[generator]''' when the default gen
 * '''players''': Number of starting locations for the map.
 * '''castle_size''': Number of castle tiles (including the keep), per player.
 * '''temperature_iterations''': Same as iterations, but for the temperature map.
-* '''temperature_size''': Same as hill_size, but for the temperature map.
-(Temperature map is generated the same way as a hill map, but is hard coded with a island_size of 0.)
+* '''temperature_size''': Same as hill_size, but for the temperature map. (Temperature map is generated the same way as a hill map, but is hard coded with a island_size of 0.)
 * '''roads''': number of roads the generator will attempt to make
 * '''road_windiness''': Use 1 for the road to be made using the cheapest path (based on [road_cost] tags), higher values introduce randomness to make the road wind a bit.
 * '''island_size''': Use 1-5 for coastal maps and 6-10 for island maps. Bigger values may crash map generation process. Bigger numbers makes more water (and less land)
 * '''default_flatland''': If not specified, is Grassland. If your height tags don't go down to 0, the default_flatland will be used (possibly in other cases as well).
-* '''[height]''': list of common terrain types
-which come in at different heights, from highest to lowest
-Good WML will have the range of 1000-0 covered.
+* '''[height]''': list of common terrain types that come in at different heights, from highest to lowest. Good WML will have the range of 1000-0 covered.
 ** '''height''': the terrain specified below will appear at this height and up.
 ** '''terrain''': 1 terrain code
-* '''[convert]''': used to make terrain conversions
-For example water becomes ice at low temperatures, grass snow, etc.
-If the terrain is between the min_x and max_x it will be converted
-if min_x is not defined it will default to a large negative number
-if max_x is not defined it will default to a large positive number
+* '''[convert]''': used to make terrain conversions. For example, water becomes ice at low temperatures, grass snow, etc. If the terrain is between the min_x and max_x it will be converted. If min_x is not defined it will default to a large negative number. If max_x is not defined it will default to a large positive number
 ** '''min_height'''
 ** '''max_height'''
 ** '''min_temperature'''
@@ -75,9 +68,9 @@ if max_x is not defined it will default to a large positive number
 * '''[castle]''': the conversion of castles
 ** '''valid_terrain''': a comma-separated terrain list with terrains which are allowed to be converted to a castle.
 ** '''min_distance''': all castles generated must be this number of hexes apart from each other
-* '''[naming]'''
+* '''[naming]''': The names used to label landscape features (forests, lakes, etc.). This controls, for example, the "Fox" part of "Foxwood". If this tag is empty, those labels should be suppressed. (Due to a bug, they are not suppressed prior to 1.11.1.) The predefined macro VILLAGE_NAMES is one option for the contents of this tag. If that macro is not used, this tag takes one key.
 ** '''male_names'''
-* '''[village_naming]'''
+* '''[village_naming]''': The names used to label villages. This controls, for example, the "Fox" part of "Foxham". If this tag is empty, those labels should be suppressed. (Due to a bug, they are not suppressed prior to 1.11.1.) The predefined macro VILLAGE_NAMES is one option for the contents of this tag. If that macro is not used, this tag takes one key.
 ** '''male_names'''
 
 ===The Cave Generator===

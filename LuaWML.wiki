@@ -376,12 +376,13 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Misc#wesnoth.synchronize_choice|wesnoth.synchronize_choice]]
 * [[LuaWML:Misc#wesnoth.get_image_size|wesnoth.get_image_size]]
 * [[LuaWML:Misc#wesnoth.compare_versions|wesnoth.compare_versions]]
+* [[LuaWML:Misc#wesnoth.have_file|wesnoth.have_file]] {{DevFeature1.11}}
 * [[LuaWML:Misc#wesnoth.debug|wesnoth.debug]]
 * [[LuaWML:Misc#helper.set_wml_tag_metatable|helper.set_wml_tag_metatable]]
 * [[LuaWML:Misc#helper.modify_unit|helper.modify_unit]]
 * [[LuaWML:Misc#helper.move_unit_fake|helper.move_unit_fake]]
 * [[LuaWML:Misc#helper.rand|helper.rand]]
-* [[LuaWML:Misc#helper.round|helper.round]]
+* [[LuaWML:Misc#helper.round|helper.round]] {{DevFeature1.11}}
 
 == Encoding WML objects into Lua tables ==
 

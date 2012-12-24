@@ -77,6 +77,10 @@
 * '''unit_description''': Переопределяет описание данного бойца (по умолчанию используется описание его типа). You will probably want to set up a ''post_advance'' [[EventWML|event]] to override the default description after promotions. Or better, use an object with a profile [[EffectWML|effect(s)]] to filter on unit type and change the unit description and/or portrait.
 * '''[event]''' The event is copied from this unit's wml description into the scenario. The event is carried along with the unit (it can advance etc) and inserted into every scenario where this unit is first created. A [unit][event] is required a non-empty id= attribute.
 
+* '''[ai]''' This affects how the computer will control this unit (currently only used by [[FormulaAI]]).
+** '''formula''': if set, the unit will execute this code during the "unit_formulas" stage, assuming that the "unit_formulas" stage has been enabled for this side
+** '''priority''', '''loop_formula''', '''[vars]''': see the [[FormulaAI]] documentation for details
+
 
 == Смотрите также ==
 * [[UnitTypeWML]]

@@ -134,19 +134,14 @@ Variable will contain following members:
 
 ==== [store_time_of_day] ====
 Получает данные о времени суток. Целевой контейнер заполняется всеми атрибутами тега [[TimeWML|[time]]].
-* '''x, y''': Location to store the time for. Time areas matter, illumination does not.
+* '''x, y''': Location to store the time for. [[DirectActionsWML#.5Btime_area.5D|Time areas]] matter; illumination does not. If this is omitted, the global (location-independent) time is stored.
 * '''turn''': Номер хода, для которого нужно узнать время суток (по умолчанию: текущий ход).
 * '''variable''': Имя контейнера, куда будет записана информация (по умолчанию: 'time_of_day').
+Prior to 1.11.1, the variable was treated as an array, and the container with the time of day information was appended to the end. The upshot of which is that in 1.10, you probably want to [[#.5Bclear_variable.5D|clear]] the <code>time_of_day</code> variable before storing information in it.
 
 ==== [store_turns] ====
 Получает установленный лимит ходов. Если же он не установлен, то значение ''-1''.
 * '''variable''': Имя переменной, в которую нужно записать лимит ходов (по умолчанию: 'turns').
-
-==== [store_turns] ====
-
-Stores the turn limit (the maximum number of turns). If there is no limit, this stores ''-1''.
-
-* '''variable''': (default='turns') the name of the variable in which to store the turn limit.
 
 ==== [store_unit] ====
 
@@ -292,36 +287,6 @@ This will produce two output messages, first one saying '''bar''' and next one s
          message= _ "Yo Kalenz!"
      [/message]
  [/event]
-
-=== Firing the event via [insert_tag] ===
-Sometimes you need to fire specific event out of a wide variety, but when you make scenario you don't know which one. But before you use this, make sure what all other solutions aren't suit you.
-One of possible solutions is use all power of internal actions: [set_variable]+[insert_tag]+[fire_event].
-
-First of all, make sure a event is defined and included.
- [event]
-     name = custom_event
- 
-     [message]
-         speaker=Konrad
-         message= _ "Yo Kalenz!"
-     [/message]
- [/event]
-
-Then set a variable, which will contain name of your event.
- [event]
-     name = start
- 
-     [set_variable]
-         name = event_name_container.name
-         value = "custom_event"
-     [/set_variable]
- [/event]
-
-Then add insert tag where you need it. It can be [command] of menu item, or even other event.
- [insert_tag]
-     name = fire_event
-     variable = event_name_container
- [/insert_tag]
 
 
 == Смотрите также ==

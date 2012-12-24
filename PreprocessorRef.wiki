@@ -133,6 +133,8 @@ Using the name of an existing macro as the name of a macro argument is possible,
 
 Сравнивает версию, определенную внутри макроса, с указанным аргументом. ''Оператор'' может быть одним из следующих: ''=='' (равно), ''!='' (не равно), ''<'' (меньше), ''<='' (меньше или равно), ''>'' (больше), ''>='' (больше или равно). Макрос же должен быть заранее определен, содержать только простое текстовое значение, и не должен использовать аргументы.
 
+Versions with text suffixes are sorted in binary order and come after all versions with the same number. The most common suffix is "+svn", but as it represents multiple possible versions, comparing versions against it is not recommended.
+
 Пример:
  #ifver WESNOTH_VERSION >= 1.9.7+svn
      [message]

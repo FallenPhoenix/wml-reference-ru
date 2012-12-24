@@ -51,5 +51,4 @@ It works like night; that is it gives advantage to chaotic units and disadvantag
 * [[ScenarioWML]]
 * [[ReferenceWML]]
 
-
 [[Category: WML Reference]]

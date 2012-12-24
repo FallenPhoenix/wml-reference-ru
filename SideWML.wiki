@@ -23,9 +23,9 @@
 * '''shroud_data''': describes the area which this team has de-shrouded. An example:
  |
  |00011111000
-This would leave the first column on the map unaltered and would change the second column for 11 tiles. A '0' means: shrouded, '1' means unshrouded. You can either call an external file using {@filename}  (see [[PreprocessorRef]]) or place the data in quotes. For making an external file see [[BuildingScenariosShroudData]].
-* '''persistent''': whether the side exists in any other scenarios. If '1'(yes), then ''save_id''(see below) is used to identify the side in other scenarios. Default '1'(yes) for sides with a human controller, '0'(no) for ai controlled sides.
-* '''save_id''': default ''description'' if available, 'Unknown' otherwise. The ID of the side with respect to the previous and next scenarios. Used to carry over the side's recall list (including the side's leader), recruitment list, and starting gold from scenario to scenario. Also used for the side's displayed name in the victory gold-calculation dialog. (For versions prior to 1.7.3, some extra effort to retrieve carryover information may be needed. See [[SideSwitchingWML]])
+:This would leave the first column on the map unaltered and would change the second column for 11 tiles. A '0' means: shrouded, '1' means unshrouded. You can either call an external file using {@filename}  (see [[PreprocessorRef]]) or place the data in quotes. For making an external file see [[BuildingScenariosShroudData]].
+* '''persistent''': whether the side exists in any other scenarios. If ''yes'', then ''save_id'' (see below) is used to identify the side in other scenarios. Defaults to ''yes'' for sides with a human controller, and ''no'' for ai controlled sides.
+* '''save_id''': defaults to the leader's ''id'' if available, 'Unknown' otherwise. The ID of the side with respect to the previous and next scenarios. Used to carry over the side's recall list (including the side's leader), recruitment list, and starting gold from scenario to scenario. Also used for the side's displayed name in the victory gold-calculation dialog. (For versions prior to 1.7.3, some extra effort to retrieve carryover information may be needed. See [[SideSwitchingWML]])
 * '''team_name''': Непереводимая строка, определяющая команду стороны. Носители одинаковых идентификаторов команд — союзники. Default ''side''. ''team_name'' is now a comma-separated list of teams that the side is on.
 * '''user_team_name''': Переводимая строка, определяющая отображаемое название команды (по умолчанию: ''team_name'').
 * '''current_player''': Переводимая строка, определяющая имя лидера. Defaults to the leader's id; if the side's leader is a human player in multiplayer, the default is the player's username.
@@ -37,8 +37,8 @@ This would leave the first column on the map unaltered and would change the seco
 * '''recall_cost''': Стоимость призыва бойцов. Значение по умолчанию определяется параметром '''recall_cost''' в [[GameConfigWML|[game_config]]].
 * '''share_maps''': Определяет, должна ли передаваться союзникам разведанная область данной стороны (рассеивание пелены).
 * '''share_view''': Определяет, должна ли передаваться союзникам область видимости данной стороны (рассеивание тумана войны).
-* '''disallow_observers''': Отключает отображение ходов данной стороны у зрителей (по умолчанию: no).
 * '''scroll_to_leader''': Прокрутка к лидеру в начале каждого хода (по умолчанию: yes).
+* '''suppress_end_turn_confirmation''': {{DevFeature1.11}} If "yes", then the player will not be asked to confirm ending their turn even if they have not done anything. This is provided for some (probably few) user-made scenarios in which players often skip their turns. (default: no)
 * '''[ai]''' При '''controller=ai''' определяет параметры ИИ. См. [[AiWML]].
 * '''[village]''' Описывает деревню, изначально принадлежащую данной стороне.
 ** '''x''', '''y''': Расположение деревни на карте. Если по указанным координатам деревни нет, то поведение неопределенно. Игрой движок и wmllint должны об этом предупредить.
@@ -47,6 +47,7 @@ This would leave the first column on the map unaltered and would change the seco
 
 В мультиплеере также поддерживаются:
 * '''allow_player''': Отображение стороны в списке холла (по умолчанию: true).
+* '''disallow_observers''': Отключает отображение ходов данной стороны у зрителей (по умолчанию: no).
 * '''team_lock''': Запрещает изменять команду стороны.
 * '''color_lock''': Запрещает изменять цвета стороны.
 * '''gold_lock''': Запрещает изменять стартовое золото стороны.
