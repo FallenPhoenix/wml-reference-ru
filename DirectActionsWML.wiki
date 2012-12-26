@@ -42,25 +42,25 @@
 * '''x,y''': Целевые координаты.
 * '''clear_shroud''': should shroud be cleared on arrival
 * '''animate''': should a teleport animation be played (if the unit doesn't have a teleport animation, it will fade out/fade in)
-* '''check_passability''': (boolean yes|no, default yes): normally, units will not be teleported into terrain that is impassable for them. Setting this attribute to "no" permits it.
+* '''check_passability''': По умолчанию бойцы не могут телепортироваться на непроходимую местность. Установка в "no" это позволяет.
 
 (Примечание: Также существует способность к телепортации, см. [[AbilitiesWML]].)
 
 === [terrain_mask] ===
-Changes the terrain on the map. Смотрите [[TerrainMaskWML]].
+Изменяет ландшафт карты. Смотрите [[TerrainMaskWML]].
 
 === [terrain] ===
-Changes the terrain on the map.
-* '''terrain''': the character of the terrain to use.  See [[TerrainCodesWML]] to see what letter a type of terrain uses.
-* [[StandardLocationFilter]]. This [[StandardLocationFilter]]'s terrain= key is used for the new terrain, filtering by terrain can be done with a nested [[StandardLocationFilter]]: [and]terrain=terrain_string_to_be_filtered_for.
-* '''layer''': (overlay|base|both, default=both) only change the specified layer.
-* '''replace_if_failed''': (default=no) When replacing just one layer failed, try to replace the whole terrain. If '''terrain''' is an overlay only terrain, use the default_base as base layer. If the terrain has no default base, do nothing.
+Изменяет ландшафт карты.
+* '''terrain''': Код используемого ландшафта (см. [[TerrainCodesWML]]).
+* '''layer''': Определяет, какие слои требуется изменить (overlay|base|both, по умолчанию: both).
+* '''replace_if_failed''': Указывает, что при фейле с заменой отдельного слоя нужно попробовать заменить местность целиком (по умолчанию: no). If '''terrain''' is an overlay only terrain, use the default_base as base layer. If the terrain has no default base, do nothing.
+* [[StandardLocationFilter]]: Определяет изменяемую местность. Но т.к. атрибут фильтра '''terrain''' перебивается собственным ключом данного тега, для фильтрации по типу ландшафта необходимо использовать вложенный [[StandardLocationFilter]]: [and]terrain=код_для_фильтра[/and].
 
 === [gold] ===
 Изменяет золотой запас указанной стороны.
 * '''amount''': Количество золота, которое нужно прибавить или отнять.
 * '''side''': Номер стороны, либо их список.<br>Примечание: Дефолтное значение side=1 устарело — сторону нужно указывать.
-* '''[filter_side]''' со параметрами [[StandardSideFilter]] (в 1.11 не поддерживается).
+* '''[filter_side]''' с параметрами [[StandardSideFilter]] (в 1.11 не поддерживается).
 * {{DevFeature1.11}} ключи и теги [[StandardSideFilter]]; по умолчанию применяется ко всем сторонам (стандартное поведение SSF).
 
 === [unstore_unit] ===
@@ -94,7 +94,6 @@ Prevents a side from recruiting units it could previously recruit.
 * '''side''': Номер стороны, либо их список.<br>Примечание: Дефолтное значение side=1 устарело — сторону нужно указывать.
 * {{DevFeature1.11}} ключи и теги [[StandardSideFilter]]; по умолчанию применяется ко всем сторонам (стандартное поведение SSF).
 
-
 === [disallow_extra_recruit] ===
 Prevents a leader from recruiting units it could previously recruit.
 * '''extra_recruit''': the types of units that the side can no longer recruit.
@@ -112,27 +111,27 @@ Sets the units a leader can recruit.
 * '''[[StandardUnitFilter]]''': All units matching this filter are modified. Does not match on recall list units.
 
 === [modify_side] ===
-Изменяет параметры определенной стороны посреди сценария. Поддерживаются только следующие параметры:
+Изменяет параметры определенной игровой стороны посреди сценария. Поддерживаются только следующее:
 * '''side''': Номер изменяемой стороны.
 * '''[filter_side]''' с параметрами [[StandardSideFilter]].
-* '''income''': the income given at the begining of each turn.
-* '''recruit''': a list of unit types, replacing the side's current recruitment list.
-* '''team_name''': the team in which the side plays the scenario.
-* '''user_team_name''': a translatable string representing the team's description. This has no effect on alliances. Defaults to ''team_name''.
-* '''gold''': the amount of gold the side owns.
-* '''village_gold''': the income setting per village for the side.
+* '''gold''': Количество золота.
+* '''income''': Доход, получаемый в начале каждого хода.
+* '''village_gold''': Доход, получаемый с каждой захваченной деревни.
+* '''recruit''': Список типов бойцов для вербовки на замену текущему.
+* '''team_name''': Команда (союз), в которой состоит сторона.
+* '''user_team_name''': Отображаемое наименование команды.
 * '''controller''': the identifier string of the side's controller. Uses the same syntax of the ''controller'' key in the [[SideWML|[side]]] tag.
-* '''fog''': a boolean string (yes/no) describing the status of Fog for the side.
-* '''shroud''': a boolean string describing the status of Shroud for the side.
-* '''hidden''': a boolean string specifying whether side is shown in status table.
-* '''color''': {{DevFeature1.11}} a team color range specification, name (e.g. "red", "blue"), or number (e.g. "1", "2") for this side. The default color range names, numbers, and definitions can be found in data/core/team_colors.cfg.
-* '''[ai]''': replaces a side's AI parameters with the new specified ones. Uses the same syntax described in [[AiWML]].
-* '''switch_ai''': replaces a side ai with a new AI from specified file(ignoring those AI parameters above). Path to file follows the usual WML convention.
+* '''fog''': Отображение тумана.
+* '''shroud''': Отображение пелены.
+* '''hidden''': Скрытие из панели состояния.
+* '''color''': {{DevFeature1.11}} Цветовой диапазон, задаваемый строчным ("red", "blue" и т.д.) или числовым идентификатором. Все стандартные диапазоны определены в файле data/core/team_colors.cfg.
+* '''[ai]''': Изменяет параметры искусственного интелекта, используя синтаксис, описанный в [[AiWML]].
+* '''switch_ai''': Заменяет ИИ стороны на прописанный в указанном файле (игнорируя значение [ai]).
 * '''reset_maps''': {{DevFeature1.11}} If set to "yes", then the shroud is spread to all hexes, covering the parts of the map that had already been explored by the side, including hexes currently seen. (Seen hexes will be cleared at the end of most events; they can also be manually cleared with {{tag|InterfaceActionsWML|redraw}}.) This is only effective if shroud is on, but this is evaluated after shroud= (and before shroud_data=).
 * '''reset_view''': {{DevFeature1.11}} If set to "yes", then the fog of war is spread to all hexes, covering the parts of the map that had already been seen this turn by the side, including hexes currently seen, excluding hexes affected by multi-turn {{tag|DirectActionsWML|lift_fog}}. (Seen hexes will be cleared at the end of most events; they can also be manually cleared with {{tag|InterfaceActionsWML|redraw}}.) This is only effective if fog is on, but this is evaluated after fog=.
 * '''share_maps''': change the share_maps side attribute. Be sure to use shroud=yes for that side and have it as an ally
 * '''share_view''': change the share_view side attribute. Be sure to use fog=yes for that side and have it as an ally
-* '''shroud_data''': changes to the side's shroud, using the same format as when defining the [side].
+* '''shroud_data''': Изменяет пелену, используя тот же формат, что при [[SideWML|определении]] стороны.
 * '''suppress_end_turn_confirmation''': {{DevFeature1.11}} Boolean value controlling whether or not a player is asked for confirmation when skipping a turn.
 
 === [modify_turns] ===
@@ -162,10 +161,10 @@ Sets the units a leader can recruit.
 * '''[secondary_unit]''' with a [[StandardUnitFilter]] as argument. Do not use a [filter] tag. Has an effect only if fire_event=yes. The first on-map unit matching the filter becomes second_unit in any fired die and last breath events. If an on-map unit matches and if there are several units killed with a single [kill] tag, second_unit is this same unit for all of them. If no on-map unit matches or [secondary_unit] isn't present, the variable second_unit in each of the die and last breath events is always the same as the variable unit (the dying unit).
 
 === [move_unit] ===
-works like the MOVE_UNIT macro.
-* [[StandardUnitFilter]] as argument; do not use a [filter] tag. All units matching the filter are moved. If the target location is occupied, the nearest free location is chosen.
-* '''to_x''' (unsigned integer): The units are moved to this x coordinate. Can be a comma-separated list, in which case the unit follows this given path during the move.
-* '''to_y''' (unsigned integer): The units are moved to this y coordinate. Can be a comma-separated list.
+Перемещает бойца на указанную позицию. Также можно юзать макрос MOVE_UNIT.
+* [[StandardUnitFilter]]: Перемещены будут все соответствующий фильтру бойцы; и если указанная область уже кем-то занята, они разместятся в ближайших свободных.
+* '''to_x''': X-координата целевой локации. Can be a comma-separated list, in which case the unit follows this given path during the move.
+* '''to_y''': Y-координата целевой локации. Можно указать список.
 * '''fire_event''' (optional, boolean yes|no, default no): Whether any according moveto events shall be fired. The target location ($x1, $y1 in the event) may not be the same location that the unit was tried to be moved to, if the original target location is occupied or impassable.
 * '''check_passability''' (boolean yes|no, default yes): Whether the terrain the unit is moved to should be checked for suiting the unit. (If it does not, a nearby suitable hex is chosen.)
 
@@ -200,28 +199,28 @@ transforms every unit matching the filter to the given unit type. Keeps intact h
 * '''transform_to''': the unit type in which all the units matching the filter will be transformed. If missing, the units will follow their normal advancement.
 
 === [petrify] ===
-* [[StandardUnitFilter]] as an argument. Do not use a [filter] tag. All units matching this filter are petrified. Recall list units are included.
+* [[StandardUnitFilter]] в виде параметра. Окаменяет всех соответствующих фильтру бойцов, включая список призыва.
 
 === [unpetrify] ===
-* [[StandardUnitFilter]] as an argument. Do not use a [filter] tag. All units matching this filter are unpetrified. Recall list units are included.
+* [[StandardUnitFilter]] в виде параметра. Снимает окаменение со всех соответствующих фильтру бойцов, включая список призыва.
 
 === [object] ===
 Gives some unit an object which modifies their stats in some way.
 * '''id''': (Optional) when the object is picked up, a flag is set for ''id''.  The object cannot be picked up if a flag for ''id'' has been set.  This means that any object with an id can only be used once, even if first_time_only=no is set for the event. This restriction is per level. In a campaign objects with the same id can be assigned once per level.
-* '''delayed_variable_substitution''' (boolean yes|no, default no): If set to "yes", the wml block contained in this [object] is not variable-substituted at execution time of the event where this [object] is within. You need this to work around a bug when adding ABILITY_TELEPORT via an [object] or when using [object][effect][filter]with a $this_unit (see http://gna.org/bugs/index.php?18893).
-* '''[effect]''': one or more effect elements may be listed.  See [[EffectWML]] for a description of [effect].
-* '''duration''':
-**if 'level', effects only last until the end of the level (note : 'level' is the scenario, so this doesn't mean it last until the unit levels-up). {{DevFeature1.11}} 'level' has been renamed to 'scenario'.
-**if 'forever' or not set, effects never wear off.
-** {{DevFeature1.11}} if 'turn', effects only last until the start of the units next turn (when the unit refreshes movement and attacks). (Like other start-of-turn behavior, objects with a duration of "turn" won't expire before turn 2.)
-* '''[filter]''' with a [[StandardUnitFilter]] as argument. The first unit found that matches the filter will be given the object. Only on-map units are considered. If no unit matches or no [filter] is supplied, it is tried to apply the object to the unit at the $x1,$y1 location of the event where this [object] is in. The case of no unit being at that spot is handled in the same way as no unit matching a given filter ([else] commands executed, cannot_use_message displayed)
+* '''delayed_variable_substitution''' (по умолчанию: ''no''): If set to "yes", the wml block contained in this [object] is not variable-substituted at execution time of the event where this [object] is within. You need this to work around a bug when adding ABILITY_TELEPORT via an [object] or when using [object][effect][filter]with a $this_unit (see http://gna.org/bugs/index.php?18893).
+* '''[effect]''': one or more effect elements may be listed, см. [[EffectWML]].
+* '''duration''': Продолжительность действия эффекта:
+** '''''forever''''': Эффект никогда не спадет. Это значение по умолчанию.
+** '''''level''''': Эффект продлится до конца текущего cценария.<br>{{DevFeature1.11}} значение переименовано в 'scenario'.
+** '''''turn''''' {{DevFeature1.11}}: Эффект продлится только до следующего хода бойца, т.е. когда у него восстановится способность передвигаться и атаковать.
+* '''[filter]''' с аргументом [[StandardUnitFilter]]. The first unit found that matches the filter will be given the object. Only on-map units are considered. If no unit matches or no [filter] is supplied, it is tried to apply the object to the unit at the $x1,$y1 location of the event where this [object] is in. The case of no unit being at that spot is handled in the same way as no unit matching a given filter ([else] commands executed, cannot_use_message displayed)
 * '''[then]''': a subtag that lets you execute actions if the filter conditions are met.  The most common action that should be inside here is a '''[remove_item]''' tag, but you could probably put any tags that otherwise work in a [then] tag.
 * '''[else]''': a subtag that lets you execute actions if the filter conditions are *not* met.
-* '''silent''': whether or not messages should be suppressed. Default is "no".
+* '''silent''': Указывает, должны ли подавляться сообщения (по умолчанию: ''no'').
 * '''image''': the displayed image of the object.
 * '''name''': (translatable) displayed as a caption of the image.
 * '''description''': (translatable) displayed as a message of the image.
-* '''cannot_use_message''': (translatable) displayed instead of '''description''' if no unit passes the filter test.
+* '''cannot_use_message''': Отображается вместо '''description''', если не нашлось бойцов, соответствующих фильтру. Поддерживает локализацию.
 
 === [remove_shroud] ===
 Removes some shroud from the map for a certain side (only relevant for sides that have shroud=yes).
@@ -304,15 +303,15 @@ How a day should progress in a given area. Everywhere not specified in a [time_a
 Завершает ход текущей стороны. The current event is finished before the turn is ended. Also, if the current event (where the tag appears) has been fired by another event, that event (and the complete stack of other possible parent events) is ended before [end_turn] comes into affect. Also, events following the event stack that fired [end_turn] are not omitted (e.g. [end_turn] is used by a side turn event and a turn refresh event does something afterwards).
 
 === [replace_map] ===
-Replaces the entire map.
-* '''map''': Content of a wesnoth map file. example:
+Заменяет всю карту сценария.
+* '''map''': Содержимое map-файла, например:
  map="{campaigns/Heir_To_The_Throne/maps/01_The_Elves_Besieged.map}"
-* '''expand''': if 'yes', allows the map size to increase. The expansion direction is currently always bottom-right.
-* '''shrink''': if 'yes', allows the map size to decrease. If the map size is reduced, any units that would no longer be on the map due to its coordinates no longer existing will be put into the recall list.
+* '''expand''': Позволяет увеличивать размер карты. Расширение всегда происходит вниз и вправо.
+* '''shrink''': Позволяет уменьшать размер карты. При уменьшении размера все бойцы, вылетевшие за ее пределы, перемещаются в список призыва.
 
 === [replace_schedule] ===
-Replace the time of day schedule of the entire scenario.
-* [[TimeWML]]: the new schedule.
+Переписывает временной цикл сценария.
+* [[TimeWML]]: Новый цикл.
 
 === [tunnel] ===
 
