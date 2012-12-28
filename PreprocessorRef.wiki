@@ -1,7 +1,7 @@
 {{WML Tags}}
 == Обзор ==
 
-Напрямую «Веснот» загружает только один конфиг-файл: '''data/_main.cfg'''. Тем не менее, '''препроцессор WML''' allows to include more files. Whenever a WML file is read by Wesnoth, it is passed through the preprocessor.
+Напрямую «Веснот» загружает только один конфиг-файл: '''data/_main.cfg'''. Тем не менее, '''препроцессор WML''' позволяет подключать и другие. Whenever a WML file is read by Wesnoth, it is passed through the preprocessor.
 
 The preprocessor can interpret a simple language of string expansions known as ''macros''. A macro should always be defined '''before''' the place where it needs to be used.
 
@@ -10,112 +10,110 @@ The preprocessor is applied recursively, so included files will be parsed for ma
 
 == Директивы препроцессора ==
 
-The following directives are used to create and use ''macros'', i.e. shortcuts which reduce repetition of information. See [http://www.wesnoth.org/macro-reference.xhtml the macro reference] for the list of predefined core macros.
+Ниже описанные директивы используются для создания и использования макросов, i.e. shortcuts which reduce repetition of information. Список всех предопределенных макросов вы найдете [http://www.wesnoth.org/macro-reference.xhtml тут].
 
-The preprocessor has changed several times, so don't expect old Wesnoth versions to behave exactly the same as the current stable and development series.
+Препроцессор не раз менялся, так что не ждите, что старые версии игры будут вести себя точно так же, как актуальные.
 
 '''Note:''' In multiplayer scenarios, these directives will appear to work only for the host and not for other clients. This is because the preprocessor is run only on the host, and the clients receive the resultant WML from the server. It's particularly important to keep this in mind before using preprocessor conditionals.
 
 === #define ===
 
-'''Синтаксис: #define ''symbol'' [''parameters''] ''<новая_строка>'' ''substitution'' #enddef'''
+'''Синтаксис: #define ''имя_макроса'' [''параметры''] ''<новая_строка>'' ''подстановка'' #enddef'''
 
-All subsequent occurences of '''{''symbol'' [''arguments'']}''' (see below) will be replaced by the contents of the ''substitution'' block, with all occurrences of any parameter {''parameter''} within ''substitution'' replaced by the corresponding value in ''arguments''.  For example, the ENEMY_UNIT macro for the [[#Macro inclusions|macro inclusion]] example below could be defined as follows:
+Определяет макрос. Все последующие вхождения '''{''имя_макроса'' [''аргументы'']}''' (см. ниже) будут заменяться содержимым блока ''подстановка'', с предварительной заменой внутри ''подстановки'' всех вхождений типа {''параметр''} на соответствующие им значения (''аргументы''). Например, макрос ENEMY_UNIT для параграфа [[#Вложение макросов|Вложение макросов]] можно было бы задать следующим образом:
 
  #define ENEMY_UNIT TYPE X Y
- ## the ordering above is important, since the preprocessor does not distinguish
- ## data into different types; only the ordering is used to determine which
- ## arguments apply to which parameters.
+ ## Препроцессор не делает различий между типами данных; так что последовательность
+ ## расположения параметров и аргументов - единственное, что определяет их связь
+ ## между собой.
  [unit]
-     type={TYPE} ## the unit will be of type TYPE, so different
-                 ## instantiations
-                 ## of this macro can create different units.
+     type={TYPE} ## Боец создается типа TYPE, так что разные вызовы
+                 ## данного макроса способны создавать различных бойцов.
      x={X}
      y={Y}
-     side=2 ## the unit will be an enemy, regardless of the parameter
-            ## values. This reduces "repetition of information",
-            ## since it is no longer necessary to specify
-            ## each created unit as an enemy.
+     side=2 ## Независимо от входных параметров он будет врагом. Но это уменьшает
+            ## количество повторяемой информации, т.к. не нужно для каждого бойца
+            ## указывать сторону.
  [/unit]
  #enddef
 
-(See [[SingleUnitWML]] for further information on creating units using WML.)
+(Для подробной информации по созданию бойцов см. [[SingleUnitWML]].)
 
 === #undef ===
 
-'''Синтаксис:''' '''#undef ''symbol'' '''
+'''Синтаксис:''' '''#undef ''имя_макроса'' '''
 
-Removes the previous definition of the macro named ''symbol''.
+Заставляет препроцессор "забыть" известное ему макроопределение.
 
 === Директива вложения {} ===
 
-This directive can be used to include macros, single files or sets of files from a target directory.
+Данная директива может быть использована для вложения макросов или файлов.
 
 ==== Вложение файлов и папок ====
 
 '''Синтаксис: {''путь''}'''
 
-Includes the file with the specified ''path'', which will in turn run the preprocessor on it and perform any required substitutions or inclusions within it. The ''path'' may not contain ''..'' or the inclusion will be skipped.
+Подключает файл, находящийся по указанному ''пути'', which will in turn run the preprocessor on it and perform any required substitutions or inclusions within it. Путь не должен содержать "..", иначе вложение просто игнорируется.
 
-The exact location in which the ''path'' will be resolved will depend on its prefix:
+Точное место поиска файлов игровым движком зависит от префикса команды:
 
-* '''{''path''}''': If ''path'' isn't a known macro (see below), the game will assume it's a relative path to a file in the main game '''data/''' directory and include it.
-* '''{~''path''}''': As above, but instead of the game data directory, the path is resolved relative to the user '''data/''' directory, where user made add-ons can normally be found.
-* '''{./''path''}''': The path is resolved relative to the location of the current file containing this inclusion.
+* '''{''path''}''': Если ''path'' не является известным макросом (см. ниже), игра принимает его за относительный путь к файлу в базовой папке "data/" и пытается такой файл подключить.
+* '''{~''path''}''': Путь воспринимается относительно пользовательской папки '''data/''', где по стандарту лежат все аддоны.
+* '''{./''path''}''': Путь относительно папки с файлом, в котором прописано вложение.
 
 Information for locating the user data and game data directories can be found in [[EditingWesnoth]].
 
-Forward slashes ('''/''') should '''always''' be used as the path delimiter, even if your platform uses a different symbol such as colons (''':''') or backslashes ('''\''')! It is also very important to respect the '''actual letter case''' used to name files and directories for compatibility with case-sensitive filesystems on Unix-based operating systems.
+Разделителем пути обязательно должен служить прямой слеш ('''/'''), даже если ваша операционка использует что-то другое типа бэкслеша ('''\''') или двоеточия (''':''')! Также важно сохранять оригинальный регистр букв в именах файлов и папок для совместимости с Linux'овыми файловыми системами, которыми к нему чувствительны.
 
-When ''path'' points to a directory instead of a file, the preprocessor will include all files found within with the '''.cfg''' extension, in alphabetical order; files without this extension (such as '''.map''' or '''.png''' files) are ignored.
+Если ''путь'' указывает не на файл, а на папку, препроцессор в алфавитном порядке подключает все находящиеся в ней файлы с расширением '''.cfg'''; остальные файлы (типа '''.map''', '''.png''' и т.п.) игнорируются.
 
-Some directories are handled in a special fashion according to their contents:
+Но некоторые папки обрабатываются особым образом, в соответствии с их содержимым:
 
-* If there's a file named '''_main.cfg''' in the target directory, only that file will be included and preprocessed. It may include other files from its own directory or subdirectories within it, of course. This is used for managing WML directories as self-contained packages, like user made add-ons.
-* If there are files named '''_main.cfg''' in subdirectories of the target and there isn't one in the target itself, they will be all preprocessed. Given the following layout:
+* Если там находится файл '''_main.cfg''', то подключается и обрабатывается только он. It may include other files from its own directory or subdirectories within it, of course. Это используется для работы с самостоятельными пакетами типа пользовательских аддонов.
+* If there are files named '''_main.cfg''' in subdirectories of the target and there isn't one in the target itself, they will be all preprocessed. Возьмем следующую структуру:
  dir/
  dir/a/_main.cfg
  dir/a/other.cfg
  dir/b/_main.cfg
  dir/b/other.cfg
  dir/other.cfg
-Using '''{dir}''' will cause dir/a/_main.cfg, dir/b/_main.cfg and dir/other.cfg to be included.
-* If there's a file named '''_final.cfg''' but no '''_main.cfg''', the file is guaranteed to be included and processed ''after'' all the other files in the directory.
-* If there's a file named '''_initial.cfg''' but no '''_main.cfg''', the file is guaranteed to be included and processed ''before'' all the other files in the directory.
+В таком случае использование директивы '''{dir}''' приведет к подключению dir/a/_main.cfg, dir/b/_main.cfg и dir/other.cfg.
+* Если есть файл '''_initial.cfg''' но нету '''_main.cfg''', он гарантировано обрабатывается перед всеми остальными файлами.
+* Если есть файл '''_final.cfg''' но нету '''_main.cfg''', он обрабатывается в последнюю очередь.
 
 ==== Вложение макросов ====
 
-'''Синтаксис: {''symbol'' [''аргументы'']}'''
+'''Синтаксис: {''имя_макроса'' [''аргументы'']}'''
 
-If the macro named ''symbol'' is defined, the preprocessor will replace this instruction by the expression ''symbol'' was previously defined as, using ''arguments'' as parameters. The number of arguments must be exactly the same as in the original definition or an error will occur.
+Если макрос с таким ''именем'' объявлен, препроцессор заменяет данную инструкцию на его содержимое, используя указанные ''аргументы''. Число параметров должно точно совпадать, иначе это приведет к ошибке.
 
-You can create multiple word arguments by using parentheses to delimit the contents. For example, in '''{ENEMY_UNIT Wolf Rider 18 24}''' the four words will be interpreted as separate arguments and cause the preprocessor to fail since the macro was defined above with only three; instead, you should use '''{ENEMY_UNIT (Wolf Rider) 18 24}'''.
+Аргументы, состоящие из нескольких слов, нужно заключать в скобки. Так, в команде '''{ENEMY_UNIT Wolf Rider 18 24}''' препроцессор увидит 4 аргумента и выдаст ошибку, ибо в объявлении макроса значилось только 3; но '''{ENEMY_UNIT (Wolf Rider) 18 24}''' будет понята верно.
 
-Using the name of an existing macro as the name of a macro argument is possible, but the argument will always take precedence over the original macro:
+Называть параметры именами уже существующих макросов допустимо, но они в таком случае имеют больший приоритет:
 
  #define VARIABLE
  #enddef
  #define MACRO VARIABLE
-     {VARIABLE} # is calling for the argument, not for the macro above
+     {VARIABLE} # вызывает аргумент, а не объявленный выше макрос
  #enddef
 
 === #ifdef и #ifndef ===
 
-В отличие от прочих директив препроцессора, '''#ifdef''' и '''#ifndef''' служат не просто для удобства. Они нередко необходимы для различения различных игровых режимов и уровней сложности (см. параграф [[#Встроенные макросы|Встроенные макросы]]).
+В отличие от прочих директив препроцессора, '''#ifdef''' и '''#ifndef''' служат не просто для удобства. Они необходимы для определения различения игровых режимов и уровней сложности (см. параграф [[#Встроенные макросы|Встроенные макросы]]).
 
-'''Синтаксис:''' '''#ifdef ''symbol'' ''substitution-if-defined'' [#else ''substitution-if-not-defined'' ] #endif'''
+'''Синтаксис:''' '''#ifdef ''имя_макроса'' ''подстановка_если_определен'' [#else ''подстановка_если_не_определен'' ] #endif'''
 
-Если ''symbol'' был определен директивой '''#define''', будет выполняться блок ''substitution-if-stored''. В противном случае — блок ''substitution-if-not-stored'' (если задан).
+Если макрос с указанным ''именем'' был объявлен директивой '''#define''', будет выполняться первый блок; в противном случае - второй (если прописан).
 
 '''#ifndef''' работает прямо противоположно '''#ifdef''':
 
-'''Синтаксис:''' '''#ifndef ''symbol'' ''substitution-if-not-stored''  [#else ''substitution-if-stored''] #endif'''
+'''Синтаксис:''' '''#ifndef ''имя_макроса'' ''подстановка_если_не_определен''  [#else ''подстановка_если_определен''] #endif'''
 
 === #ifhave и #ifnhave ===
 
 '''Синтаксис:''' '''#ifhave ''путь'' ''подстановка_при_наличии_файла'' [#else ''подстановка_при_отстутствии_файла''] #endif'''
 
-Проверяет существование файла. Использует те же относительные пути, что и директива вложения (см. ниже).
+Проверяет существование файла. Использует те же относительные пути, что и директива вложения (см. выше).
 
 Пример:
 
@@ -129,11 +127,11 @@ Using the name of an existing macro as the name of a macro argument is possible,
 
 === #ifver и #ifnver ===
 
-'''Синтаксис:''' '''#ifver ''определение'' ''оператор'' ''номер_версии'' ''<новая_строка>'' ''подстановка_при_выполнении_условия'' [#else ''подстановка_при_невыполнении_условия''] #endif'''
+'''Синтаксис:''' '''#ifver ''имя_макроса'' ''оператор'' ''номер_версии'' ''<новая_строка>'' ''подстановка_при_выполнении_условия'' [#else ''подстановка_при_невыполнении_условия''] #endif'''
 
 Сравнивает версию, определенную внутри макроса, с указанным аргументом. ''Оператор'' может быть одним из следующих: ''=='' (равно), ''!='' (не равно), ''<'' (меньше), ''<='' (меньше или равно), ''>'' (больше), ''>='' (больше или равно). Макрос же должен быть заранее определен, содержать только простое текстовое значение, и не должен использовать аргументы.
 
-Versions with text suffixes are sorted in binary order and come after all versions with the same number. The most common suffix is "+svn", but as it represents multiple possible versions, comparing versions against it is not recommended.
+Версии с текстовыми суффиксами сортируются в бинарном порядке и идут после всех версий с тем же номером. Наиболее распространен суффикс "+svn", но он представляет множество различных ревизий, так что не рекомендуется с ним что-либо сравнивать.
 
 Пример:
  #ifver WESNOTH_VERSION >= 1.9.7+svn
@@ -152,21 +150,21 @@ Versions with text suffixes are sorted in binary order and come after all versio
 
 '''#ifnver''' противоположна '''#ifver''':
 
-'''Синтаксис:''' '''#ifnver ''определение'' ''оператор'' ''номер_версии'' ''<новая_строка>'' ''подстановка_при_невыполнении_условия'' [#else ''подстановка_при_выполнении_условия''] #endif'''
+'''Синтаксис:''' '''#ifnver ''имя_макроса'' ''оператор'' ''номер_версии'' ''<новая_строка>'' ''подстановка_при_невыполнении_условия'' [#else ''подстановка_при_выполнении_условия''] #endif'''
 
 
 == Встроенные макросы ==
 
-The following macros are automatically defined with empty contents (unless specified otherwise) by the game engine depending on the configuration or gameplay mode.
+Следующие макросы автоматически объявляются движком в зависимости от конфигурации и режима игры.
 
-* A campaign define symbol (see ''define'' in [[CampaignWML]]): defined when playing a single-player campaign.
-* A campaign difficulty level, usually '''EASY''', '''NORMAL''' or '''HARD''' (see ''difficulties'' in [[CampaignWML]]): defined according to the chosen difficulty when starting a single-player campaign, also stored in saved games.
-* '''MULTIPLAYER''': defined when in multiplayer mode.
-* '''TUTORIAL''': defined when playing the tutorial campaign.
-* '''EDITOR''': defined when running the built-in map editor.
-* '''DEBUG_MODE''': defined when the game has been launched in debug mode (i.e. with '''-d''' or '''--debug''' in the command line).
-* '''APPLE''': defined while processing the main game data when running on Mac OS X.
-* '''WESNOTH_VERSION''': defined containing just the game version number when running the WML preprocessor.
+* Собственное обозначение кампании (см. ''define'' в [[CampaignWML]]): объявляется при запуске одиночных кампаний.
+* Уровень сложности кампании, обычно '''EASY''', '''NORMAL''' или '''HARD''' (см. ''difficulties'' в [[CampaignWML]]): так же объявляется в сольных кампаниях в соответствии с выбранным уровнем сложности.
+* '''MULTIPLAYER''': объявлен в режиме мультиплеера.
+* '''TUTORIAL''': объявлен во время прохождения обучающей кампании.
+* '''EDITOR''': объявлен при работе встроенного редактора карт.
+* '''DEBUG_MODE''': объявлен, когда игра запущена в режиме отладки (т.е. с параметром '''-d''' или '''--debug''').
+* '''APPLE''': объявлен при обработке основных игровых данных на Mac OS X.
+* '''WESNOTH_VERSION''': объявлен всегда и содержит информацию о версии игры.
 
 
 == Command-line preprocessor ==
