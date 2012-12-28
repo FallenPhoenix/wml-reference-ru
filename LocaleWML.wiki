@@ -1,17 +1,17 @@
 {{WML Tags}}
-== The toplevel [locale] tag ==
+== Тег верхнего уровня [locale] ==
 
-Each [locale] tag represents a language. Languages are selected in the dialog summoned by pressing the "Language" button in the title screen.
+Каждый тег [locale] описывает один язык интерфейса. Выбрать используемый можно через кнопку "Язык" на титульном экране.
 
-The following keys are recognized in [locale] tags:
+Доступны следующие атрибуты:
 
-* '''name''': The name of the language.
-* '''sort_name''': The name that will be used when sorting all of the languages alphabetically.
-* '''locale''': The locale corresponding to the language.
-* '''alternates''': Other locales to associate with the language.
-* '''dir''': The direction of text in the language, possible values are ''ltr'' (default left-to-right) and ''rtl'' (right-to-left).
+* '''name''': Отображаемое название языка.
+* '''sort_name''': Имя, используемое для сортировки языков по алфавиту.
+* '''locale''': Соответствующая языку локаль.
+* '''alternates''': Другие локали, сопоставляемые с данным языком.
+* '''dir''': Направление текста. Допустимы значения ''ltr'' (слева направо, это значение по умолчанию) и ''rtl'' (справа налево).
 
-== See Also ==
+== Смотрите также ==
 * [[ReferenceWML]]
 
 
