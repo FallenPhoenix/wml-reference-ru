@@ -1,8 +1,8 @@
 {{WML Tags}}
 
-== The '''[lua]''' tag ==
+== Тег [lua] ==
 
-This tag is a part of [[ActionWML]], thus can be used inside [event] and at other places where [[ActionWML]] can be used. It makes it possible to write actions with the [http://www.lua.org Lua 5.2] language.
+Тег является частью [[ActionWML]], и позволяет писать скрипты операций на языке [http://www.lua.org Lua 5.1] (в 1.11 обновлено до 5.2).
 
 The tag supports only the '''code''' key, which is a string containing the Lua scripts. Since Lua makes usage of the quotes and the { and } symbols, it is certainly wise to enclose the script between stronger quotes, as they prevent the preprocessor from performing macro expansion and tokenization.
 
@@ -10,11 +10,7 @@ The tag supports only the '''code''' key, which is a string containing the Lua s
      code = << wesnoth.message "Hello World!" >>
  [/lua]
 
-The Lua kernel can also be accessed from the [[CommandMode|command mode]]:
-
- :lua local u = wesnoth.get_units({ id = "Konrad" })[1]; u.moves = 5
-
-The '''[args]''' sub-tag can be used to pass a WML object to the script via its variadic local variable "'''...'''".
+Дочерний тег '''[args]''' служит для передачи скрипту WML-объектов посредством локальной переменной "'''...'''".
 
  [lua]
      code = << local t = ...; wesnoth.message(tostring(t.text)) >>
@@ -22,8 +18,13 @@ The '''[args]''' sub-tag can be used to pass a WML object to the script via its 
          text = _ "Hello world!"
      [/args]
  [/lua]
+ 
+Также к Lua можно обращаться через [[CommandMode|консоль]]:
 
-== Global environment ==
+ :lua local u = wesnoth.get_units({ id = "Konrad" })[1]; u.moves = 5
+
+
+== Глобальное окружение ==
 
 All the Lua scripts of a scenario share the same global environment (aka Lua state). For instance, a function defined in an event can be used in all the events that happen after it.
 
@@ -93,9 +94,9 @@ The global environment initially contains the following modules: [http://www.lua
 
 At the start of a script, the variadic local variable '''...''' (three dots) is a proxy table representing [[#Encoding WML objects into Lua tables|WML data]]. This table is the content of the '''[args]''' sub-tag of the '''[lua]''' tag, if any.
 
-== Examples ==
+== Примеры ==
 
-The following WML event is taken from Wesnoth' tutorial. It will serve as an example to present how Lua scripts are embedded into Wesnoth. The event is fired whenever a unit from side 1 (that is, the hero controlled by the user) moves to a tile that is not the one set in the WML variable ''target_hex''.
+Следующее событие взято из обучающей кампании. Оно послужит наглядным примером, как встраиваются Lua-скрипты. Событие возникает каждый раз, когда боец из первой команды (т.е. герой игрока) moves to a tile that is not the one set in the WML variable ''target_hex''.
 
  # General catch for them moving to the wrong place.
  [event]
@@ -138,7 +139,7 @@ The following WML event is taken from Wesnoth' tutorial. It will serve as an exa
      [/if]
  [/event]
 
-A Lua script that performs the same action is presented below.
+На Lua то же самое можно было бы написать так:
 
  [event]
      name=moveto
@@ -223,13 +224,13 @@ A longer translation of the tutorial is available at [https://gna.org/patch/down
 
 == Interface to the engine and helper functions ==
 
-Functionalities of the game engine are available through the functions of the '''wesnoth''' global table. Some of these functions return proxy tables. Writes to fields marked "read-only" are ignored. The '''__cfg''' fields return plain tables; in particular, writes do not modify the original object, and reads return the values from the time the dump was performed.
+Функционал игрового движка доступен через функции глобальной таблицы '''wesnoth'''. Some of these functions return proxy tables. Writes to fields marked "read-only" are ignored. The '''__cfg''' fields return plain tables; in particular, writes do not modify the original object, and reads return the values from the time the dump was performed.
 
 Some helper functions are provided by the '''lua/helper.lua''' library. They are stored inside a table that is returned when loading the library with [[LuaWML:Files#wesnoth.require|wesnoth.require]].
 
  helper = wesnoth.require "lua/helper.lua"
 
-=== WML variables ===
+=== Переменные WML ===
 
 * [[LuaWML:Variables#wesnoth.get_variable|wesnoth.get_variable]]
 * [[LuaWML:Variables#wesnoth.set_variable|wesnoth.set_variable]]
@@ -240,7 +241,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Variables#helper.get_variable_proxy_array|helper.get_variable_proxy_array]]
 * [[LuaWML:Variables#helper.set_variable_array|helper.set_variable_array]]
 
-=== Events and WML actions ===
+=== События и операции ===
 
 * [[LuaWML:Events#wesnoth.fire|wesnoth.fire]]
 * [[LuaWML:Events#wesnoth.register_wml_action|wesnoth.register_wml_action]]
@@ -256,7 +257,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Events#helper.shallow_literal|helper.shallow_literal]]
 * [[LuaWML:Events#helper.shallow_parsed|helper.shallow_parsed]]
 
-=== User interface ===
+=== Пользовательский интерфейс ===
 
 * [[LuaWML:Display#wesnoth.message|wesnoth.message]]
 * [[LuaWML:Display#wesnoth.clear_messages|wesnoth.clear_messages]]
@@ -280,7 +281,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Display#helper.get_user_choice|helper.get_user_choice]]
 * [[LuaWML:Display#wesnoth.get_time_of_day|wesnoth.get_time_of_day]]
 
-=== Map and terrains ===
+=== Карта и территории ===
 
 * [[LuaWML:Tiles#wesnoth.get_map_size|wesnoth.get_map_size]]
 * [[LuaWML:Tiles#wesnoth.get_terrain|wesnoth.get_terrain]]
@@ -288,7 +289,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Tiles#wesnoth.get_terrain_info|wesnoth.get_terrain_info]]
 * [[LuaWML:Tiles#wesnoth.get_selected_tile|wesnoth.get_selected_tile]]
 * [[LuaWML:Tiles#wesnoth.get_locations|wesnoth.get_locations]]
-* {{DevFeature1.11}}[[LuaWML:Tiles#wesnoth.get_villages|wesnoth.get_villages]]
+* [[LuaWML:Tiles#wesnoth.get_villages|wesnoth.get_villages]] {{DevFeature1.11}}
 * [[LuaWML:Tiles#wesnoth.match_location|wesnoth.match_location]]
 * [[LuaWML:Tiles#wesnoth.add_tile_overlay|wesnoth.add_tile_overlay]]
 * [[LuaWML:Tiles#wesnoth.remove_tile_overlay|wesnoth.remove_tile_overlay]]
@@ -296,7 +297,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Tiles#items.place_halo|items.place_halo]]
 * [[LuaWML:Tiles#items.remove|items.remove]]
 
-=== Units ===
+=== Бойцы ===
 
 * [[LuaWML:Units#wesnoth.get_units|wesnoth.get_units]]
 * [[LuaWML:Units#wesnoth.get_unit|wesnoth.get_unit]]
@@ -320,7 +321,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Units#wesnoth.simulate_combat|wesnoth.simulate_combat]]
 * [[LuaWML:Units#wesnoth.transform_unit|wesnoth.transform_unit]]
 
-=== Sides ===
+=== Стороны ===
 
 * [[LuaWML:Sides#wesnoth.get_side|wesnoth.get_side]]
 * [[LuaWML:Sides#wesnoth.sides|wesnoth.sides]]
@@ -332,7 +333,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Sides#wesnoth.get_starting_location|wesnoth.get_starting_location]]
 * [[LuaWML:Sides#helper.all_teams|helper.all_teams]]
 
-=== Pathfinder ===
+=== Поиск пути ===
 
 * [[LuaWML:Pathfinder#wesnoth.find_path|wesnoth.find_path]]
 * [[LuaWML:Pathfinder#wesnoth.find_vacant_tile|wesnoth.find_vacant_tile]]
@@ -369,7 +370,7 @@ Some helper functions are provided by the '''lua/helper.lua''' library. They are
 * [[LuaWML:Location_set#location_set:union_merge|location_set:union_merge]]
 * [[LuaWML:Location_set#location_set:inter_merge|location_set:inter_merge]]
 
-=== Miscellaneous ===
+=== Прочее ===
 
 * [[LuaWML:Misc#wesnoth.game_config|wesnoth.game_config]]
 * [[LuaWML:Misc#wesnoth.current|wesnoth.current]]
@@ -526,7 +527,7 @@ It may be worth putting the whole Lua script above inside a separate file and ha
      [/lua]
  [/event]
 
-== Remarks ==
+== Примечания ==
 
 The math.random function is not safe for replays and multiplayer games, since the random values will be different each time and on all the clients. Instead, the Lua code should rely on the [[InternalActionsWML#.5Bset_variable.5D|[set_variable]]] tag to synchronize random values.
 
