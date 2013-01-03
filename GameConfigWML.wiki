@@ -1,47 +1,47 @@
 {{WML Tags}}
-== The [game_config] tag ==
+== Тег [game_config] ==
 
-This tag is a top level WML tag which can only be used once because
-it defines basic settings that are used everywhere in the game.
-In official versions of Wesnoth it is in ''game_config.cfg''; values used there are labeled 'standard'.
+Тег определяет базовые установки игры, используемые повсеместно, и не может использоваться более одного раза.
+В официальных версиях "Веснота" он находится в ''game_config.cfg''; используемые в них значения указаны как 'стандарт'.
 
 
-The following keys are recognised
-* '''base_income''': (standard 2) how much your leader earns without any villages
-* '''village_income''': (standard 1) how much your leader earns for each village you control
-* '''poison_amount''': (standard 8) the amount of damage poison deals to a unit
-* '''rest_heal_amount''': (standard 2) how much HP a unit gains each turn it rests
-* '''recall_cost''': (standard 20) how much it costs to recall a unit; this cost is independent of level.
-* '''kill_experience''': (standard 8) killing a unit with ''level=X'' will give ''X''*''kill_experience'' experience to the killing unit. However, if a unit has ''level=0'', it will still give half of ''X'' experience.
+Поддерживаются следующие ключи:
 
-* '''icon''': (standard 'wesnoth-icon.png') the game icon file
-* '''title''': (standard 'misc/title.png') the title screen image
-* '''logo''': (standard 'misc/logo.png') the wesnoth logo which will be put over the title image
-* '''default_defeat_music''': (standard 'defeat.ogg,defeat2.ogg') default list of music tracks that are chosen to play on player's defeat; this can be overriden per-scenario
-* '''default_victory_music''': (standard 'victory.ogg,victory2.ogg') default list of music tracks that are chosen to play on player's victory; this can be overriden per-scenario
-* '''title_music''': (standard 'main_menu.ogg') the music to play at the title screen
-* '''logo_x''':      (standard 292) the x position of the logo on the title screen
-* '''logo_y''':      (standard  120) the y position of the logo on the title screen
-* '''buttons_x''':   (standard 760) the x position of the buttons on the title screen
-* '''buttons_y''':   (standard 330) the y position of the buttons on the title screen
-* '''buttons_padding''': (standard  20) space between buttons, and border in main menu
-* '''tip_x''':       (standard 100) space between the button panel left edge and the tip-of-the-day panel right edge
-* '''tip_y''':       (standard 500) not used (the bottom right corner of the tip-of-the-day panel is pegged to align with the bottom of the button panel)
-* '''tip_width''':   (standard 495) max width in pixels of the tip-of-the-day panel.  The width will actually adjust to be the smallest size necessary to fit the text.  Once the max width is reached, if text must flow onto multiple lines, then the height will also automatically adjust.
-* '''tip_padding''': (standard  20) space between the edge of the tip-of-the-day panel and an imaginary bounding box containing the text inside the panel
+* '''base_income''': (стандарт: 2) how much your leader earns without any villages
+* '''village_income''': (стандарт: 1) how much your leader earns for each village you control
+* '''poison_amount''': (стандарт: 8) the amount of damage poison deals to a unit
+* '''rest_heal_amount''': (стандарт: 2) how much HP a unit gains each turn it rests
+* '''recall_cost''': (стандарт: 20) Стоимость призыва существ, сохранившихся с предыдущих эпизодов кампании. Не зависит от их уровня.
+ * '''kill_experience''': (стандарт: 8) За убийство вражеского бойца с уровнем ''X'' начисляется ''X''*''kill_experience'' опыта. Бойцы нулевого уровня дают половину от ''kill_experience''.
 
-* '''map_image''':   (standard 'maps/wesnoth.png') the background image for the "About" screen
-* '''sidebar_image''': (standard 'misc/rightside.png') border of window when displaying unit statistics
-* '''sidebar_image_bottom''': (standard 'misc/rightside-bottom.png') border of image when displaying unit statistics
-* '''energy_image''': (standard 'misc/bar-energy.png') the images used to display hp/xp bars.
-* '''moved_ball_image''': (standard 'misc/ball-moved.png') the orb image to add on top of the hp bar for player's moved units; see 'Orbs', [[WesnothManual]]
-* '''unmoved_ball_image''': (standard 'misc/ball-unmoved.png') like '''moved_ball_image''', but for player's unmoved units
-* '''partmoved_ball_image''': (standard 'misc/ball-partmoved.png') like '''moved_energy_image''', but for player's partially moved units
-* '''flag_image''': (standard 'image/flag'terrain/flag-1.png:150,terrain/flag-2.png:150,terrain/flag-3.png:150,terrain/flag-4.png:150') the default flag animation to mark captured villages (if no custom flag is defined in the [side] tag). By example, this animation has 4 frames of 150ms each. An automatic side-coloring is applied. 
-* '''flag_icon_image''': (standard 'flags/flag-icon.png') the default flag icon to indicate the side playing in the statusbar (if no custom flag_icon is defined in the [side] tag). An automatic side-coloring is applied. 
+* '''icon''': (стандарт: 'wesnoth-icon.png') Значок игры.
+* '''title''': (стандарт: 'misc/title.png') Фоновое изображение титульного экрана.
+* '''logo''': (стандарт: 'misc/logo.png') Логотип игры, отображаемый поверх него.
+* '''logo_x''': (стандарт: 292) X-координата логотипа.
+* '''logo_y''': (стандарт: 120) Y-координата логотипа.
+* '''default_defeat_music''': (стандарт: 'defeat.ogg,defeat2.ogg') default list of music tracks that are chosen to play on player's defeat; this can be overriden per-scenario
+* '''default_victory_music''': (стандарт: 'victory.ogg,victory2.ogg') default list of music tracks that are chosen to play on player's victory; this can be overriden per-scenario
+* '''title_music''': (стандарт: 'main_menu.ogg') Музыка, звучащая на титульном экране.
+* '''buttons_x''': (стандарт: 760) the x position of the buttons on the title screen
+* '''buttons_y''': (стандарт: 330) the y position of the buttons on the title screen
+* '''buttons_padding''': (стандарт: 20) space between buttons, and border in main menu
+* '''tip_x''': (стандарт: 100) space between the button panel left edge and the tip-of-the-day panel right edge
+* '''tip_y''': (стандарт: 500) not used (the bottom right corner of the tip-of-the-day panel is pegged to align with the bottom of the button panel)
+* '''tip_width''': (стандарт: 495) max width in pixels of the tip-of-the-day panel.  The width will actually adjust to be the smallest size necessary to fit the text.  Once the max width is reached, if text must flow onto multiple lines, then the height will also automatically adjust.
+* '''tip_padding''': (стандарт: 20) space between the edge of the tip-of-the-day panel and an imaginary bounding box containing the text inside the panel
 
-* '''cross_image''': (standard 'misc/cross.png') the cross image displayed on the map at start of scenarios; see [[IntroWML]]
-* '''dot_image''': (standard 'misc/dot.png') the dot image used to draw a path on the map before scenarios
+* '''map_image''':   (стандарт: 'maps/wesnoth.png') the background image for the "About" screen
+* '''sidebar_image''': (стандарт: 'misc/rightside.png') border of window when displaying unit statistics
+* '''sidebar_image_bottom''': (стандарт: 'misc/rightside-bottom.png') border of image when displaying unit statistics
+* '''energy_image''': (стандарт: 'misc/bar-energy.png') the images used to display hp/xp bars.
+* '''moved_ball_image''': (стандарт: 'misc/ball-moved.png') the orb image to add on top of the hp bar for player's moved units; see 'Orbs', [[WesnothManual]]
+* '''unmoved_ball_image''': (стандарт: 'misc/ball-unmoved.png') like '''moved_ball_image''', but for player's unmoved units
+* '''partmoved_ball_image''': (стандарт: 'misc/ball-partmoved.png') like '''moved_energy_image''', but for player's partially moved units
+* '''flag_image''': (стандарт: 'image/flag'terrain/flag-1.png:150,terrain/flag-2.png:150,terrain/flag-3.png:150,terrain/flag-4.png:150') the default flag animation to mark captured villages (if no custom flag is defined in the [side] tag). By example, this animation has 4 frames of 150ms each. An automatic side-coloring is applied. 
+* '''flag_icon_image''': (стандарт: 'flags/flag-icon.png') the default flag icon to indicate the side playing in the statusbar (if no custom flag_icon is defined in the [side] tag). An automatic side-coloring is applied. 
+
+* '''cross_image''': (стандарт: 'misc/cross.png') the cross image displayed on the map at start of scenarios; see [[IntroWML]]
+* '''dot_image''': (стандарт: 'misc/dot.png') the dot image used to draw a path on the map before scenarios
 
 * '''footprint_left_nw''', '''footprint_left_n''', '''footprint_right_nw''', '''footprint_right_n''': images used to display the path that a unit would take to the tile the cursor is on.
 The first image of each key is used for tiles which would take only 1 movement point for the selected unit to move onto;
@@ -50,17 +50,16 @@ The 'n' and 'nw' designations distinguish between tiles which are moved from ort
 The 'left' and 'right' designations are used alternately throughout the path;
 however, the standard values are the same for 'left' and 'right'.
 
-* '''terrain_mask_image''': (standard 'terrain/alphamask.png') used to give a hex-shape from a rectangular image.
-* '''grid_image''': (standard 'terrain/grid.png') the image used by the grid option 
-* '''unreachable_image''': (standard 'terrain/darken.png') the stripes mask used to show unreachable locations
+* '''terrain_mask_image''': (стандарт: 'terrain/alphamask.png') used to give a hex-shape from a rectangular image.
+* '''grid_image''': (стандарт: 'terrain/grid.png') the image used by the grid option 
+* '''unreachable_image''': (стандарт: 'terrain/darken.png') the stripes mask used to show unreachable locations
 
-* '''missile_n_image''': (standard 'projectiles/missile-n.png') orthogonal missile image to use if none is specified; see ''image'', '''[missile_frame]''', [[AnimationWML]]
-* '''missile_ne_image''': (standard 'projectiles/missile-ne.png') diagonal missile image to use if none is specified; see ''image_diagonal'', '''[missile_frame]''', [[AnimationWML]]
-* '''observer_image''': (standard 'misc/eye.png') the image to use for observer in multi-player games. (The eye in the upper right hand corner.)
-* '''download_campaign_image''': (standard no image) the icon for the "Download more Campaigns" campaign menu option.
+* '''missile_n_image''': (стандарт: 'projectiles/missile-n.png') orthogonal missile image to use if none is specified; see ''image'', '''[missile_frame]''', [[AnimationWML]]
+* '''missile_ne_image''': (стандарт: 'projectiles/missile-ne.png') diagonal missile image to use if none is specified; see ''image_diagonal'', '''[missile_frame]''', [[AnimationWML]]
+* '''observer_image''': (стандарт: 'misc/eye.png') the image to use for observer in multi-player games. (The eye in the upper right hand corner.)
+* '''download_campaign_image''': (стандарт: no image) the icon for the "Download more Campaigns" campaign menu option.
 
-== See Also ==
-
+== Смотрите также ==
 * [[ReferenceWML]]
 
 
