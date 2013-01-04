@@ -1,63 +1,61 @@
 {{WML Tags}}
-== The toplevel [language] tag ==
+== Тег [language] ==
 
-The contents of the [language] tag associate strings with certain keywords used by the engine and some WML, such as attack types and ranges.
+Это тег верхнего уровня, служащий для связи переводимых строк с некоторыми ключевыми словами WML-движка и его данными.
 
-The following keys and tags are recognized in [language] tags:
+Поддерживаются следующие ключи:
 
-* '''EASY''': string to associate with the EASY difficulty keyword.
-* '''NORMAL''': string to associate with the NORMAL difficulty keyword.
-* '''HARD''': string to associate with the HARD difficulty keyword.
-* '''NIGHTMARE''': string to associate with the NIGHTMARE difficulty keyword.
-* '''liminal_description''': string for the liminal alignment's description.
-* '''lawful_description''': string for the lawful alignment's description.
-* '''neutral_description''': string for the neutral alignment's description.
-* '''chaotic_description''': string for the chaotic alignment's description.
-* '''bridge_name''': comma-separated list of names to be used by the feature-labeling function for bridges.
-* '''road_name''': comma-separated list of names to be used by the feature-labeling function for roads.
-* '''river_name''': comma-separated list of names to be used by the feature-labeling function for rivers.
-* '''forest_name''': comma-separated list of names to be used by the feature-labeling function for forests.
-* '''lake_name''': comma-separated list of names to be used by the feature-labeling function for lakes.
-* '''mountain_name''': comma-separated list of names to be used by the feature-labeling function for mountains.
-* '''swamp_name''': comma-separated list of names to be used by the feature-labeling function for rivers.
-* '''village_name''': comma-separated list of names to be used by the feature-labeling function for villages.
-* '''range_melee''': string to associate with the melee range keyword.
-* '''range_ranged''': string to associate with the ranged range keyword.
-* '''range_$RANGE''': string to associate with whatever range $RANGE is in actual use. Refer to the [[LanguageWML#Examples|examples section]] for actual uses and examples.
-* '''type_$TYPE''': string to associate with whatever type $TYPE is in actual use. Refer to the the [[LanguageWML#Examples|examples section]] for actual uses and examples.
+* '''EASY''': Строка, сопоставляемая уровню сложности '''EASY'''.
+* '''NORMAL''': Строка, сопоставляемая уровню сложности '''NORMAL'''.
+* '''HARD''': Строка, сопоставляемая уровню сложности '''HARD'''.
+* '''NIGHTMARE''': Строка, сопоставляемая уровню сложности '''NIGHTMARE'''.
+* '''lawful_description''': Описание склонности существ к порядку ('''lawful''').
+* '''neutral_description''': Описание склонности существ к нейтралитету ('''neutral''').
+* '''chaotic_description''': Описание склонности существ к хаосу ('''chaotic''').
+* '''liminal_description''': Описание лиминальной склонности существ ('''liminal''').
+* '''bridge_name''': Список имен для функции маркировки мостов.
+* '''road_name''': Список имен для функции маркировки дорог.
+* '''river_name''': Список имен для функции маркировки рек.
+* '''forest_name''': Список имен для функции маркировки лесов.
+* '''lake_name''': Список имен для функции маркировки озер.
+* '''mountain_name''': Список имен для функции маркировки гор.
+* '''swamp_name''': Список имен для функции маркировки болот.
+* '''village_name''': Список имен для функции маркировки деревень.
+* '''range_melee''': Строка для контактных атак ('''melee''').
+* '''range_ranged''': Строка для дистанционных атак ('''ranged''').
+* '''range_$RANGE''': Строка, сопоставляемая с $RANGE дальностью атаки (см. [[#Использование range_$RANGE|пример]]).
+* '''type_$TYPE''': Строка, сопоставляемая с $TYPE типом повреждений (см. [[#Использование type_$TYPE|пример]]).
 
-== Examples ==
 
-=== Examples and actual uses of range_$RANGE ===
+== Примеры ==
 
-Example of an actual use in mainline:
- 
+=== Использование range_$RANGE ===
+
+Фактическое применение в меинлайне:
  [language]
      range_melee= _ "melee"
  [/language]
 
-Example of an association of a string with the keyword for a '''very_long''' range in UMC:
- 
+Cопоставление строки с пользовательским типом дистанции '''very_long''':
  [language]
      range_very_long= _ "very long"
  [/language]
 
-=== Examples and actual uses of type_$TYPE ===
+=== Использование type_$TYPE ===
 
-Example of an actual use in mainline:
- 
+Фактическое применение в меинлайне:
  [language]
      type_arcane= _ "arcane"
  [/language]
 
-Example of an association of a string with the keyword for an '''electric''' type in UMC:
- 
+Cопоставление строки с пользовательским типом повреждений '''electric''':
  [language]
      type_electric= _ "electric"
  [/language]
 
-== See Also ==
-* [[ReferenceWML]]
 
+== Смотрите также ==
+* [[ReferenceWML]]
+* [http://wiki.wesnoth.org/LanguageWML Английская версия данной статьи]
 
 [[Category: WML Reference]]
