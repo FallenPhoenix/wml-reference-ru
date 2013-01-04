@@ -57,20 +57,17 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 
 === Атаки ===
 * '''[attack]''': Описывает одну из атак бойца.
-** '''name''': Непереводимое рабочее название атаки. Используется для ''has_weapon'' и фильтров анимации (см. [[StandardUnitFilter]] и [[AnimationWML]]). Также может определять отображаемое имя, если не задан атрибут ''description'', и значок, если не задан атрибут ''icon'' (''name=x'' => ''icon=attacks/x.png'').
+** '''name''': Непереводимое рабочее имя атаки. Используется для ''has_weapon'' и фильтров анимации (см. [[StandardUnitFilter]] и [[AnimationWML]]). Также может определять отображаемое имя, если не задан атрибут ''description'', и значок, если не задан атрибут ''icon'' (''name=x'' => ''icon=attacks/x.png'').
 ** '''description''': Отображаемое название атаки. Поддерживает локализацию.
-** '''type''': the damage type of the attack.  Used in determining resistance to this attack (see '''[resistances]''', [[UnitsWML]]).
-** '''[specials]''': contains the specials of the attack. See [[AbilitiesWML]].
-** '''icon''': the image to use as an icon for the attack in the attack choice menu, as a path relative to the images directory.
+** '''icon''': Изображение, используемое как значок для меню нападения.
+** '''range''': Дальность атаки. Стандартные игровые значения - '''melee''' и '''ranged''', но в принципе можно использовать и любые свои типы (отображаемые строки задаются через [[LanguageWML]]). Противник может отвечать только атакой с тем же идентификатором дальности.
+** '''type''': Тип повреждений. Используется при определении сопротивления к данной атаке (см. '''[resistances]''', [[UnitsWML]]).
 ** '''damage''': Урон, наносимый при попадании.
 ** '''number''': Количество ударов.
-** '''range''': the range of the attack.  Used to determine the enemy's retaliation, which will be of the same type.  Also displayed on the status table in parentheses; 'melee'(default) displays "melee", while 'ranged' displays "ranged". Range can be anything. Standard values are now "melee" and "ranged". From now on, ''short'' and ''long'' will be treated as totally different ranges. You can create any number of ranges now (with any name), and units can only retaliate against attacks for which they have a corresponding attack of the same range. This value is translatable.
-** '''type''': Тип повреждений. Используется при определении сопротивления к данной атаке (см. '''[resistances]''', [[UnitsWML]]).
-** '''[specials]''': Описывает одну из особенностей атаки. См. [[AbilitiesWML]].
-** '''movement_used''': determines how many movement points using this attack expends. By default all movement is used up, set this to 0 to make attacking with this attack expend no movement.
-** '''attack_weight''': helps the AI to choose which attack to use when attacking; highly weighted attacks are more likely to be used. Setting it to 0 disables the attack on attack
-** '''defense_weight''': used to determine which attack is used for retaliation. This affects gameplay, as the player is not allowed to determine his unit's retaliation weapon. Setting it to 0 disable the attacks on defense 
-For the weight settings, the engine usually chooses the attack with the best average total damages * weight (default weight = 1.0).
+** '''[specials]''': Контейнер для установки особых свойств, см. [[AbilitiesWML]].
+** '''movement_used''': Определяет, сколько расходуется очков передвижения. По умолчанию все оставшиеся, но можно установить 0, чтобы передвижение не тратилось.
+** '''attack_weight''': Помогает искусственному интеллекту выбирать атаку при нападении. Чем больше это значение, тем больше боец ее любит, а при нулевом ИИ вообще не будет ее выбирать.
+** '''defense_weight''': Используется для определения, какой атакой боец будет отбиваться, когда его бьют. Чаще всего движок выбирает имеющую наибольший средний урон, уможенный на значение "весомости" (по умолчанию это значение равно 1.0). В связи с тем, что игроки не могут выбирать контрудары, это немаловажно и для них.
 
 === Прочие теги ===
 * '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Subsequent attributes modify the copy. Tags modify the corresponding tag of the original, so for example the first '''[attack]''' tag in the derived unit would modify the first attack of the base unit rather than defining a new attack.
