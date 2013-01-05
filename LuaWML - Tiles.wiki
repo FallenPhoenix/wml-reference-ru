@@ -1,0 +1,102 @@
+This page describes the [[LuaWML]] functions for handling terrains and tiles. The ''items'' library can be loaded by
+
+ items = wesnoth.require "lua/wml/items.lua"
+
+==== wesnoth.get_map_size ====
+
+Returns the width, the height, and the border size of the map.
+
+ local w,h,b = wesnoth.get_map_size()
+
+==== wesnoth.get_terrain ====
+
+Returns the terrain code for the given location.
+
+ local is_grassland = wesnoth.get_terrain(12, 15) == "Gg"
+
+==== wesnoth.set_terrain ====
+
+Modifies the terrain at the given location.
+
+ function create_village(x, y)
+     wesnoth.set_terrain(x, y, "Gg^Vh")
+ end
+An optional 4th parameter can be passed (layer): overlay, base or both, default both: Change the specified layer only.
+An optional 5th boolean parameter (replace_if_failed) can be passed, see the documentation of the [terrain] tag. To pass the 5th parameter but not the 4th, pass nil for the 4th.
+
+==== wesnoth.get_terrain_info ====
+
+Returns the terrain details for the given terrain code.
+
+ local is_keep = wesnoth.get_terrain_info(wesnoth.get_terrain(12, 15)).keep
+
+Terrain info is a plain table with the following fields:
+* '''id''': string
+* '''name''', '''description''', '''editor_name''': translatable strings
+* '''castle''', '''keep''', '''village''': booleans
+* '''healing''': integer
+
+==== wesnoth.get_selected_tile ====
+
+Returns the two coordinates of the currently selected tile. This is mostly useful for defining command-mode helpers.
+
+ function chg_unit(attr, val)
+    local x, y = wesnoth.get_selected_tile()
+    if not x then wesnoth.message("Error", "No unit selected."); return end
+    helper.modify_unit({ x = x, y = y }, { [attr] = val })
+ end
+ -- Function chg_unit can be used in command mode to modify unit attributes on the fly:
+ --   :lua chg_unit("status.poisoned", true)
+
+==== wesnoth.get_locations ====
+
+Returns a table containing all the locations matching the given filter. Locations are stored as pairs: tables of two elements. See [[StandardLocationFilter]] for details about location filters.
+
+ -- replace all grass terrains by roads
+ for i,loc in ipairs(wesnoth.get_locations { terrain = "Gg" }) do
+     wesnoth.set_terrain(loc[1], loc[2], "Rr")
+ end
+
+==== wesnoth.get_villages ====
+
+{{DevFeature1.11}}This function, when called without arguments, returns a table containing all the villages present on the map (as tables of two elements). If it's called with a WML table as argument, a table containing only the villages matching the supplied [[StandardLocationFilter]] is returned.
+
+ -- How many villages do we have on our map?
+ v = #wesnoth.get_villages()
+
+==== wesnoth.match_location ====
+
+Returns true if the given location passes the filter.
+
+ bool b = wesnoth.match_location(x, y, { terrain = "Ww", { "filter_adjacent_location", terrain = "Ds,*^Bw*" } })
+
+==== wesnoth.add_tile_overlay ====
+
+Places a tile overlay (either an image or a halo) at a given location. The overlay is described by a table supporting the same fields as [[InterfaceActionsWML|[item]]]. Note that the overlay is not kept over save/load cycles.
+
+ wesnoth.add_tile_overlay(17, 42, { image = "items/orcish-flag.png" })
+
+==== wesnoth.remove_tile_overlay ====
+
+Removes all the overlays at the given location. If a filename is passed as a third argument, only this overlay (either image or halo) is removed.
+
+ wesnoth.remove_tile_overlay(17, 42, "items/orcish-flag.png")
+
+==== items.place_image ====
+
+Places an image at a given location and registers it as a WML ''[item]'' would do, so that it can be restored after save/load.
+
+ local items = wesnoth.require "lua/wml/items.lua"
+ items.place_image(17, 42, "items/orcish-flag.png")
+
+==== items.place_halo ====
+
+Behaves the same as [[#items.place_image]] but for halos.
+
+==== items.remove ====
+
+Removes an overlay set by [[#items.place_image]] or [[#items.place_halo]]. If no filename is provided, all the overlays on a given tile are removed.
+
+ items.remove(17, 42, "items/orcish-flag.png")
+
+[[Category: Lua Reference]]

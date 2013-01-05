@@ -1,0 +1,46 @@
+This page describes the [[LuaWML]] functions for handling Lua files.
+
+==== wesnoth.dofile ====
+
+Replaces [http://www.lua.org/manual/5.1/manual.html#5.1 basic.dofile] for loading files. Loads the given filename (relative to the content directory) and executes it in an unprotected environment (that is, exceptions propagate to the caller). Returns the values returned by the executed script.
+
+ wesnoth.dofile "~add-ons/MyCampaign/lua/scenario-utils.lua"
+
+It may be helpful to put as many Lua code as possible in specific files instead of embedding it into WML files, so as to not confuse text editors. Then a scenario only needs to contain the following event:
+
+ [event]
+     name = preload
+     first_time_only = no
+     [lua]
+         code = << wesnoth.dofile "~add-ons/MyCampaign/lua/scenario-utils.lua" >>
+     [/lua]
+ [/event]
+
+If the same files need to be loaded for all the scenarios, the [lua] tag above can be directly put inside the '''_main.cfg''' file (or equivalent file). The Lua code will then be executed at the start of each scenario.
+
+==== wesnoth.require ====
+
+Loads the given filename (relative to the content directory) and executes it in a protected environment. If the file has already been executed once, then compilation and execution are skipped and the value from its previous run is returned.
+
+ helper = wesnoth.require "lua/helper.lua"
+
+This function is helpful in writing libraries of functions that can be accessed from various places. So the return value of the file is supposed to be a table containing the methods provided by the library. Such a library would look like:
+
+ local library = {}
+ function library.do_something(a) ... end
+ function library.go_somewhere(x, y) ... end
+ return library
+
+It can also be helpful when writing unit types with events, since unit types are not necessarily available at ''preload'' time, hence preventing the usage of [[#wesnoth.dofile]] for precompiling code:
+
+ [unit_type]
+     id = phoenix
+     [event]
+         name = last breath
+         [lua]
+             code = << wesnoth.require("~add-ons/MyEra/lua/unit-utils.lua").resurrect(...) >>
+         [/lua]
+     [/event]
+ [/unit_type]
+
+[[Category: Lua Reference]]

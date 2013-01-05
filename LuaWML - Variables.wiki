@@ -1,0 +1,71 @@
+This page describes the [[LuaWML]] functions and helpers for handling WML variables and containers.
+
+==== wesnoth.get_variable ====
+
+Loads a WML variable with the given qualified name (argument 1) and converts it into a Lua object. Returns ''nil'' if the name does not point to anything, a scalar for a WML attribute, and a table for a WML object. The format of the table is described in [[LuaWML#Encoding WML objects into Lua tables]].
+
+ wesnoth.fire("store_unit", { variable="my_unit", { "filter", { id="hero" } } })
+ local heros_hp = wesnoth.get_variable("my_unit[0].hitpoints")
+ wesnoth.message(string.format("The 'hero' unit has %d hitpoints.", heros_hp))
+
+Argument 2, if ''true'', prevents the recursive conversion when the name points to an object; a fresh empty table is returned in this case. This is mainly used for writing proxy objects, e.g. in [[#helper.set_wml_var_metatable]].
+
+Note that, if the variable name happens to designate a sequence of WML objects, only the first one (index 0) is fetched. If all the WML objects with this name should have been returned, use [[#helper.get_variable_array]] instead.
+
+==== wesnoth.set_variable ====
+
+Converts and stores a Lua object (argument 2) to a WML variable (argument 1). A WML object is created for a table, an attribute otherwise.
+
+ wesnoth.set_variable("my_unit.hitpoints", heros_hp + 10)
+
+Setting a WML variable to nil erases it.
+
+==== helper.set_wml_var_metatable ====
+
+Sets the metable of a table so that it can be used to access WML variables. Returns the table. The fields of the tables are then proxies to the WML objects with the same names; reading/writing to them will directly access the WML variables.
+
+ helper.set_wml_var_metatable(_G)
+ my_persistent_variable = 42
+
+==== helper.get_child ====
+
+Returns the first sub-tag of a WML object with the given name.
+
+ local u = wesnoth.get_units({ id = "Delfador" })[1]
+ local costs = helper.get_child(u.__cfg, "movement_costs")
+ wesnoth.message(string.format("Delfador needs %d points to move through a forest.", costs.forest))
+
+If a third parameter is passed, only children having a ''id'' attribute equal to it are considered.
+
+==== helper.child_range ====
+
+Returns an iterator over all the sub-tags of a WML object with the given name.
+
+ local u = wesnoth.get_units({ id = "Delfador" })[1]
+ for att in helper.child_range(u.__cfg, "attack") do
+     wesnoth.message(tostring(att.description))
+ end
+
+==== helper.get_variable_array ====
+
+Fetches all the WML container variables with given name and returns a table containing them (starting at index 1).
+
+ function get_recall_list(side)
+     wesnoth.fire("store_unit", { x = "recall", variable = "LUA_recall_list })
+     local l = get_variable_array "LUA_recall_list"
+     wesnoth.set_variable "LUA_recall_list"
+     return l
+ end
+
+==== helper.get_variable_proxy_array ====
+
+Creates proxies for all the WML container variables with given name and returns a table containing them (starting at index 1). This function is similar to [[#helper.get_variable_array]], except that the proxies can be used for modifying WML containers.
+
+==== helper.set_variable_array ====
+
+Creates WML container variables with given name from given table.
+
+ helper.set_variable_array("target", { t1, t2, t3 })
+ -- target[0] <- t1; target[1] <- t2; target[2] <- t3
+
+[[Category: Lua Reference]]

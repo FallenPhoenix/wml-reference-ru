@@ -1,0 +1,143 @@
+This page describes miscellaneous [[LuaWML]] objects and helpers.
+
+==== wesnoth.game_config ====
+
+Contrarily to the other values of the ''wesnoth'' table, ''game_config'' is simply a proxy table. Its fields offer an interface to the global settings of Wesnoth:
+
+* '''version''': string (read only)
+* '''base_income''': integer (read/write)
+* '''village_income''': integer (read/write)
+* '''poison_amount''': integer (read/write)
+* '''rest_heal_amount''': integer (read/write)
+* '''recall_cost''': integer (read/write)
+* '''kill_experience''': integer (read/write)
+* '''last_turn''': integer (read/write) turn limit, maximum number of turns
+* '''debug''': boolean (read only)
+* '''mp_debug''': boolean (read only) {{DevFeature1.11}}
+
+ -- Poison a bit weak? Let's boost it!
+ wesnoth.game_config.poison_amount = 15
+
+==== wesnoth.current ====
+
+As with ''game_config'', ''current'' is a proxy table. Its fields are getter for game-related properties:
+
+* '''side''': integer (read only)
+* '''turn''': integer (read only)
+* '''event_context''': WML table with attributes ''name'', ''x1'', ''y1'', ''x2'', ''y2'', and children ''weapon'', ''second_weapon'', describing the trigger for the current event.
+
+ wesnoth.message(string.format("Turn %d, side %d is playing.", wesnoth.current.turn, wesnoth.current.side))
+
+==== wesnoth.synchronize_choice ====
+
+Recovers a WML table that was computed on one client only or was stored in a replay. The actual computation is performed by the function passed as the first argument, assuming that the client is the side currently playing. For all the other clients, the function will not be called. An optional second function can be passed; if present, it will be used instead of the first one when the client happens to be an AI (hence not enable to interact with a user interface).
+
+ local result = wesnoth.synchronize_choice(
+   function()
+     -- Called only on the client handling the current side, if it is a human.
+     local choice = 0
+     wesnoth.show_dialog(
+       some_dialog_cfg, nil,
+       function()
+         choice = wesnoth.get_dialog_value "some_list"
+       end)
+     return { value = choice }
+   end,
+   function()
+     -- Called only on the client handling the current side, if it is an AI.
+     return { value = math.random(some_list_size) }
+   end)
+ wesnoth.message(string.format("Selected item: %d", result.value))
+
+==== wesnoth.get_image_size ====
+
+Returns the width and height of an image.
+
+ local w, h = wesnoth.get_image_size "units/transport/galleon.png"
+
+==== wesnoth.compare_versions ====
+
+Takes two versions strings and an operator, returns whether the comparison yields true.
+Follows the same rules like the #ifver preprocessor statement.
+
+ local function version_is_sufficient(required)
+  if not wesnoth.compare_versions then return false end
+  return wesnoth.compare_versions(wesnoth.game_config.version, ">=", required)
+ end
+ local required = "1.9.6+svn"
+ if not version_is_sufficient(required) then wesnoth.message(string.format(
+  "Your BfW version is insufficient, please get BfW %s or greater!", required)) end
+
+==== wesnoth.have_file ====
+
+{{DevFeature1.11}}Checks if the file (not necessarily a Lua file) or the directory passed as argument exists. Returns true if the file exists, false otherwise. Follows the same rules like the #ifhave preprocessor statement.
+
+ -- Does the user have installed the UMC Music Book 1?
+ local umc_music = wesnoth.have_file( "~add-ons/UMC_Music_Book_1/_main.cfg" )
+ -- and if we want to check for the folder?
+ local music_folder = wesnoth.have_file( "~add-ons/UMC_Music_Book_1/" )
+
+==== wesnoth.debug ====
+
+Takes a userdata with metatable wml object or a wml table and dumps its content into a pretty string.
+ wesnoth.set_variable("number", 100)
+ local vconfig = wesnoth.tovconfig({ key = "$number", another_key = true,
+     {"a_subtag", { a_key_in_the_subtag = "foo" }}
+ })
+ wesnoth.message(wesnoth.debug(vconfig))
+ wesnoth.message(wesnoth.debug(vconfig.__literal))
+
+==== wesnoth.get_time_stamp ====
+
+{{DevFeature1.11}}This function retrieves the current time stamp, that is the amount of milliseconds passed from when the SDL library was initialized. It takes no arguments and returns an integer.
+'''WARNING:''' this function uses the same code as [set_variable] time=stamp, and so it is MP-unsafe. It is provided only for benchmark purposes and AI development, although it should work inside wesnoth.synchronize_choice() as well.
+ local stamp = wesnoth.get_time_stamp()
+
+==== helper.set_wml_tag_metatable ====
+
+Sets the metable of a table so that it can be used to create subtags with less brackets. Returns the table. The fields of the table are simple wrappers around table constructors.
+
+ T = helper.set_wml_tag_metatable {}
+ W.event { name = "new turn", T.message { speaker = "narrator", message = "?" } }
+
+==== helper.modify_unit ====
+
+Modifies all the units satisfying the given filter (argument 1) with some WML attributes/objects (argument 2). This is a Lua implementation of the [http://www.wesnoth.org/macro-reference.xhtml MODIFY_UNIT] macro.
+
+ helper.modify_unit({ id="Delfador" }, { moves=0 })
+
+==== helper.move_unit_fake ====
+
+Fakes the move of a unit satisfying the given filter (argument 1) to the given position (argument 2). This is a Lua implementation of the [http://www.wesnoth.org/macro-reference.xhtml MOVE_UNIT] macro.
+
+ helper.move_unit_fake({ id="Delfador" }, 14, 8)
+
+==== helper.rand ====
+
+(A shortcut to set_variable's rand= since math.rand is an OOS magnet and therefore disabled.) Pass a string like you would to set_variable's rand=.
+
+create a random unit at (1, 1) on side=1 :
+ wesnoth.put_unit(1, 1, { type = helper.rand("Dwarvish Fighter,Dwarvish Thunderer,Dwarvish Scout") })
+
+==== helper.round ====
+
+{{DevFeature1.11}}Unlike other languages (Python, Perl, Javascript, ...), Lua does not include a round function. This helper function allows rounding numbers, following the "round half away from zero method", see Wikipedia [[http://en.wikipedia.org/wiki/Rounding_numbers#Round_half_away_from_zero]]. Returns the number rounded to the nearest integer.
+
+ -- this number will be rounded up
+ helper.round(345.67) -- returns 346
+ -- this one will be rounded down
+ helper.round(543.21) -- returns 543
+ -- an integer stays integer
+ helper.round(123) -- returns 123
+ -- works also for negative numbers
+ helper.round(-369.84) -- returns -370
+ helper.round(-246.42) -- returns -246
+
+==== helper.shuffle ====
+
+{{DevFeature1.11}}This function randomly sorts in place the elements of the table passed as argument, following the Fisher-Yates algorithm. It returns no value.
+'''WARNING:''' this function uses Lua's math.random(), and so it is MP-unsafe. It is provided mainly for AI development, although it should work inside wesnoth.synchronize_choice() as well.
+ local locs = wesnoth.get_locations( { terrain="G*" } )
+ helper.shuffle( locs )
+
+[[Category: Lua Reference]]

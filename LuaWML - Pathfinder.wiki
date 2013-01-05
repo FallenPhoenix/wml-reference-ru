@@ -1,0 +1,79 @@
+This page describes the [[LuaWML]] functions and helpers for finding paths.
+
+==== wesnoth.find_path ====
+
+Returns the shortest path from one location to another. The source location is given either by coordinates as two arguments x and y; there must be a unit at the source location when using the standard path calculator. The source location can also be given by a unit as a single argument (as returned by the functions from [[LuaWML:Units]]). The second location is given by its coordinates. The last argument is an optional table that can be used to parametrize the pathfinder. Its options are:
+* '''max_cost''': if set, the pathfinder will ignore paths longer than its value
+* '''ignore_units''': if set, the path will go through units and ignore zones of control
+* '''ignore_teleport''': if set, the teleport ability of the unit is ignored
+* '''viewing_side''': if set to a valid side number, fog and shroud for this side will be taken into account; if set to an invalid number (e.g. 0), fog and shroud will be ignored; if left unset, the viewing side will be the unit side
+
+The path is returned as a table of coordinate pairs. It contains both the source and destination tile if a path was found. The total cost of the path is also available as a second return value, if needed.
+
+ -- Display some items along the path from (x1,y1) to (x2,y2).
+ local u = wesnoth.get_units({ x = x1, y = y1 })[1]
+ local path, cost = wesnoth.find_path(u, x2, y2, { ignore_units = true, viewing_side = 0 })
+ if cost > u.moves then
+     wesnoth.message("That's too far!")
+ else
+     for i, loc in ipairs(path) do
+         wesnoth.fire("item", { x = loc[1], y = loc[2], image = "items/buckler.png" })
+     end
+ end
+
+Instead of a parameter table, a cost function can be passed to the pathfinder. It will be called for all the tiles the computed path may possibly go through. It receives three arguments. The first two are the coordinates of the tile, the last one is the current cost for reaching that tile. The function should return a floating-point value that is the cost for entering the given tile. This cost should be greater or equal to one.
+
+ -- Count how many turns it would take, assuming the worst case (3 movement points per tile)
+ local max_moves = wesnoth.get_units({ x = x1, y = y1 })[1].max_moves
+ local path, cost = wesnoth.find_path(x1, y2, x2, y2,
+     function(x, y, current_cost)
+         local remaining_moves = max_moves - (current_cost % max_moves)
+         if remaining_moves < 3 then current_cost = current_cost + remaining_moves end
+         return current_cost + 3
+     end)
+ wesnoth.message(string.format("It would take %d turns.", math.ceil(cost / 3)))
+
+==== wesnoth.find_vacant_tile ====
+
+Returns the two coordinates of an empty tile the closest to the tile passed by coordinates. An optional unit (either a WML table or a proxy object) can be passed as a third argument; if so, the returned tile has terrain which is passable for the passed unit.
+
+ function teleport(src_x, src_y, dst_x, dst_y)
+   local u = wesnoth.get_units({x = src_x, y = src_y })[1]
+   local ut = u.__cfg
+   dst_x, dst_y = wesnoth.find_vacant_tile(dst_x, dst_y, u)
+   wesnoth.put_unit(src_x, src_y)
+   wesnoth.put_unit(dst_x, dst_y, ut)
+ end
+
+==== wesnoth.find_reach ====
+
+Returns all the locations reachable by a unit. The unit is given either by its two coordinates or by a proxy object.  The last argument is an optional table that can be used to parametrize the pathfinder. Its options are:
+* '''additional_turns''': if set to an integer n, the pathfinder will consider tiles that can be reached in n+1 turns
+* '''ignore_units''': if set, the paths will go through units and ignore zones of control
+* '''ignore_teleport''': if set, the teleport ability of the unit is ignored
+* '''viewing_side''': if set to a valid side number, fog and shroud for this side will be taken into account; if set to an invalid number (e.g. 0), fog and shroud will be ignored; if left unset, the viewing side will be the unit side
+The locations are stored as triples in an array. The first two elements of a triple are the coordinates of a reachable tile, the third one is the number of movement points left when reaching the tile.
+
+ -- overlay the number of turns needed to reach each tile
+ local t = wesnoth.find_reach(u, { additional_turns = 8 })
+ local m = u.max_moves
+ for i,l in ipairs(t) do
+   wesnoth.fire("label", { x = l[1], y = l[2], text = math.ceil(9 - l[3]/m) })
+ end
+
+==== helper.distance_between ====
+
+Returns the distance between two tiles given by their coordinates.
+
+ local d = distance_between(x1, y1, x2, y2)
+
+==== helper.adjacent_tiles ====
+
+Returns an iterator on the (at most six) tiles around a given location that are on the map. If the third argument is ''true'', tiles on the map border are also visited.
+
+ -- remove all the units next to the (a,b) tile
+ for x, y in helper.adjacent_tiles(a, b) do
+     wesnoth.put_unit(x, y)
+ end
+
+[[Category: Lua Reference]]
