@@ -1,0 +1,77 @@
+This page describes the [[LuaWML]] functions and helpers for handling sides and villages.
+
+==== wesnoth.get_side ====
+
+{{DevFeature1.11}}: This function is deprecated, use wesnoth.sides[i] instead of wesnoth.get_side(i).
+
+==== wesnoth.sides ====
+
+This is not a function but a table indexed by side numbers. Its elements are proxy tables with these fields:
+* '''side''': the side number
+* '''gold''', '''village_gold''', '''base_income''': integers (read/write)
+* '''total_income''': integer (read only)
+* '''objectives''', '''user_team_name''': translatable strings (read/write)
+* '''objectives_changed''': boolean (read/write)
+* '''team_name''': string (read/write)
+* '''controller''': string (read/write)
+''note: In networked multiplayer, the controller attribute is ambiguous. Be very careful or you have OOS errors.''
+* '''fog''': boolean (read)
+* '''shroud''': boolean (read)
+* '''hidden''': boolean (read)
+* '''name''': string (read)
+* '''color''': string (read) {{DevFeature1.11}}: also write
+* '''recruit''': table of strings
+* '''__cfg''': WML table (dump)
+
+The metatable of these proxy tables appears as '''"side"'''.
+
+ local team = wesnoth.sides[1]
+ team.gold = team.gold + 50
+ wesnoth.message(string.format("%d sides", #wesnoth.sides))
+
+==== wesnoth.get_sides ====
+
+Returns a table array containing proxy tables for these sides matching the passed [[StandardSideFilter]].
+ --set gold to 0 for all sides with a leader
+ local sides = wesnoth.get_sides({ {"has_unit", { canrecruit = true }} })
+ for i,v in ipairs(sides) do
+     v.gold = 0
+ end
+
+==== wesnoth.get_village_owner ====
+
+Returns the side that owns the village at the given location.
+
+ local owned_by_side_1 = wesnoth.get_village_owner(12, 15) == 1
+
+==== wesnoth.set_village_owner ====
+
+Gives ownership of the village at the given location to the given side (or remove ownership if none). Ownership is also removed if nil or 0 is passed for the third parameter, but no capture events are fired in this case.
+An optional 4th parameter (boolean true|false, default: false) can be passed determining whether to fire any capture events.
+
+ wesnoth.set_village_owner(12, 15, 1)
+
+==== wesnoth.is_enemy ====
+
+Returns true if side A is enemy of side B, false otherwise.
+
+ local enemy_flag = wesnoth.is_enemy(1, 3)
+
+==== wesnoth.match_side ====
+
+Matches a side against a given [[StandardSideFilter]].
+
+ wesnoth.message(tostring(wesnoth.match_side(1, {{"has_unit", { type = "Troll" }}})))
+
+==== wesnoth.get_starting_location ====
+
+ local loc = wesnoth.get_starting_location(1)
+ wesnoth.message(string.format("side 1 starts at (%u, %u)", loc[1], loc[2]))
+
+==== helper.all_teams ====
+
+Returns an iterator over teams that can be used in a for-in loop.
+
+ for team in helper.all_teams() do team.gold = 200 end
+
+[[Category: Lua Reference]]

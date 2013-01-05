@@ -1,0 +1,236 @@
+This page describes the [[LuaWML]] functions and helpers for interfacing with the user.
+
+==== wesnoth.message ====
+
+Displays a string in the chat window and dumps it to the lua/info log domain (''--log-info=scripting/lua'' on the command-line).
+
+ wesnoth.message "Hello World!"
+
+The chat line header is "<Lua>" by default, but it can be changed by passing a string before the message.
+
+ wesnoth.message("Big Brother", "I'm watching you.") -- will result in "&lt;Big Brother&gt; I'm watching you."
+
+See also [[LuaWML:Events#helper.wml_error|helper.wml_error]] for displaying error messages.
+
+==== wesnoth.clear_messages ====
+
+Removes all messages from the chat window. No argument or returned values.
+
+==== wesnoth.textdomain ====
+
+Creates a function proxy for lazily translating strings from the given domain.
+
+ -- #textdomain "my-campaign"
+ -- the comment above ensures the subsequent strings will be extracted to the proper domain
+ _ = wesnoth.textdomain "my-campaign"
+ wesnoth.set_variable("my_unit.description", _ "the unit formerly known as Hero")
+
+The metatable of the function proxy appears as '''"message domain"'''. The metatable of the translatable strings (results of the proxy) appears as '''"translatable string"'''.
+
+The translatable strings can be appended to other strings/numbers with the standard '''..''' operator. Translation can be forced with the standard '''tostring''' operator in order to get a plain string.
+
+ wesnoth.message(string.format(tostring(_ "You gain %d gold."), amount))
+
+==== wesnoth.delay ====
+
+Delays the engine like the [delay] tag. one argument: time to delay in milliseconds
+
+ wesnoth.delay(500)
+
+==== wesnoth.float_label ====
+
+Pops some text above a map tile.
+
+ wesnoth.float_label(unit.x, unit.y, "&lt;span color='#ff0000'&gt;Ouch&lt;/span&gt;")
+
+==== wesnoth.get_time_of_day ====
+
+Returns schedule information. First parameter (optional) is the turn number for which to return the information, if unspecified: the current turn ($turn_number). Second argument is an optional table. If present, first and second fields must be valid on-map coordinates and all current time_areas in the scenario are taken into account (if a time area happens to contain the passed hex). If the table isn't present, the scenario main schedule is returned. The table has an optional third parameter (boolean). If true (default: false), time of day modifying units and terrain (such as Mages of Light or lava) are taken into account (if the passed hex happens to be affected). The units' placement being considered is always the current one.
+
+ wesnoth.get_time_of_day(2, { 37, 3, true })
+
+The function returns a table with these named fields:
+* '''id''': string (as in [time])
+* '''lawful_bonus''': integer (as in [time])
+* '''bonus_modified''': integer (bonus change by units)
+* '''image''': string (tod image in sidebar)
+* '''name''': translatable string
+* '''red, green, blue''': integers (color adjustment for this time)
+
+The optional first parameter does not work if there is no turn limit in 1.11.0 and earlier.
+
+==== wesnoth.select_hex ====
+
+Selects the given location in the game map as if the player would have clicked onto it.
+Argument 3: boolean, whether to show the movement range of any unit on that location (def: true)
+Argument 4: boolean, whether to fire any select events (def: false)
+
+ wesnoth.select_hex(14,6, true, true)
+
+==== wesnoth.scroll_to_tile ====
+
+Scrolls the map to the given location. If true is passed as the third parameter, scrolling is disabled if the tile is hidden under the fog. If true is passed as the fourth parameter {{DevFeature1.11}}, the view instantly warps to the location regardless of the scroll speed setting in Preferences.
+
+ local u = wesnoth.get_units({ id = "hero" })[1]
+ wesnoth.scroll_to_tile(u.x, u.y)
+
+==== wesnoth.lock_view ====
+
+{{DevFeature1.11}} Locks or unlocks gamemap view scrolling for human players. If true is passed as the first parameter, the view is locked; pass false to unlock.
+
+Human players cannot scroll the gamemap view as long as it is locked, but Lua or WML actions such as wesnoth.scroll_to_tile still can; the locked/unlocked state is preserved when saving the current game. This feature is generally intended to be used in cutscenes to prevent the player scrolling away from scripted actions.
+
+ wesnoth.lock_view(true)
+ wesnoth.scroll_to_tile(12, 14, false, true)
+
+==== wesnoth.view_locked ====
+
+{{DevFeature1.11}} Returns a boolean indicating whether gamemap view scrolling is currently locked.
+
+==== wesnoth.play_sound ====
+
+Plays the given sound file once, optionally repeating it one or more more times if an integer value is provided as a second argument (note that the sound is ''repeated'' the number of times specified in the second argument, i.e. a second argument of 4 will cause the sound to be played once and then repeated four more times for a total of 5 plays. See the example below).
+
+ wesnoth.play_sound "ambient/birds1.ogg"
+ wesnoth.play_sound("magic-holy-miss-3.ogg", 4) -- played 1 + 4 = 5 times
+
+==== wesnoth.set_music ====
+
+Sets the given table as an entry into the music list. See [[MusicListWML]] for the recognized attributes.
+
+ wesnoth.set_music { name = "traveling_minstrels.ogg" }
+
+Passing no argument forces the engine to take into account all the recent changes to the music list. (Note: this is done automatically when sequences of WML commands end, so it is useful only for long events.)
+
+==== wesnoth.show_dialog ====
+
+Displays a dialog box described by a WML table and returns:
+* if the dialog was dismissed by a button click, the integer value associated to the button via the "return_value" keyword.
+* if the dialog was closed with the enter key, -1.
+* if the dialog was closed with the escape key, -2.
+
+The dialog box is equivalent to the resolution section of a GUI window as described in [[GUIToolkitWML#Window_definition|GUIToolkitWML]] and must therefore contain at least the following children: '''[tooltip]''', '''[helptip]''', and '''[grid]'''. The [grid] must contain nested [row], [column] and [grid] tags which describe the layout of the window. (More information can be found in [[GUILayout]]; suffice to say that the basic structure is grid -> row -> column -> widget, where the widget is considered to be in a cell defined by the row and column of the grid. A list of widgets can be found at [[GUIWidgetInstanceWML]].)
+
+Two optional functions can be passed as second and third arguments; the first one is called once the dialog is created and before it is shown; the second one is called once the dialog is closed. These functions are helpful in setting the initial values of the fields and in recovering the final user values. These functions can call the [[#wesnoth.set_dialog_value]], [[#wesnoth.get_dialog_value]], and [[#wesnoth.set_dialog_callback]] functions for this purpose.
+
+This function should be called in conjunction with [[LuaWML:Misc#wesnoth.synchronize_choice|#wesnoth.synchronize_choice]], in order to ensure that only one client displays the dialog and that the other ones recover the same input values from this single client.
+
+The example below defines a dialog with a list and two buttons on the left, and a big image on the right. The ''preshow'' function fills the list and defines a callback on it. This ''select'' callback changes the displayed image whenever a new list item is selected. The ''postshow'' function recovers the selected item before the dialog is destroyed.
+
+ local helper = wesnoth.require "lua/helper.lua"
+ local T = helper.set_wml_tag_metatable {}
+ local _ = wesnoth.textdomain "wesnoth"
+ 
+ local dialog = {
+   T.tooltip { id = "tooltip_large" },
+   T.helptip { id = "tooltip_large" },
+   T.grid { T.row {
+     T.column { T.grid {
+       T.row { T.column { horizontal_grow = true, T.listbox { id = "the_list",
+         T.list_definition { T.row { T.column { horizontal_grow = true,
+           T.toggle_panel { T.grid { T.row {
+             T.column { horizontal_alignment = "left", T.label { id = "the_label" } },
+             T.column { T.image { id = "the_icon" } }
+           } } }
+         } } }
+       } } },
+       T.row { T.column { T.grid { T.row {
+         T.column { T.button { id = "ok", label = _"OK" } },
+         T.column { T.button { id = "cancel", label = _"Cancel" } }
+       } } } }
+     } },
+     T.column { T.image { id = "the_image" } }
+   } }
+ }
+ 
+ local function preshow()
+     local t = { "Ancient Lich", "Ancient Wose", "Elvish Avenger" }
+     local function select()
+         local i = wesnoth.get_dialog_value "the_list"
+         local ut = wesnoth.unit_types[t[i]].__cfg
+         wesnoth.set_dialog_value(string.gsub(ut.profile, "([^/]+)$", "transparent/%1"), "the_image")
+     end
+     wesnoth.set_dialog_callback(select, "the_list")
+     for i,v in ipairs(t) do
+         local ut = wesnoth.unit_types[v].__cfg
+         wesnoth.set_dialog_value(ut.name, "the_list", i, "the_label")
+         wesnoth.set_dialog_value(ut.image, "the_list", i, "the_icon")
+     end
+     wesnoth.set_dialog_value(2, "the_list")
+     select()
+ end
+ 
+ local li = 0
+ local function postshow()
+     li = wesnoth.get_dialog_value "the_list"
+ end
+ 
+ local r = wesnoth.show_dialog(dialog, preshow, postshow)
+ wesnoth.message(string.format("Button %d pressed. Item %d selected.", r, li))
+
+==== wesnoth.set_dialog_value ====
+
+Sets the value of a widget on the current dialog. The value is given by the first argument; its semantic depends on the type of widget it is applied to. The last argument is the ''id'' of the widget. If it does not point to a unique widget in the dialog, some discriminating parents should be given on its left, making a path that is read from left to right by the engine. The row of a list is specified by giving the ''id' of the list as a first argument and the 1-based row number as the next argument.
+
+ -- sets the value of a widget "bar" in the 7th row of the list "foo"
+ wesnoth.set_value(_"Hello world", "foo", 7, "bar")
+
+Notes: When the row of a list does not exist, it is created. The value associated to a list is the selected row.
+
+==== wesnoth.get_dialog_value ====
+
+Gets the value of a widget on the current dialog. The arguments described the path for reaching the widget (see [[#wesnoth.set_dialog_value]]).
+
+==== wesnoth.set_dialog_active ====
+
+Enables or disables a widget.  The first argument is a boolean specifying whether the widget should be active (true) or inactive (false).  The remaining arguments are the path to locate the widget in question (see [[#wesnoth.set_dialog_value]]).
+
+==== wesnoth.set_dialog_callback ====
+
+Sets the first argument as a callback function for the widget obtained by following the path of the other arguments (see [[#wesnoth.set_dialog_value]]). This function will be called whenever the user modifies something about the widget, so that the dialog can react to it.
+
+==== wesnoth.set_dialog_canvas ====
+
+Sets the WML passed as the second argument as the canvas content (index given by the first argument) of the widget obtained by following the path of the other arguments (see [[#wesnoth.set_dialog_value]]). The content of the WML table is described at [[GUICanvasWML]].
+
+ -- draw two rectangles in the upper-left corner of the window (empty path = window widget)
+ wesnoth.set_dialog_canvas(2, {
+     T.rectangle { x = 20, y = 20, w = 20, h = 20, fill_color= "0,0,255,255" },
+     T.rectangle { x = 30, y = 30, w = 20, h = 20, fill_color = "255,0,0,255" }
+ })
+
+The meaning of the canvas index depends on the chosen widget. It may be the disabled / enabled states of the widget, or its background / foreground planes, or... For instance, overwriting canvas 1 of the window with an empty canvas causes the window to become transparent.
+
+==== wesnoth.get_displayed_unit ====
+
+Returns a proxy to the unit currently displayed in the side pane of the user interface, if any.
+
+ local name = tostring(wesnoth.get_displayed_unit().name)
+
+==== wesnoth.theme_items ====
+
+This field is not a function but an associative table. It links item names to the functions that describe their content. These functions are called whenever the user interface is refreshed. The description of an item is a WML table containing '''[element]''' children. Each subtag shall contain either a '''text''' or an '''image''' field that is displayed to the user. It can also contain a '''tooltip''' field that is displayed to the user when moused over, and a "help" field that points to the help section that is displayed when the user clicks on the theme item.
+
+Note that the ''wesnoth.theme_items'' table is originally empty and using ''pairs'' or ''next'' on it will not return the items from the current theme. Its metatable ensures that the drawing functions of existing items can be recovered though, as long as their name is known. The example below shows how to modify the ''unit_status'' item to display a custom status:
+
+ local old_unit_status = wesnoth.theme_items.unit_status
+ function wesnoth.theme_items.unit_status()
+     local u = wesnoth.get_displayed_unit()
+     if not u then return {} end
+         local s = old_unit_status()
+         if u.status.entangled then
+             table.insert(s, { "element", {
+                 image = "entangled.png",
+                 tooltip = _"entangled: This unit is entangled. It cannot move but it can still attack."
+             } })
+         end
+     return s
+ end
+
+==== helper.get_user_choice ====
+
+Displays a WML message box querying a choice from the user. Attributes and options are taken from given tables (see [[InterfaceActionsWML#.5Bmessage.5D|[message]]]). The index of the selected option is returned.
+
+ local result = helper.get_user_choice({ speaker = "narrator" }, { "Choice 1", "Choice 2" })
+
+[[Category: Lua Reference]]
