@@ -6,13 +6,13 @@
 
 When a tag permits ActionWML as content, this means that it permits a sequence of any of the following tags:
 
-* операции управления ([[DirectActionsWML]]) which have a direct effect on gameplay
-* display actions ([[InterfaceActionsWML]]) which show something to the user
-* внутренние операции ([[InternalActionsWML]]) which are used by WML internally
-* условные операции ([[ConditionalActionsWML]]) which contain other actions, which then are (maybe) executed ([if], [switch], [while], [command])
-* [event] (см. [[EventWML#Nested Events|EventWML]]), создающий новый обработчик события<br>note: [event] can also be a subtag of [unit], [era] and [scenario], where it would not be counted as ActionWML (but has nearly the same syntax).
-* [lua] ([[LuaWML]]) which contains Lua code to be executed, and
-* all tags created from lua with [[LuaWML:Events#wesnoth.register_wml_action|wesnoth.register_wml_action]] (if they don't fit in one of the categories above)
+* операции управления ([[DirectActionsWML]]), прямо влияющие на геймплей
+* операции интерфейса ([[InterfaceActionsWML]]), служащие для взаимодействия с игроком
+* внутренние операции ([[InternalActionsWML]]), имеющие вспомогательное назначение
+* условные операции ([[ConditionalActionsWML]]), служащие оберткой для других операций, которые должны выполняться или не выполняться при определенных условиях
+* [event] (см. [[EventWML#Nested Events|EventWML]]), создающий новый обработчик события<br>Примечание: [event] также можно использовать внутри [unit], [era] и [scenario], и там он не считается частью ActionWML, хоть имеет примерно такой же синтаксис.
+* [lua] ([[LuaWML]]), содержащий скрипты на языке Lua
+* все теги, созданные в Lua через [[LuaWML:Events#wesnoth.register_wml_action|wesnoth.register_wml_action]] (если они не вписываются в рамки вышеперечисленных категорий)
 
 Все операции ActionWML выполняются в порядке их указания.
 
@@ -28,6 +28,8 @@ ActionWML можно использовать:
 
 В остальных случаях код ActionWML выдаст ошибку, будет проигнорирован либо интерпретирован иначе (при совпадении имен тегов и атрибутов).
 
+== Смотрите также ==
+[[ReferenceWML]]
 
-[[Category:ActionsWML]]
 [[Category:WML Reference]]
+[[Category:ActionsWML]]
