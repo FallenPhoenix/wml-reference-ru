@@ -14,6 +14,7 @@ The RCA AI is highly configurable in three different ways (sorted by increasing 
 * The default AI used through Wesnoth 1.8 was named 'Default AI' (note the capital D).  This might cause confusion, as the current default AI (RCA AI) is not the Default AI.
 * Besides the RCA AI, the only other AI available in the core distribution is ''idle_ai'', which does nothing at all (see ''ai_algorithm'' [[AiWML#The_.5Bai.5D_Tag:_Defining_Aspects|below]]).  
 * The [[General_RCA_AI_Howto#Available_Stages|fallback stage]], which used to fall back to the old Default AI, now falls back to the RCA AI.
+* Starting from Version 1.11.2, a number of [[Micro_AIs]] are also available.  These add specialized behavior to Wesnoth that cannot be achieved by adjusting default AI parameters (such as those described here).  A Micro AI can be included in a scenario with a few lines of WML code, using the [[Micro_AIs#Setting_up_a_Micro_AI|[micro_ai]]] tag.
 
 
 == Evaluating AI Moves -- Candidate Actions (CAs)  ==
@@ -38,7 +39,7 @@ When the AI does its turn, a number of potential actions (called candidate actio
 
 *'''Move to targets''' CA: Evaluate potential [[AiWML#AI_Targets_and_Goals|targets]] and move units toward them.  The evaluation takes into account how valuable the targets are (this is configurable by setting [[AiWML#Aspects_and_Goals_Overview|goals]]), how easily the AI's units can get there, how exposed to attacks they will be, etc.  Targets are enemy leaders, enemy units that pose a thread to the AI leader and villages, as well as anything defined as a goal.  It is important to understand that targets only apply to the move-to-targets CA.  If a target is within range of the AI's unit(s) on the current turn, other CAs, such as combat, healing and villages have a higher evaluation score and are (usually) executed first.  Thus, a target is specifically ''not'' an attack target, but a move target.
 
-*'''Passive leader shares keep''' CA: Move the leader off the keep to let an allied leader recruit.
+*'''Leader shares keep''' CA: Move the leader off the keep to let an allied leader recruit, if an allied leader can get to the keep in one move.  ''Note: This CA used to be called 'passive_leader_shares_keep'.  That name still works for the time being but will be deprecated at some point.''
 
 If several candidate actions are possible for the next move, they are prioritized in the order given above.  For example, the Goto CA is always the first move that is done (if ''goto_x'' and ''goto_y'' are defined and a move toward them is possible).  If a valid attack is found in the combat CA, it is ''always'' executed before any healing, village grabbing or move-to-target moves.  One of the effects this has is that attacks always have priority over any goals/targets of the move-to-target phase.
 
@@ -106,11 +107,15 @@ The following keys/tags can be used in an '''[ai]''' tag:
 ** '''id'''="": (string)  An internal id key of the [leader_goal] tag.  An id is required for ''auto_remove'' to work.  However, setting this id does not automatically set the id of the [leader_goal] [[AiWML#A_Bit_More_on_Simple_vs._Composite_Aspects|facet]].  Thus, in principle for this to work, you need to set the id of the facet as described [[AiWML#Adding_and_Deleting_Aspects_with_the_.5Bmodify_ai.5D_Tag|below]] ''and'' set the ''id'' key in [leader_value] to the same value.  Since you are probably only going to use one [leader_goal] tag at a time, there is a much simpler way: setting 'id=0' (which refers to the first facet) or 'id=*' (which means all facets) in [leader_goal] allows ''auto_remove'' to work without the extra step of setting the facet id.
 **'''max_risk'''=1-caution: (double: meaningful values are >=0)  How much risk the leader may be exposed to by moving toward the goal.  For evaluating this risk, the AI multiplies the leader's hitpoints by this number.  The leader is only moved toward the goal if the resulting value is larger than the expected damage the leader is going to take during the next enemy turn.  Thus, 'max_risk=0' means he will only move if no attack on him is possible at the target hex of the move.  'max_risk=1' (or larger) results in him moving even if he's almost certainly going to die.
 
+* {{DevFeature1.11}} '''leader_ignores_keep'''=no: (bool) If 'yes', AI leaders do not move to the closest keep at the beginning of the turn.  Instead, they participate in the move_to_targets candidate action (and all other CAs in which they already participated anyway, of course).  For practical purposes this means that:
+** Leaders participate in all the moves and attacks in the same way as any other unit of the AI side.
+** AI leaders do not recruit except on the first turn if they start on a keep, or if they accidentally end up on a keep.  Thus, if a leader is supposed to recruit first and then participate in the action, leader_ignores_keep should be set to 'no' at the beginning of the scenario, and be changed to 'yes' in an event later.
+
 * '''leader_value'''=3: (double) A number 0 or higher which determines the value of enemy leaders as [[AiWML#AI_Targets_and_Goals|targets]].  Affects move-to-targets CA only (and therefore specifically does not apply to attacks).
 
-* '''passive_leader'''=no: (bool) If 'yes', the AI leader never moves or attacks (not even to move back to the keep or to attack adjacent units), except to obey [leader_goal]s.  Affects all CAs except recruitment and move-leader-to-goals.
+* '''passive_leader'''=no: (bool) If 'yes', the AI leader never moves or attacks, not even to move back to the keep (unless 'passive_leader_shares_keep=yes' is set) or to attack adjacent units, except to obey [leader_goal]s.  Affects all CAs except recruitment and move-leader-to-goals.
 
-* '''passive_leader_shares_keep'''=no: (bool) If 'yes', this has most of the effects of ''passive_leader=yes'', but the AI leader moves 1 hex from the keep to share it with allied players (if they can reach it next turn).  He also returns to keep to recruit when possible and attacks adjacent enemy units.
+* '''passive_leader_shares_keep'''=no: (bool) If 'yes', lets the AI leader moves off the keep to share it with allied leaders (if they can reach it next turn) if 'passive_leader=yes' is set.  He also returns to keep to recruit when possible and attacks adjacent enemy units.
 
 *'''recruitment'''="": Limits the number of units of a given type that the AI can have on the map simultaneously.  Applies to the recruitment CA only.  It cannot be set in the same way as the other aspects and is therefore described in a [[AiWML#Limiting_Recruiting_with_the_.27recruitment.27_Aspect|separate section]] below.
 
@@ -469,3 +474,4 @@ Finally note that [modify_ai] in [side][ai] is activated when the AI is first in
 * [[BuildingScenariosIndex]]
 
 [[Category: WML Reference]]
+[[Category:AI]]

@@ -152,10 +152,10 @@ Normally menu items are, including all their defining wml, automatically carried
 
 The following tags are also action tags:
 === [item] ===
-Makes a graphical item appear on a certain hex. Note this only places the graphics for an item. It does not make the item do anything. Use a moveto event to make moving onto the item do something. <tt>''('''Hint:''' There are a number of predefined items that are used in various campaigns that you can make use of. You can find [http://www.wesnoth.org/macro-reference.xhtml#file:items.cfg a list of them] if you look into the items.cfg file in the wesnoth install directory (under /data/core/macros))''</tt>
+Makes a graphical item appear on a certain hex. Note this only places the graphics for an item. It does not make the item do anything. Use a moveto event to make moving onto the item do something. <tt>''('''Hint:''' There are a number of predefined items that are used in various campaigns that you can make use of. You can find [http://www.wesnoth.org/macro-reference.xhtml#file:items.cfg a list of them] if you look into the items.cfg file in the wesnoth install directory (under /data/core/macros).)''</tt>
 * '''x''', '''y''': the location to place the item. (only for [event][item]: full [[StandardLocationFilter|SLF]] support)
-* '''image''': the image (in ''images/'' as .png) to place on the hex.
-* '''halo''': an image to place centered on the hex. Use this instead of ''image'' if the image is bigger than the hex or if you want to animate an image. ''Example (where the integer after the colon is the duration of each frame): halo=scenery/fire1.png:100,scenery/fire2.png:100,scenery/fire3.png:100,scenery/fire4.png:100,scenery/fire5.png:100,scenery/fire6.png:100,scenery/fire7.png:100,scenery/fire8.png:100''
+* '''image''': the image (in ''images/'' as .png) to place on the hex. This image is aligned with the top-left of the hex (which is 72 pixels wide and 72 pixels tall). It is drawn underneath units. ''('''Hint:''' If using an image smaller than 72x72, then it might be useful to [[ImagePathFunctionWML#Blit_Function|BLIT]] the image onto <tt>misc/blank-hex.png</tt> (a blank 72x72 image).)''
+* '''halo''': an image to place centered on the hex. It is drawn on top of units. Use this instead of ''image'' if the image is bigger than the hex or if you want to animate an image. ''Example (where the integer after the colon is the duration of each frame): halo=scenery/fire1.png:100,scenery/fire2.png:100,scenery/fire3.png:100,scenery/fire4.png:100,scenery/fire5.png:100,scenery/fire6.png:100,scenery/fire7.png:100,scenery/fire8.png:100''
 * '''team_name''': name of the team for which the item is to be displayed (hidden for others). For multiple teams just put all the names in one string, for example separated by commas.
 * '''visible_in_fog''': whether the item should be visible through fog or not. Default yes.
 * '''redraw''': {{DevFeature1.11}}(boolean yes|no, default: yes): If no, disables implicit calls to [[InterfaceActionsWML#.5Bredraw.5D|[redraw]]] when placing the items.
@@ -262,18 +262,18 @@ Pauses the game.
 * '''time''': the time to pause in milliseconds
 === [redraw] ===
 Redraws the screen (this normally isn't done during events, although some of the other interface actions cause the screen or parts of it to be redrawn).
-* '''clear_shroud''' (boolean yes|no, default no): If yes, recalculates fog and shroud.  Useful if you for example spawn friendly units in the middle of an event and want the shroud to update accordingly (otherwise units that spawn inside fog would remain invisible for the duration of the event, since the fog would not automatically get cleared around them).
+* '''clear_shroud''' (boolean yes|no, default no): If yes, clears fog and shroud around existing units. Useful if you, for example, spawn friendly units in the middle of an event and want the shroud to update accordingly (otherwise units that spawn inside fog would remain invisible for the duration of the event, since the fog would not automatically get cleared around them).
 * '''[[StandardSideFilter]]''': the sides for which to recalculate fog and shroud.
-* '''side''': If used (forces clear_shroud=yes), recalculates fog and shroud for that side.
+* '''side''': If used (forces clear_shroud=yes), clears fog and shroud for that side.
 
 === [unit_overlay] ===
 Sets an image that will be drawn over a particular unit, and follow it around
-* [[StandardUnitFilter]]: All matching units will get the overlay
+* [[StandardUnitFilter]]: All matching units will get the overlay (do not use [filter])
 * '''image''': the image to place on the unit
 
 === [remove_unit_overlay] ===
 removes a particular overlayed image from a unit
-* [[StandardUnitFilter]]: The overlay will get removed from all matching units
+* [[StandardUnitFilter]]: The overlay will get removed from all matching units (do not use [filter])
 * '''image''': the image to remove from the unit
 
 === [animate_unit] ===

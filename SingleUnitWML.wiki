@@ -9,6 +9,8 @@ It is different from the [unit_type] in [units], which describes a class of unit
 The following keys are recognized:
 * '''type''': the ID of the unit's unit type. See [[UnitTypeWML]].
 
+* '''parent_type''': {{DevFeature1.11}} overrides '''type''' if this is present. This is likely of little use to WML authors; it is automatically generated when needed by the game (to keep track of some [unit_type][variation]s).
+
 * '''side''': the side that the unit is on. It has to be an existing side, even if the unit is created in a variable.
 
 * '''gender''': can be set to male or female to designate the gender of the unit. Default is male, but if the unit has only a female variant it will be female.

@@ -20,7 +20,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 * '''gender''': has a value of either ''male'' or ''female'', and determines which of the keys ''male_names'' and ''female_names''  should be read. When a unit of this type is recruited, it will be randomly assigned a name by the random name generator, which will use these names as a base.
 * '''hide_help''': determines if the unit type will appear in the in-game help. Possible values ''true'' and ''false'', defaults to ''false''.
 * '''hitpoints''': the maximum HP that the unit has, and the HP it has when it is created.
-* '''id''': the value of the ''type'' key for units of this type. An ''id'' should consist only of alphanumerics and spaces (or underscores). ''type'' keys are found in [[SingleUnitWML]] and [[FilterWML]]. For example, id=Drake Flare
+* '''id''': the value of the ''type'' key for units of this type. This is required and must be unique among all [unit_type] tags. An ''id'' should consist only of alphanumerics and spaces (or underscores). ''type'' keys are found in [[SingleUnitWML]] and [[FilterWML]]. For example, id=Drake Flare
 ::WARNING : characters "$", "&", "*", "-", "(" and ")" are illegal for use in the unit type id and must be avoided because they might lead to corrupted saved games
 *'''ignore_race_traits''': 'yes' or 'no' (default). Determines whether racial traits (see [[UnitsWML]]) are applied. 
 * '''image''': sets the base image of the unit, which is used on the map.
@@ -37,7 +37,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 * '''race''': See {{tag|UnitsWML|race}}.  Also used in standard unit filter (see [[FilterWML]]).
 * '''undead_variation''': When a unit of this type is killed by a weapon with the plague special, this variation is applied to the new plague unit that is created, whatever its type. For example, if the plague special creates Walking Corpses and undead_variation is set to "troll", you'll get a troll Walking Corpse. Defaults to the undead_variation set in this unit type's race.
 * '''usage''': the way that the AI should recruit this unit, as determined by the scenario designer. (See ''recruitment_pattern'', [[AiWML]]).  The following are conventions on usage:<br> ** ''scout'': Fast, mobile unit meant for exploration and village grabbing.<br> ** ''fighter'': Melee fighter, melee attack substantially more powerful than ranged.<br> ** ''archer'': Ranged fighter, ranged attack substantially more powerful than melee.<br> ** ''mixed fighter'': Melee and ranged fighter, melee and ranged attacks roughly equal.<br> ** ''healer'': Specialty 'heals' or 'cures'.<br>Note that this field affects only recruitment, not the AI's behavior in combat; that is always computed from attack power and hitpoints. Non-standard usages may be used as well.
-* '''vision''': the number of vision points to calculate the unit's sight range. Defaults to ''movement'' if not present.
+* '''vision''': the number of vision points to calculate the unit's sight range. Defaults to ''movement'' if not present.{{DevFeature1.11}}
 * '''zoc''': if "yes" the unit will have a zone of control regardless of level.  If present but set to anything other than "yes," the unit will have no zone of control.  If the tag is omitted, zone of control is dictated by unit level (level 0 = no zoc, level 1+ = has zoc).
 
 == After max level advancement (AMLA) ==
@@ -69,7 +69,7 @@ Unit animation syntax is described in [[AnimationWML]]. In addition to the anima
 For the weight settings, the engine usually chooses the attack with the best average total damages * weight (default weight = 1.0).
 
 == Other tags ==
-* '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Subsequent attributes modify the copy. Tags modify the corresponding tag of the original, so for example the first '''[attack]''' tag in the derived unit would modify the first attack of the base unit rather than defining a new attack.
+* '''[base_unit]''': Contains one attribute, '''id''', which must be the ID of a unit type.  If specified, the UnitTypeWML for that unit is copied into this one.  Attributes in this unit overwrite the copy. Tags modify the corresponding tag of the original, so for example the first '''[attack]''' tag in the derived unit would modify the first attack of the base unit rather than defining a new attack.
 
 * '''[portrait]''': Describes a unit portrait for dialogue. However, generally you should use the profile key instead; [portrait] is mostly for internal use.
 ** '''size''': The size of the portrait, in pixels.
@@ -81,13 +81,16 @@ For the weight settings, the engine usually chooses the attack with the best ave
 
 * '''[event]''': Any [event] written inside the [unit_type] tag will get included into any scenario where a unit of this type appears in. Note that such events get included when a unit of this type first appears in the scenario, not automatically when the scenario begins (meaning that ''name=prestart'' events, for example, would usually never trigger). See [[EventWML]] and [[WML_Abilities]]
 
-* '''[variation]''': Defines a variation of a unit. Variations are invoked with an [effect] tag. They are currently used for graphical variations (giving character sprites new weapons) but theoretically you could do anything with it.
+* '''[variation]''': Defines a variation of a unit. Variations are invoked with an [effect] tag or the variation= attribute in [[SingleUnitWML]]. They are currently used for graphical variations (giving character sprites new weapons) but theoretically you could do anything with it.
 ** '''variation_name''': The name of the variation.
-** '''inherit''': if ''yes'', inherits all the properties of the base unit. Defaults to no.
-: All other keys in '''[variation]''' are the same as for '''[unit_type]''' itself.
+** '''inherit''': if ''yes'', inherits all the properties of the base unit, which are then overwritten by the keys and tags of this variation. Defaults to no.
+*** {{DevFeature1.11}} The '''id''' key is always inherited, regardless of the value of '''inherit'''.
+** All keys and tags of '''[unit_type]''', except ''[advancefrom]'', ''[base_unit]'', ''[female]'', ''[male]'', and ''[variation]''. A special case is the '''id''' key, for which support is incomplete. If '''id''' is set for a variation, then it applies when filtering existing units (including the breakdown of units in the "damage versus" tooltip), but it cannot be used to create a new unit. For reliable behavior, '''id''' should match the parent type's id. {{DevFeature1.11}} Changing the id for a variation is fully supported starting in 1.11.2.
 
-* '''[male]''', '''[female]''': They can contain all '''[unit_type]''' tags, to specify a variation of different gender for a unit.
+* '''[male]''', '''[female]''': These can specify a variation based on gender for a unit. If these are provided, they will automatically apply based upon the gender of a unit.
 ** '''inherit''': if ''yes'', inherits all the properties of the base unit. Defaults to yes.
+*** {{DevFeature1.11}} The '''id''' key is always inherited, regardless of the value of '''inherit'''.
+** All '''[unit_type]''' tags and keys, excluding ''[advancefrom]'', ''[base_unit]'', ''[female]'', and ''[male]''. A special case is the '''id''' key, for which support is incomplete. If '''id''' is set for a variation, then it applies when filtering existing units (including the breakdown of units in the "damage versus" tooltip), but it cannot be used to create a new unit. For reliable behavior, '''id''' should match the parent type's id. {{DevFeature1.11}} Changing the id for a variation is fully supported starting in 1.11.2.
 
 == See Also ==
 

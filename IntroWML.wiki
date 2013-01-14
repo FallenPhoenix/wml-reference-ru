@@ -7,15 +7,25 @@ The '''[story]''' tag is a series of images and text to display as the first par
 The part is displayed until the user clicks on the "Next>>>" button.
 
 The following key/tags are recognized for '''[part]''':
-* '''background''': the image to display. Story images are usually created specially for this purpose, except for the map.
-* '''scale_background''': Whether to scale the background, default yes.
+* '''background''': the image to display. Story images are usually created specially for this purpose, except for the map. Deprecated since 1.11.2, use '''[background_layer]''' instead.
+* '''scale_background''': Whether to scale the background, default yes. Deprecated since 1.11.2, use '''[background_layer]''' instead.
 * '''story''': (translatable) the text to display below the image.
 * '''show_title''': whether to display the title of the scenario at the top
 * '''title''': specifies a custom title to display instead of the name of the scenario. If specified, it implies '''show_title=yes'''.
 * '''music''': change to this music
 * '''sound''': a list of sound files; the engine will choose one at random and play it once while displaying the story part.
+* '''[background_layer]''': {{DevFeature1.11}} a layer of the background of the story screen.
+** '''image''': path to the image file.
+** '''scale_vertically''': whether the image should be scaled to fill the screen in the vertical dimension. Default yes.
+** '''scale_horizontally''': whether the image should be scaled to fill the screen in the horizontal dimension. Default yes.
+** '''scale''': a shortcut to set scale_vertically and scale_horizontally at once. If specified, the values of the former two keys will be ignored.
+** '''keep_aspect_ratio''': whether the aspect ratio of the image should be preserved while scaling. Default yes.
+** '''tile_vertically''': whether the image should be tiled in the vertical direction. Tiling happens after aligning the image to the center of the screen. Default no.
+** '''tile_horizontally''': whether the image should be tiled in the horizontal direction. Tiling happens after aligning the image to the center of the screen. Default no.
+** '''tile''': a shortcut to set tile_vertically and tile_horizontally at once. If specified, the values of the former two keys will be ignored.
+** '''base_layer''': whether is this the layer to align the overlay images to. Default no.
 * '''[image]''': an image to display.
-** '''x''', '''y''': the location in pixels to draw the image. The x,y pixel location is relative to the image specified in background, but not in a normal way.  The background image is scaled up or down to fill the screen resolution, but images are never scaled in size.  Their coordinates, however, are scaled.  It's basically a big pain in the rear.  Example: I have a background image at 640x480 and an overlay at 640x480.  To horizontally center the overlay on a 1024x768 screen, I want to position it at x=192.  This is because 1024-640 = 384 total extra pixel space, then 384/2 = 192.  This results in equal space on both sides of the overlay.  However, now you have to account for the background scaling.  The background image at 640 is scaled up to 1024, a scaling factor of 1.6.  All image locations are also scaled up, so the overlay is not drawn at x=192, rather it is drawn at x=192*1.6 or x=307!  To compensate for this, divide the desired pixel location by the scaling factor.  In the example, x_compensated=192/1.6 or x_compensated=120.
+** '''x''', '''y''': the location in pixels to draw the image. The x,y pixel location is relative to the image specified in background, but not in a normal way.  The background image is scaled up or down to fill the screen resolution, but images are never scaled in size.  Their coordinates, however, are scaled.  It's basically a big pain in the rear.  Example: I have a background image at 640x480 and an overlay at 640x480.  To horizontally center the overlay on a 1024x768 screen, I want to position it at x=192.  This is because 1024-640 = 384 total extra pixel space, then 384/2 = 192.  This results in equal space on both sides of the overlay.  However, now you have to account for the background scaling.  The background image at 640 is scaled up to 1024, a scaling factor of 1.6.  All image locations are also scaled up, so the overlay is not drawn at x=192, rather it is drawn at x=192*1.6 or x=307!  To compensate for this, divide the desired pixel location by the scaling factor.  In the example, x_compensated=192/1.6 or x_compensated=120. {{DevFeature1.11}} In version 1.11.2 and later, you can specify which background overlay you want to use as a base for the coordinates. See '''[background_overlay]''' for details.
 ** '''centered''': If "yes", use the center of the image when placing at the x,y coordinates, which is useful since this image is not scaled like the background is (and by centering no need to worry about this).
 ** '''file''': the image to display.
 ** '''delay''': the time to delay drawing this image.
