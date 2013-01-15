@@ -7,22 +7,22 @@
 
 === [endlevel] ===
 Завершает сценарий.
-* '''result''': before the scenario is over, all events with ''name=result'' are triggered. If ''result=victory'', the player progresses to the next level; if ''result=defeat'', the game returns to the main menu. 
+* '''result''': Перед тем, как сценарий завершается, вызываются все события с ''name=result''. Если ''result=victory'' - игрок переходит на следующий уровень, если ''result=defeat'' -  совершается переход в главное меню. 
 
 При '''result=victory''' также доступны следующие ключи:
-* '''bonus''': whether the player should get bonus gold (maximum possible gold that could have been earned by waiting the level out). The default is bonus=yes.
-* '''carryover_report''': whether the player should receive a summary of the scenario outcome, the default is carryover_report=yes.
-* '''save''': whether a start-of-scenario save should be created for the next scenario, the default is save=yes. Do not confuse this with saving of replays for the current scenario.
-* '''replay_save''': whether a replay save for the current scenario is allowed, the default is replay_save=yes. If yes, the player's settings in preferences will be used to determine if a replay is saved. If no, will override and not save a replay.
-* '''linger_mode''': If ...=yes, the screen is greyed out and there's the possibility to save before advancing to the next scenario, the default is linger_mode=yes.
-* '''reveal_map''': (Multiplayer only) (Default is 'yes') If 'no', shroud doesn't disappear when game ended.
-* '''next_scenario''': (default specified in '''[scenario]''' tag) the ID of the next scenario that should be played.  All units that side 1 controls at this point become available for recall in ''next_scenario''.
-* '''carryover_percentage''': by default 80% of the gold is carried over to the next scenario, with this key the amount can be changed.
-* '''carryover_add''': if true the gold will be added to the starting gold the next scenario, if false the next scenario will start with the amount of the current scenario (after taxes) or the minimum in the next scenario. Default is false.
-* '''music''': (default specified in '''[scenario]''' or '''[game_config]''' tags) a comma-separated list of music tracks from which one will be chosen and played once after any events related to the end of level result are executed; by default, victory_music is used on victory, and defeat_music on defeat.
-* '''end_credits''': {{DevFeature1.11}} Whether to display the credits screen at the end of a single-player campaign. Defaults to ''yes''. Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
-* '''end_text''': (translatable) Text that is shown centered in a black screen at the end of a campaign. Defaults to "The End". Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
-* '''end_text_duration''': Delay, in milliseconds, before displaying the game credits at the end of a campaign. In other words, for how much time '''end_text''' is displayed on screen. Defaults to 3500. Note that this has cumulative effects over the campaign - it persists even if the endlevel does not trigger the end of the campaign. See also [[CampaignWML]].
+* '''bonus''': Должен ли игрок получить бонус (максимальное количество золота, которое можно получить, ожидая завершения уровня). Значение по умолчанию: bonus=yes.
+* '''carryover_report''': Должен ли игрок получить отчёт о пройденном сценарии. По умолчанию carryover_report=yes.
+* '''save''': Должно ли быть создано "сохранение начала сценария" для следующего сценария, по умолчанию save=yes. Не путайте это с сохранением реплея текущего сценария.
+* '''replay_save''': Можно ли сохранить реплей текущего сценария, по умолчанию replay_save=yes. В этом случае для того, чтобы определить, будет ли реплей сохранён, используются настройки пользователя. Если no, то реплей не будет сохранён вне зависимости от настроек игрока.
+* '''linger_mode''': Если ...=yes, экран "сереет" и нет возможности сохраниться перед следующим сценарием. По умолчанию linger_mode=yes.
+* '''reveal_map''': Если 'no', карта не показывается целиком в конце игры (только для мультиплеера, по умолчанию 'yes').
+* '''next_scenario''': (Значение по умолчанию определяется в теге '''[scenario]''') ID следующего сценария. Все юниты, которые контролируются стороной 1 на этот момент становятся доступны для вызова в ''next_scenario''.
+* '''carryover_percentage''': По умолчанию 80% золота переносится в следующий сценарий, этот ключ позволяет изменить это значение.
+* '''carryover_add''': Если true, золото будет добавлено к золоту начала сценария, если false, следующий сценарий начнётся с текущим значением золота (за исключением "налогов") или минимальным значением для следующего сценария. По умолчанию false.
+* '''music''': Список с разделителями запятыми музыкальных треков, один из которых выбирается и проигрывается после выполнения любого события, связанного с концом уровня. По умолчанию victory_music используется при победе и defeat_music при поражении (значение по умолчанию определяется в '''[scenario]''' или '''[game_config]''').
+* '''end_credits''': {{DevFeature1.11}} Отображать ли титры после конца однопользовательской кампании. По умолчанию ''yes''. Обратите внимание, что этот тег имеет кумулятивный эффект - он сохраняется, даже если endlevel не вызывает конца кампании. См также [[CampaignWML]].
+* '''end_text''': (переводимо) Текст, который показывается в центре чёрного экрана в конце кампании. По умолчанию "The End".Обратите внимание, что этот тег имеет кумулятивный эффект - он сохраняется, даже если endlevel не вызывает конца кампании. См также [[CampaignWML]].
+* '''end_text_duration''': Задержка в миллисекундах перед отображением титров в конце кампании. Другими словами, этот ключ определяет как долго будет показан '''end_text'''. По умолчанию 3500. Обратите внимание, что этот тег имеет кумулятивный эффект - он сохраняется, даже если endlevel не вызывает конца кампании. См также [[CampaignWML]].
 
 === [unit] ===
 Добавляет бойца на карту. Синтаксис смотрите в [[SingleUnitWML]]. {{Short Note:Predefined Macro|GENERIC_UNIT}}
