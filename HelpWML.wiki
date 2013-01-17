@@ -3,9 +3,8 @@
 == Тег верхнего уровня [help] ==
 
 Тег служит для описания справочной системы "Веснота".
-Each of the three subtags [toplevel], [section] and [topic] describe an element of the help system.
 
-* '''[toplevel]''': The toplevel tag denotes sections and topics that should be shown immediately when the "Help" button is clicked on (see the "help" action, [[ThemeWML]]). Разделы, указанные в данным теге, считываются рекурсивно.
+* '''[toplevel]''': Определяет, какие разделы и статьи будут находиться в корне справочника.
 ** '''sections''': Список разделов верхнего уровня (по id).
 ** '''topics''': Список статей верхнего уровня.
 * '''[section]''': Описывает раздел справочника. Каждый раздел может содержать статьи и подразделы.
@@ -15,7 +14,7 @@ Each of the three subtags [toplevel], [section] and [topic] describe an element 
 ** '''sections_generator'''
 ** '''sort_sections'''
 ** '''topics''': Список статей, относящихся к данному разделу.
-** '''generator''': provides the name of a function that will generate a list of topics and include them in this section. These topics will be included after topics listed on the '''topics''' key unless ''sort_topics'' is ''yes''.
+** '''generator''': Задает функцию генерации статей в разделе. При отключенной сортировке эти статьи располагаются после тех, что указаны в '''topics'''.
 ** '''sort_topics''': Определяет, должны ли статьи упорядочиваться по алфавиту, или в порядке, указанном в '''topics'''.
 *** ''yes'': Фиксированные и генерируемые статьи сортируются вместе в алфавитном порядке.
 *** ''no'': indicates that topics should appear in the order listed with fixed topics appearing before generated topics.
@@ -37,7 +36,7 @@ The following key/tags are accepted inside '''text''':
 ** '''dst''': Идентификатор целевой статьи.
 ** '''text''': Текст ссылки на '''dst'''; т.е. при клике на '''text''' открывается страница '''dst'''.
 ** '''force''': Указывает, что ссылка должна отображаться даже если целевая страница скрыта или отсутствует.
-* '''<jump>''': when this text is selected, the input position along the X axis is moved.  Can be used for example to create columns of things.  A jump is ignored if it would bring the input position to an invalid position.
+* '''<jump>''': Перемещает каретку по горизонтали, что можно использовать, например, для создания столбцов. При неверных координатах прыжок игнорируется.
 ** '''to''': the X coordinate of the text area to jump to.  If it can't be done on the current row, the input position is moved down one line.
 ** '''amount''': the number of pixels to jump forward
 * '''<img>''': Вставляет изображение.
@@ -94,6 +93,7 @@ The following key/tags are accepted inside '''text''':
 
 == Смотрите также ==
 * [[ReferenceWML]]
+* [http://wiki.wesnoth.org/HelpWML Английская версия данной статьи]
 
 
 [[Category: WML Reference]]
