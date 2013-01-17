@@ -1,10 +1,8 @@
-From [[FilterWML]], this is the standard way of filtering units.
+= Стандартный фильтр бойцов =
 
-When a unit filter is applied to a map, first it applies to all units on the field,
-based on their coordinates.
-Next it applies to units in the recall list.
-This is important to remember as it means, for example,
-that the tag '''[kill]''' can be used to kill units in the recall list.
+Часть [[FilterWML]], представляющая стандартный способ отбора бойцов.
+
+When a unit filter is applied to a map, first it applies to all units on the field, based on their coordinates. Next it applies to units in the recall list. This is important to remember as it means, for example, that the tag '''[kill]''' can be used to kill units in the recall list.
 
 You can access the filtered unit within the filter as the ''$this_unit'' variable, see [[SingleUnitWML]] for the possible content of these variables
 
@@ -66,5 +64,9 @@ You are limited to having each attribute, such as '''id''', appear once or less 
     [/or]
   [/kill]
 
+
+== Смотрите также ==
+* [[ReferenceWML]]
+* [[FilterWML]]
 
 [[Category: WML Reference]]
