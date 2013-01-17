@@ -171,12 +171,13 @@ When multiple meta-conditions are encountered one after another in a containing 
 
 
 == Смотрите также ==
+* [[ReferenceWML]]
 * [[VariablesWML]]
+* [[EventWML]]
 * [[InternalActionsWML]]
 * [[DirectActionsWML]]
 * [[InterfaceActionsWML]]
-* [[EventWML]]
-* [[ReferenceWML]]
+
 
 [[Category: WML Reference]]
 [[Category: ActionsWML]]

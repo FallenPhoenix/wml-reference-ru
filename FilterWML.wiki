@@ -1,5 +1,5 @@
 {{WML Tags}}
-== Filtering in WML ==
+== Фильтрация в WML ==
 
 A ''filter'' is a special WML block.
 Filters are used to describe a set of units, hexes, weapons or something else.
@@ -26,7 +26,7 @@ and ''secondary unit'' must match the filter contained in '''[filter_second]'''.
 
 == Фильтрация локаций ==
 
-As you have seen, standard unit filter can contain a location filter.
+Как видно, стандартный фильтр бойцов может содержать фильтр локаций.
 Several actions, such as '''[terrain]''', also use location filters.
 Location filters are represented on this site by the phrase "standard location filter".
 
@@ -53,7 +53,7 @@ These keys are used as filter input for attack filters:
 * '''special''': filter on the attack's special power. For values see [[AbilitiesWML]].
 {{DevFeature1.11}} Also, '''[and]''', '''[or]''', and '''[not]''' subfilters are supported.
 
-== Filtering Terrains ==
+== Фильтрация ландшафта ==
 
 ''This section describes basically the same as "Filtering Locations" above, namely a [[StandardLocationFilter]].''
 
@@ -87,7 +87,7 @@ Notice how the * can be used separately for both layers (base and overlay layers
 
 For a list of terrain types and their string codes see [[TerrainCodesWML|TerrainCodesWML]].
 
-== Filtering Vision ==
+== Фильтрация видимости ==
 
 The '''[filter_vision]''' tag allows you to filter locations based on whether or not the hex is obscured by fog or shroud from the point-of-view of a viewing side.
 

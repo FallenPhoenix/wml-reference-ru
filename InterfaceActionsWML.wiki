@@ -209,7 +209,7 @@ This feature is generally intended to be used in cutscenes to prevent the player
 === [scroll] ===
 Scroll a certain number of pixels in a given direction. Useful for earthquake/shaking effects.
 * '''x''', '''y''': the number of pixels to scroll along the x and y axis
-=== '''[scroll_to]''' ===
+=== [scroll_to] ===
 Scroll to a given hex
 * '''x''', '''y''': the hex to scroll to
 * {{DevFeature1.11}} [[StandardLocationFilter]], do not use a [filter_location] sub-tag. If more than one location matches the filter, only the first matching location will be used.
@@ -254,12 +254,12 @@ Switches to playing different music
 * '''name''': the filename of the music to play (in ''music/'' as .ogg)
 * see [[MusicListWML]] for the correct syntax
 
-===[volume]===
+=== [volume] ===
 Устанавливает игровую громкость в процентах от указанной в настройках. Допустимы значения от 0 до 100.  
 * '''music''':  Изменяет громкость музыки.
 * '''sound''':  Изменяет громкость звуков.
 
-=== [color_adjust]===
+=== [color_adjust] ===
 Tints the color of the screen.
 * '''red''', '''green''', '''blue''': values from -255 to 255, the amount to tint by for each color
 

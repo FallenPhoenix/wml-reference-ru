@@ -1,10 +1,10 @@
 {{WML Tags}}
-== the toplevel [terrain_type] tag ==
+== Тег верхнего уровня [terrain_type] ==
 
-The [terrain_type] tag describes a terrain in WML.
-Terrains are usually described in the terrain.cfg file
+Тег [terrain_type] описывает определенный тип местности (ландшафта).
+Основные ландшафты определены в файлы terrain.cfg.
 
-the [terrain_type] tag has the following keys and subtags
+Поддерживает следующие атрибуты:
 * '''symbol_image''': an image used for this terrain in the minimap
 * '''editor_image''': an image used for this terrain in the map editor; if not defined uses symbol_image
 * '''id''': a non-translatable string identifying this terrain. It is used as the key for attributes in some parts of WML, such as {{tag|UnitsWML|movetype}} (but see also the aliasof= attribute below; not all ids need to be listed under movetypes).
@@ -31,8 +31,7 @@ the [terrain_type] tag has the following keys and subtags
 * '''editor_group''': a comma separated list of editor_group ids to which this terrain belongs.
 * '''hidden''': (boolean) if set to 'yes', makes this terrain not appear in the map editor palettes.
 
-== See Also ==
-
+== Смотрите также ==
 * [[ReferenceWML]]
 * [[TerrainCodesWML]]
 * [[EditorGroupWML]]
