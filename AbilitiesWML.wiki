@@ -1,53 +1,49 @@
 {{WML Tags}}
-==  Abilities and their effects ==
+== Способности и их применение ==
 
-There are two types of abilities: ones that apply to units (called ''abilities'') and ones that only apply when using a particular attack (called ''specials'' or ''weapon specials'').  A unit may have multiple abilities and an attack can have multiple specials, but by convention only one weapon special should be assigned to any given attack.
+Способности бывают двух типов: одни наделяют какими-то возможостями самих бойцов (собственно ''способности''), а другие работают при использовании ими определенных атак (''особенности атак'' или ''спецудары''). Причем каждый боец может обладать и несколькими способностями, а каждая атака, соответственно, особенностями (хоть меинлайнеры и решили не выдавать атакам более одной).
 
-== ��� ''[abilities]'' ==
+== Тег [abilities] ==
 
-The following tags are used to describe an ability in WML:
+Для описания способностей в WML используются следующие теги:
 
 * '''[heals]''': modifies the hitpoints of a unit at the beginning of the healer's turn
 * '''[regenerate]''': modifies the hitpoints of a unit at the beginning of the unit's turn
-* '''[resistance]''': modifies the resistance of a unit to damage
-* '''[leadership]''': modifies the damage of a unit
-* '''[skirmisher]''': ��������� ������������ ��������� ���� ��������.
+* '''[resistance]''': Влияет на сопротивление бойцов.
+* '''[leadership]''': Влияет на урон бойцов.
+* '''[skirmisher]''': Позволяет игнорировать вражеские зоны контроля.
 * '''[illuminates]''': modifies the time of day adjacent to the affected units
-* '''[teleport]''': allows the unit to teleport
-* '''[hides]''': ������ ����� ��������� ��� ������.
-Any other name is valid (for example '''[dummy]'''), but will result in an ability that does nothing but report it's there. These tags still use the same common keys and tags as every other ability. '''Note:''' a dummy ability must have an id for the name and description to display.
+* '''[teleport]''': Позволяет телепортироваться.
+* '''[hides]''': Делает бойца невидимым для врагов.
+Признаются и любые другие имена тегов (например '''[dummy]'''), но они порождают способности, которые ничего не делают, кроме как сообщают о своем существовании. Тем не менее, эти теги поддерживают все базовые ключи способностей. '''Note:''' a dummy ability must have an id for the name and description to display.
 
-=== Common keys and tags for every ability ===
+=== Общие ключи и теги для всех способностей бойцов ===
 
-* '''name''': the (translatable) name of the ability.
-* '''female_name''': the (translatable) name of the ability when possessed by a female unit. Defaults to ''name'' if not specified.
-* '''name_inactive''': the (translatable) name of the ability when inactive. {{DevFeature1.11}} Defaults to ''name'' if not specified; if the ability is supposed to be not displayed when inactive, you must explicitly set ''name_inactive'' to an empty string (nothing after the equals sign).
-* '''female_name_inactive''': the (translatable) name of the ability when inactive and possessed by a female unit. Defaults to ''name_inactive'' if not specified.
-* '''description''': the (translatable) description of the ability.
-* '''description_inactive''': the (translatable) description of the ability when inactive. {{DevFeature1.11}} Defaults to ''description'' if not specified.
-* '''affect_self''': if equal to 'yes', the ability will affect the unit that has it.
-* '''affect_allies''': if equal to 'yes', the ability will affect allies in the specified adjacent hexes.
-* '''affect_enemies''': if equal to 'yes', the ability will affect enemies in the specified adjacent hexes.
+* '''id''': Идентификатор способности. This ability will not be cumulative with other abilities using this id. Must be present if cumulative is anything other than 'yes'.
+* '''name''': Отображаемое название способности.
+* '''female_name''': Вариация наименования для бойцов женского пола. Если не указано, используется значение ''name''.
+* '''description''': Отображаемое описание способности.
+* '''name_inactive''': Название, используемое когда способность неактивна (по умолчанию не отображается).<br>{{DevFeature1.11}} Если не указано, используется значение ''description''; для предотвращения отображения необходимо явно задать пустое значение.
+* '''female_name_inactive''': Женский вариант.<br>{{DevFeature1.11}} Если не указано, используется значение ''name_inactive''.
+* '''description_inactive''': Описание, используемое когда способность неактивна.<br>{{DevFeature1.11}} Если не указано, используется значение ''description''.
+* '''affect_self''': Должна ли способность влиять на своего носителя (yes/no).
+* '''affect_allies''': Должна ли она влиять на близстоящих союзников.
+* '''affect_enemies''': Должна ли она влиять на близстоящих противников.
 * '''cumulative''': if set to 'yes', this ability will be cumulative with the base value for this ability.
-* '''id''': this ability will not be cumulative with other abilities using this id. Must be present if cumulative is anything other than 'yes'.
-* '''[filter]''': [[StandardUnitFilter]] If the unit owning the ability does not match this filter, the ability will be inactive.
-* '''[affect_adjacent]''': an adjacent unit that does not match this filter will not receive its effects. There can be multiple [affect_adjacent] tags in a single ability; a unit needs to match any one of these to receive the effects. If there are no [affect_adjacent] tags, then no adjacent units will receive the effects.
-** '''adjacent''': a comma separated list of any combination of these directions: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
-** '''[filter]''': a [[StandardUnitFilter]].
-* '''[filter_self]''': if the owner of the ability does not match this filter, it will not receive the effects of the ability. [filter_self] takes a [[StandardUnitFilter]] as argument.
+* '''[filter]''': [[StandardUnitFilter]] Если носитель способности не удовлетворяет фильтру, она становится неактивной.
+* '''[affect_adjacent]''': Близстоящие бойцы, не удовлетворяющие данному фильтру, будут проигнорированы. Способность может содержать и несколько тегов [affect_adjacent]; тогда боец может соответствовать любому из них. Если же [affect_adjacent] не задан, на близстоящих бойцов эффект способности не распространяется.
+** '''adjacent''': Список направлений, включающий любые из следующих значений: '''n''','''ne''','''se''','''s''','''sw''','''nw'''.
+** '''[filter]''': [[StandardUnitFilter]].
+* '''[filter_self]''': Если носитель способности не удовлетворяет фильтру, она не будет оказывать на него никакого воздействия.
+** [[StandardUnitFilter]]
 * '''[filter_base_value]''': filters on the value before any modifications; uses the keys '''equals''', '''not_equals''', etc. If several keys are used all have to match.
 
-=== Extra keys used by the ''[heals]'' ability ===
+=== Дополнительные ключи тегов [heals] и [regenerate] ===
 
-* '''value''': the amount healed.
-* '''poison''': can be one of ''slowed'',''cured''.
+* '''value''': Количество восстанавливаемых единиц здоровья.
+* '''poison''': Должна ли способность исцелять от яда (значение ''cured'') или временно предотвращать его действие (значение ''slowed'').
 
-=== Extra keys used by the ''[regenerate]'' ability ===
-
-* '''value''': the amount healed.
-* '''poison''': can be one of ''slowed'',''cured''.
-
-=== Extra keys and tags used by the ''[resistance]'' ability ===
+=== Дополнительные ключи тега [resistance] ===
 
 * '''value''': set resistance to this value.
 * '''max_value''': maximum resistance value. This value '''must''' be set in order for [resistance] to function.
@@ -58,25 +54,25 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 * '''apply_to''': a list of damage types; if left out, the ability applies to all types.
 * '''active_on''': one of 'defense' or 'offense'; if left out, the ability is active on both.
 
-=== Extra keys used by the ''[leadership]'' ability ===
+=== Дополнительные ключи тега [leadership] ===
 
-* '''value''': the percentage bonus to damage.
+* '''value''': Процентный бонус к урону.
 
-=== Extra keys used by the ''[illuminates]'' ability ===
+=== Дополнительные ключи тега [illuminates] ===
 
 * '''value''': the percentage bonus to lawful units.
 * '''max_value''': the maximum percentage bonus given.
 * '''min_value''': the minimum percentage bonus given.
 
-=== Extra keys used by the ''[hides]'' ability ===
+=== Дополнительные ключи тега [hides] ===
 
-* '''alert''': the displayed text when the unit is discovered. Default "Ambushed!".
+* '''alert''': Текст, отображаемый при обнаружении бойца. По умолчанию: _"Ambushed!" ("Засада!").
 
-=== Extra tags used by the ''[teleport]'' ability ===
+=== Дополнительные ключи тега [teleport] ===
 
 * '''[tunnel]''' - a tunnel tag (see [[DirectActionsWML]]) (without the remove key) defining the tunneling source and target hexes, and maybe other conditions. (It automatically applies only to the unit with the ability.)  You may use $teleport_unit inside the tunnel tag for filtering purposes.
 
-=== ������� �������� ������������ ===
+=== Макросы основных способностей ===
 
 * ABILITY_AMBUSH
 * ABILITY_CURES
@@ -90,7 +86,7 @@ Any other name is valid (for example '''[dummy]'''), but will result in an abili
 * ABILITY_SUBMERGE
 * ABILITY_TELEPORT
 
-== ��� ''[specials]'' ==
+== Тег [specials] ==
 
 The '''[specials]''' tag goes inside the '''[attack]''' tag. It can contain the following tags:
 
@@ -108,7 +104,7 @@ The '''[specials]''' tag goes inside the '''[attack]''' tag. It can contain the 
 * '''[swarm]''': number of strikes decreases as the unit loses hitpoints
 Any other name is valid, but will result in an special that does nothing but report it is there.
 
-=== ����� � ���� ������������ ����� ===
+=== Ключи и теги особенностей атаки ===
 
 * '''name''': the (translatable) name of the special.
 * '''name_inactive''': the (translatable) name of the special when inactive. {{DevFeature1.11}} Defaults to ''name'' if not specified; if the special is supposed to be not displayed when inactive, you must explicitly set ''name_inactive'' to an empty string (nothing after the equals sign).
@@ -158,7 +154,7 @@ The ratio of the unit's current to maximum hit points will be used to scale the 
 
 Prior to version 1.11, a [swarm] special will cause [attacks] specials to be ignored. In 1.11 and later, [attacks] specials are applied before [swarm].
 
-=== ������� �������� ������������ ����� ===
+=== Макросы основных особенностей атаки ===
 
 * WEAPON_SPECIAL_BACKSTAB
 * WEAPON_SPECIAL_BERSERK
@@ -174,7 +170,7 @@ Prior to version 1.11, a [swarm] special will cause [attacks] specials to be ign
 * WEAPON_SPECIAL_STONE
 * WEAPON_SPECIAL_SWARM
 
-== �������� ����� ==
+== Смотрите также ==
 
 * [[UnitTypeWML]]
 * [[SingleUnitWML]]
